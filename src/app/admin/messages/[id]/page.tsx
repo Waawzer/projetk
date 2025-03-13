@@ -5,11 +5,13 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { FiArrowLeft, FiMail, FiUser, FiCalendar, FiClock, FiTag, FiCheck, FiX } from 'react-icons/fi';
 
-export default function MessageDetailPage({ 
-  params 
-}: { 
-  params: { id: string } 
-}) {
+type MessageDetailPageProps = {
+  params: {
+    id: string;
+  };
+}
+
+export default function MessageDetailPage({ params }: MessageDetailPageProps) {
   const router = useRouter();
   const { id } = params;
   
