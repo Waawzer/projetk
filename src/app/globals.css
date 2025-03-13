@@ -14,6 +14,8 @@
   --border: #333333;
   --card: #171717;
   --card-hover: #1f1f1f;
+  --navbar-height: 70px;
+  --navbar-height-mobile: 60px;
 }
 
 @theme inline {
@@ -21,6 +23,11 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: var(--navbar-height);
 }
 
 body {
@@ -130,6 +137,27 @@ label {
   margin-bottom: 1.5rem;
 }
 
+/* Mobile navigation adjustments */
+@media (max-width: 768px) {
+  .pt-32 {
+    padding-top: 5rem !important; /* Ajuster le padding-top pour les mobiles */
+  }
+  
+  .h-screen {
+    height: 100vh;
+    height: calc(var(--vh, 1vh) * 100); /* Ajustement pour les navigateurs mobiles */
+  }
+  
+  /* Ajuster la taille du texte sur mobile */
+  h1.text-4xl {
+    font-size: 2.25rem !important;
+  }
+  
+  h2.text-3xl {
+    font-size: 1.875rem !important;
+  }
+}
+
 /* Responsive utilities */
 @media (max-width: 768px) {
   .hide-mobile {
@@ -140,5 +168,12 @@ label {
 @media (min-width: 769px) {
   .hide-desktop {
     display: none;
+  }
+}
+
+/* Fix pour les écrans iOS avec la barre de navigation en bas */
+@supports (-webkit-touch-callout: none) {
+  .h-screen {
+    height: -webkit-fill-available;
   }
 }
