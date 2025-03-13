@@ -150,7 +150,7 @@ const AudioPlayer = ({ tracks }: AudioPlayerProps) => {
       {/* Grid of Tracks */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {tracks.map((track, index) => (
-          <div key={track.id} className="group relative aspect-square">
+          <div key={track._id || `track-${index}`} className="group relative aspect-square">
             {/* Track Cover */}
             <div className="relative w-full h-full rounded-xl overflow-hidden">
               <Image
