@@ -3,18 +3,10 @@
 import { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
 import { FiPlay, FiPause, FiSkipForward, FiSkipBack, FiVolume2, FiVolumeX, FiMusic, FiHeart } from 'react-icons/fi';
-
-interface Track {
-  id: string;
-  title: string;
-  artist: string;
-  coverImage: string;
-  audioUrl: string;
-  duration: number;
-}
+import { TrackDTO } from '@/types/track';
 
 interface AudioPlayerProps {
-  tracks: Track[];
+  tracks: TrackDTO[];
 }
 
 const AudioPlayer = ({ tracks }: AudioPlayerProps) => {
@@ -150,7 +142,7 @@ const AudioPlayer = ({ tracks }: AudioPlayerProps) => {
       {/* Grid of Tracks */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {tracks.map((track, index) => (
-          <div key={track._id || `track-${index}`} className="group relative aspect-square">
+          <div key={track.id || `track-${index}`} className="group relative aspect-square">
             {/* Track Cover */}
             <div className="relative w-full h-full rounded-xl overflow-hidden">
               <Image

@@ -1,54 +1,62 @@
 import { NextRequest, NextResponse } from 'next/server';
 import dbConnect from '@/lib/mongodb';
-import Track from '@/models/Track';
-import PricingPlan from '@/models/PricingPlan';
-import Booking from '@/models/Booking';
-import Contact from '@/models/Contact';
+import TrackModel from '@/models/Track';
+import PricingPlanModel from '@/models/PricingPlan';
+import BookingModel from '@/models/Booking';
+import ContactModel from '@/models/Contact';
+import { FilterQuery } from 'mongoose';
+import { ITrackDocument } from '@/models/Track';
+import { IPricingPlanDocument } from '@/models/PricingPlan';
+import { IBookingDocument } from '@/models/Booking';
+import { IContactDocument } from '@/models/Contact';
 
 export async function GET(request: NextRequest) {
   try {
     await dbConnect();
     
     // Récupérer les statistiques des musiques
-    const totalTracks = await Track.countDocuments();
-    const featuredTracks = await Track.countDocuments({ featured: true });
+    const totalTracks = await TrackModel.countDocuments();
+    const featuredTracks = await TrackModel.countDocuments({ featured: true });
     
     // Calculer les nouvelles musiques ce mois-ci
     const now = new Date();
     const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-    const newTracksThisMonth = await Track.countDocuments({
+    const newTracksThisMonth = await TrackModel.countDocuments({
       createdAt: { $gte: firstDayOfMonth },
-    });
+    } as FilterQuery<ITrackDocument>);
     
     // Récupérer les statistiques des forfaits
-    const totalPricingPlans = await PricingPlan.countDocuments();
-    const popularPricingPlans = await PricingPlan.countDocuments({ popular: true });
+    const totalPricingPlans = await PricingPlanModel.countDocuments();
+    const popularPricingPlans = await PricingPlanModel.countDocuments({ popular: true });
     
     // Récupérer les statistiques des réservations
-    const totalBookings = await Booking.countDocuments();
-    const pendingBookings = await Booking.countDocuments({ status: 'pending' });
-    const confirmedBookings = await Booking.countDocuments({ status: 'confirmed' });
-    const cancelledBookings = await Booking.countDocuments({ status: 'cancelled' });
+    const totalBookings = await BookingModel.countDocuments();
+    const pendingBookings = await BookingModel.countDocuments({ status: 'pending' });
+    const confirmedBookings = await BookingModel.countDocuments({ status: 'confirmed' });
+    const cancelledBookings = await BookingModel.countDocuments({ status: 'cancelled' });
     
     // Récupérer les statistiques des messages
-    const totalMessages = await Contact.countDocuments();
-    const unreadMessages = await Contact.countDocuments({ read: false });
+    const totalMessages = await ContactModel.countDocuments();
+    const unreadMessages = await ContactModel.countDocuments({ read: false });
     
     // Récupérer les activités récentes
-    const recentBookings = await Booking.find()
+    const recentBookings = await BookingModel.find()
       .sort({ createdAt: -1 })
       .limit(3)
-      .select('customerName service createdAt status');
+      .select('customerName service createdAt status')
+      .lean();
       
-    const recentMessages = await Contact.find()
+    const recentMessages = await ContactModel.find()
       .sort({ createdAt: -1 })
       .limit(3)
-      .select('name service message createdAt read');
+      .select('name service message createdAt read')
+      .lean();
       
-    const recentTracks = await Track.find()
+    const recentTracks = await TrackModel.find()
       .sort({ createdAt: -1 })
       .limit(3)
-      .select('title artist genre createdAt');
+      .select('title artist genre createdAt')
+      .lean();
     
     // Formater les activités récentes
     const recentActivity = [

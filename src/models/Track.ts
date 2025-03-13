@@ -1,6 +1,6 @@
-import mongoose, { Schema, Document } from 'mongoose';
+import mongoose, { Schema, Document, Model } from 'mongoose';
 
-export interface ITrack extends Document {
+export interface ITrack {
   title: string;
   artist: string;
   coverImage: string;
@@ -13,7 +13,9 @@ export interface ITrack extends Document {
   updatedAt: Date;
 }
 
-const TrackSchema: Schema = new Schema(
+export interface ITrackDocument extends ITrack, Document {}
+
+const TrackSchema = new Schema<ITrackDocument>(
   {
     title: {
       type: String,
@@ -56,5 +58,6 @@ const TrackSchema: Schema = new Schema(
   }
 );
 
-// Vérifier si le modèle existe déjà pour éviter les erreurs en développement avec hot-reload
-export default mongoose.models.Track || mongoose.model<ITrack>('Track', TrackSchema); 
+const TrackModel = (mongoose.models.Track || mongoose.model<ITrackDocument>('Track', TrackSchema)) as Model<ITrackDocument>;
+
+export default TrackModel; 

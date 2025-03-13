@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import dbConnect from '@/lib/mongodb';
-import Contact from '@/models/Contact';
+import ContactModel from '@/models/Contact';
+import { FilterQuery } from 'mongoose';
+import { IContactDocument } from '@/models/Contact';
 
 export async function GET(request: NextRequest) {
   try {
@@ -12,7 +14,7 @@ export async function GET(request: NextRequest) {
     const service = searchParams.get('service') || '';
 
     // Construire la requête
-    let query: any = {};
+    let query: FilterQuery<IContactDocument> = {};
 
     if (search) {
       query.$or = [
@@ -31,7 +33,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Exécuter la requête
-    const messages = await Contact.find(query).sort({ createdAt: -1 });
+    const messages = await ContactModel.find(query).sort({ createdAt: -1 }).lean();
 
     return NextResponse.json(messages);
   } catch (error) {
@@ -48,13 +50,12 @@ export async function POST(request: NextRequest) {
     await dbConnect();
     
     const data = await request.json();
-    const newMessage = new Contact({
+    const newMessage = await ContactModel.create({
       ...data,
       read: false,
     });
-    await newMessage.save();
 
-    return NextResponse.json(newMessage, { status: 201 });
+    return NextResponse.json(newMessage.toJSON(), { status: 201 });
   } catch (error) {
     console.error('Erreur lors de la création du message:', error);
     return NextResponse.json(
@@ -71,11 +72,11 @@ export async function PUT(request: NextRequest) {
     const data = await request.json();
     const { id } = data;
 
-    const updatedMessage = await Contact.findByIdAndUpdate(
+    const updatedMessage = await ContactModel.findByIdAndUpdate(
       id,
       { $set: data },
       { new: true, runValidators: true }
-    );
+    ).lean();
 
     if (!updatedMessage) {
       return NextResponse.json(
@@ -108,7 +109,7 @@ export async function DELETE(request: NextRequest) {
       );
     }
 
-    const deletedMessage = await Contact.findByIdAndDelete(id);
+    const deletedMessage = await ContactModel.findByIdAndDelete(id).lean();
 
     if (!deletedMessage) {
       return NextResponse.json(
@@ -134,11 +135,11 @@ export async function PATCH(request: NextRequest) {
     const data = await request.json();
     const { id, read } = data;
 
-    const updatedMessage = await Contact.findByIdAndUpdate(
+    const updatedMessage = await ContactModel.findByIdAndUpdate(
       id,
       { read },
       { new: true, runValidators: true }
-    );
+    ).lean();
 
     if (!updatedMessage) {
       return NextResponse.json(

@@ -7,26 +7,17 @@ import { FiMusic, FiHeadphones, FiMic, FiSliders, FiCalendar } from 'react-icons
 import AudioPlayer from '@/components/AudioPlayer';
 import Navbar from '@/components/Navbar';
 import BlackHoleLogo from '@/components/BlackHoleLogo';
-
-// Définition du type Track pour correspondre à l'interface attendue par AudioPlayer
-interface Track {
-  id: string;
-  title: string;
-  artist: string;
-  coverImage: string;
-  audioUrl: string;
-  duration: number;
-}
+import { Track, TrackDTO } from '@/types/track';
 
 // Données d'exemple pour les musiques
-const exampleTracks: Track[] = [
+const exampleTracks: TrackDTO[] = [
   {
     id: '1',
     title: 'Midnight Dreams',
     artist: 'Sarah Johnson',
     coverImage: 'https://images.unsplash.com/photo-1496293455970-f8581aae0e3b?q=80&w=500&h=500&auto=format&fit=crop',
     audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
-    duration: 238,
+    duration: '3:58',
   },
   {
     id: '2',
@@ -34,7 +25,7 @@ const exampleTracks: Track[] = [
     artist: 'The Rhythm Collective',
     coverImage: 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=500&h=500&auto=format&fit=crop',
     audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3',
-    duration: 184,
+    duration: '3:04',
   },
   {
     id: '3',
@@ -42,7 +33,7 @@ const exampleTracks: Track[] = [
     artist: 'Neon Waves',
     coverImage: 'https://images.unsplash.com/photo-1459749411175-04bf5292ceea?q=80&w=500&h=500&auto=format&fit=crop',
     audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3',
-    duration: 210,
+    duration: '3:30',
   },
   {
     id: '4',
@@ -50,12 +41,12 @@ const exampleTracks: Track[] = [
     artist: 'Emma Taylor',
     coverImage: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?q=80&w=500&h=500&auto=format&fit=crop',
     audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3',
-    duration: 195,
+    duration: '3:15',
   },
 ];
 
 export default function Home() {
-  const [tracks, setTracks] = useState<Track[]>(exampleTracks);
+  const [tracks, setTracks] = useState<TrackDTO[]>(exampleTracks);
   const [isLoading, setIsLoading] = useState(true);
   
   useEffect(() => {
@@ -80,9 +71,9 @@ export default function Home() {
           console.warn('Aucune musique retournée par l\'API, utilisation des données d\'exemple');
           setTracks(exampleTracks);
         } else {
-          // Transformer les données pour correspondre à l'interface Track
-          const formattedTracks: Track[] = data.map((track: any) => ({
-            id: track._id || track.id,
+          // Transformer les données pour correspondre à l'interface TrackDTO
+          const formattedTracks: TrackDTO[] = data.map((track: Track) => ({
+            id: track._id.toString(),
             title: track.title,
             artist: track.artist,
             coverImage: track.coverImage,

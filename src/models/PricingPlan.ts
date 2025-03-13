@@ -1,6 +1,6 @@
-import mongoose, { Schema, Document } from 'mongoose';
+import mongoose, { Schema, Document, Model } from 'mongoose';
 
-export interface IPricingPlan extends Document {
+export interface IPricingPlan {
   title: string;
   price: number;
   description: string;
@@ -14,6 +14,8 @@ export interface IPricingPlan extends Document {
   updatedAt: Date;
 }
 
+export interface IPricingPlanDocument extends IPricingPlan, Document {}
+
 const FeatureSchema = new Schema({
   text: {
     type: String,
@@ -26,7 +28,7 @@ const FeatureSchema = new Schema({
   },
 });
 
-const PricingPlanSchema: Schema = new Schema(
+const PricingPlanSchema = new Schema<IPricingPlanDocument>(
   {
     title: {
       type: String,
@@ -68,5 +70,6 @@ const PricingPlanSchema: Schema = new Schema(
   }
 );
 
-// Vérifier si le modèle existe déjà pour éviter les erreurs en développement avec hot-reload
-export default mongoose.models.PricingPlan || mongoose.model<IPricingPlan>('PricingPlan', PricingPlanSchema); 
+const PricingPlanModel = (mongoose.models.PricingPlan || mongoose.model<IPricingPlanDocument>('PricingPlan', PricingPlanSchema)) as Model<IPricingPlanDocument>;
+
+export default PricingPlanModel; 

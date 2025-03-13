@@ -4,9 +4,9 @@ export type PageProps<P = {}, S = {}> = {
   searchParams?: S & { [key: string]: string | string[] | undefined };
 };
 
-// Exemple d'utilisation:
-// import { PageProps } from '@/types/next';
-// 
-// export default function Page({ params, searchParams }: PageProps<{ id: string }, { sort?: string }>) {
-//   // ...
-// } 
+// Types pour les pages Server Components de Next.js
+export type ServerPageProps<P = {}, S = {}> = {
+  params: Promise<P>;
+  searchParams?: S & { [key: string]: string | string[] | undefined };
+};
+

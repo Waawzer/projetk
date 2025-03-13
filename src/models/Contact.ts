@@ -1,6 +1,6 @@
-import mongoose, { Schema, Document } from 'mongoose';
+import mongoose, { Schema, Document, Model } from 'mongoose';
 
-export interface IContact extends Document {
+export interface IContact {
   name: string;
   email: string;
   service: string;
@@ -10,7 +10,9 @@ export interface IContact extends Document {
   updatedAt: Date;
 }
 
-const ContactSchema: Schema = new Schema(
+export interface IContactDocument extends IContact, Document {}
+
+const ContactSchema = new Schema<IContactDocument>(
   {
     name: {
       type: String,
@@ -54,5 +56,6 @@ const ContactSchema: Schema = new Schema(
 ContactSchema.index({ read: 1 });
 ContactSchema.index({ createdAt: -1 });
 
-// Check if the model is already defined to prevent overwriting during hot reloads
-export default mongoose.models.Contact || mongoose.model<IContact>('Contact', ContactSchema); 
+const ContactModel = (mongoose.models.Contact || mongoose.model<IContactDocument>('Contact', ContactSchema)) as Model<IContactDocument>;
+
+export default ContactModel; 

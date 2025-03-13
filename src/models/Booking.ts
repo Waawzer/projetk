@@ -1,6 +1,6 @@
-import mongoose, { Schema, Document } from 'mongoose';
+import mongoose, { Schema, Document, Model } from 'mongoose';
 
-export interface IBooking extends Document {
+export interface IBooking {
   customerName: string;
   customerEmail: string;
   service: string;
@@ -13,7 +13,9 @@ export interface IBooking extends Document {
   updatedAt: Date;
 }
 
-const BookingSchema: Schema = new Schema(
+export interface IBookingDocument extends IBooking, Document {}
+
+const BookingSchema = new Schema<IBookingDocument>(
   {
     customerName: {
       type: String,
@@ -65,5 +67,6 @@ const BookingSchema: Schema = new Schema(
   }
 );
 
-// Vérifier si le modèle existe déjà pour éviter les erreurs en développement avec hot-reload
-export default mongoose.models.Booking || mongoose.model<IBooking>('Booking', BookingSchema); 
+const BookingModel = (mongoose.models.Booking || mongoose.model<IBookingDocument>('Booking', BookingSchema)) as Model<IBookingDocument>;
+
+export default BookingModel; 

@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import dbConnect from '@/lib/mongodb';
-import Booking from '@/models/Booking';
+import BookingModel from '@/models/Booking';
+import { FilterQuery } from 'mongoose';
+import { IBooking, IBookingDocument } from '@/models/Booking';
 
 export async function GET(request: NextRequest) {
   try {
@@ -12,7 +14,7 @@ export async function GET(request: NextRequest) {
     const date = searchParams.get('date') || '';
 
     // Construire la requête
-    let query: any = {};
+    let query: FilterQuery<IBookingDocument> = {};
 
     if (search) {
       query.$or = [
@@ -31,7 +33,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Exécuter la requête
-    const bookings = await Booking.find(query).sort({ createdAt: -1 });
+    const bookings = await BookingModel.find(query).sort({ createdAt: -1 }).lean();
 
     return NextResponse.json(bookings);
   } catch (error) {
@@ -48,10 +50,9 @@ export async function POST(request: NextRequest) {
     await dbConnect();
     
     const data = await request.json();
-    const newBooking = new Booking(data);
-    await newBooking.save();
+    const newBooking = await BookingModel.create(data);
 
-    return NextResponse.json(newBooking, { status: 201 });
+    return NextResponse.json(newBooking.toJSON(), { status: 201 });
   } catch (error) {
     console.error('Erreur lors de la création de la réservation:', error);
     return NextResponse.json(
@@ -68,11 +69,11 @@ export async function PUT(request: NextRequest) {
     const data = await request.json();
     const { id } = data;
 
-    const updatedBooking = await Booking.findByIdAndUpdate(
+    const updatedBooking = await BookingModel.findByIdAndUpdate(
       id,
       { $set: data },
       { new: true, runValidators: true }
-    );
+    ).lean();
 
     if (!updatedBooking) {
       return NextResponse.json(
@@ -105,7 +106,7 @@ export async function DELETE(request: NextRequest) {
       );
     }
 
-    const deletedBooking = await Booking.findByIdAndDelete(id);
+    const deletedBooking = await BookingModel.findByIdAndDelete(id).lean();
 
     if (!deletedBooking) {
       return NextResponse.json(
@@ -131,11 +132,11 @@ export async function PATCH(request: NextRequest) {
     const data = await request.json();
     const { id, status } = data;
 
-    const updatedBooking = await Booking.findByIdAndUpdate(
+    const updatedBooking = await BookingModel.findByIdAndUpdate(
       id,
       { status },
       { new: true, runValidators: true }
-    );
+    ).lean();
 
     if (!updatedBooking) {
       return NextResponse.json(
