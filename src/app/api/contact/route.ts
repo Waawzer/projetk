@@ -25,7 +25,7 @@ export async function POST(request: Request) {
     // to the admin and/or an auto-reply to the user
     
     return NextResponse.json(
-      { success: true, message: 'Message envoyé avec succès' },
+      { success: true, message: 'Message envoyé avec succès', id: contact._id },
       { status: 201 }
     );
   } catch (error: unknown) {

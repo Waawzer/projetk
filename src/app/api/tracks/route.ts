@@ -12,7 +12,7 @@ export async function GET(request: Request) {
     const limit = searchParams.get('limit') ? parseInt(searchParams.get('limit') as string) : 10;
     
     // Build query
-    const query: any = {};
+    const query: Record<string, boolean> = {};
     if (featured === 'true') {
       query.featured = true;
     }

@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/studio-music';
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/kasar-studio';
 
 if (!MONGODB_URI) {
   throw new Error(
@@ -18,11 +18,11 @@ interface MongooseCache {
   promise: Promise<typeof mongoose> | null;
 }
 
-// @ts-ignore - Global mongoose cache
+// @ts-expect-error - Global mongoose cache
 let cached: MongooseCache = global.mongoose;
 
 if (!cached) {
-  // @ts-ignore - Global mongoose cache
+  // @ts-expect-error - Global mongoose cache
   cached = global.mongoose = { conn: null, promise: null };
 }
 

@@ -40,6 +40,7 @@ const ContactForm = () => {
       
       // if (!response.ok) throw new Error('Une erreur est survenue lors de l\'envoi du message.');
       
+      console.log('Form data submitted:', data);
       setSubmitSuccess(true);
       reset();
       

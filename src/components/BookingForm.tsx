@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { FiCalendar, FiClock, FiCreditCard, FiCheck, FiAlertCircle } from 'react-icons/fi';
-import Image from 'next/image';
 
 interface FormData {
   name: string;
@@ -28,7 +27,8 @@ const BookingForm = () => {
     handleSubmit, 
     control,
     watch,
-    formState: { errors, isValid } 
+    formState: { errors, isValid },
+    reset
   } = useForm<FormData>({
     mode: 'onChange',
     defaultValues: {
@@ -82,11 +82,24 @@ const BookingForm = () => {
       await new Promise(resolve => setTimeout(resolve, 2000));
       
       // In a real application, you would:
-      // 1. Process the payment
-      // 2. Create the booking in your database
-      // 3. Add the booking to Google Calendar
+      // 1. Process the payment using data.paymentMethod
+      // 2. Send the booking data to your API
+      // const response = await fetch('/api/bookings', {
+      //   method: 'POST',
+      //   headers: { 'Content-Type': 'application/json' },
+      //   body: JSON.stringify(data),
+      // });
+      
+      // if (!response.ok) throw new Error('Une erreur est survenue lors de la réservation.');
       
       setBookingSuccess(true);
+      reset();
+      setStep(1);
+      
+      // Reset success message after 5 seconds
+      setTimeout(() => {
+        setBookingSuccess(false);
+      }, 5000);
     } catch (error) {
       setBookingError(error instanceof Error ? error.message : 'Une erreur est survenue');
     } finally {

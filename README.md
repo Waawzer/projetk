@@ -1,4 +1,4 @@
-# Studio Music - Application Web
+# Kasar Studio - Application Web
 
 Une application web moderne pour un studio d'enregistrement musical, permettant aux utilisateurs de découvrir les services, consulter les tarifs, contacter le studio et réserver des sessions.
 
@@ -29,8 +29,8 @@ Une application web moderne pour un studio d'enregistrement musical, permettant 
 
 1. Clonez le dépôt :
 ```bash
-git clone https://github.com/votre-utilisateur/studio-music.git
-cd studio-music
+git clone https://github.com/votre-utilisateur/kasar-studio.git
+cd kasar-studio
 ```
 
 2. Installez les dépendances :
@@ -61,7 +61,7 @@ npm run dev
 ## Structure du projet
 
 ```
-studio-music/
+kasar-studio/
 ├── public/            # Fichiers statiques
 │   ├── src/
 │   │   ├── app/           # Pages de l'application
@@ -97,4 +97,4 @@ Ce projet est sous licence MIT. Voir le fichier `LICENSE` pour plus de détails.
 
 ## Contact
 
-Pour toute question ou suggestion, n'hésitez pas à nous contacter à contact@studiomusic.fr.
+Pour toute question ou suggestion, n'hésitez pas à nous contacter à contact@kasarstudio.fr.

@@ -13,25 +13,25 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Studio Music - Studio d'enregistrement professionnel",
+  title: "Kasar Studio - Studio d'enregistrement professionnel",
   description: "Studio d'enregistrement professionnel proposant des services d'enregistrement, mixage, mastering et production musicale.",
   keywords: "studio, enregistrement, musique, mixage, mastering, production, audio",
-  authors: [{ name: "Studio Music" }],
-  creator: "Studio Music",
-  publisher: "Studio Music",
+  authors: [{ name: "Kasar Studio" }],
+  creator: "Kasar Studio",
+  publisher: "Kasar Studio",
   openGraph: {
-    title: "Studio Music - Studio d'enregistrement professionnel",
+    title: "Kasar Studio - Studio d'enregistrement professionnel",
     description: "Studio d'enregistrement professionnel proposant des services d'enregistrement, mixage, mastering et production musicale.",
-    url: "https://studiomusic.fr",
-    siteName: "Studio Music",
+    url: "https://kasarstudio.fr",
+    siteName: "Kasar Studio",
     locale: "fr_FR",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Studio Music - Studio d'enregistrement professionnel",
+    title: "Kasar Studio - Studio d'enregistrement professionnel",
     description: "Studio d'enregistrement professionnel proposant des services d'enregistrement, mixage, mastering et production musicale.",
-    creator: "@studiomusic",
+    creator: "@kasarstudio",
   },
 };
 

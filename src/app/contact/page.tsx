@@ -4,6 +4,7 @@ import Image from 'next/image';
 import { FiMapPin, FiPhone, FiMail, FiClock } from 'react-icons/fi';
 import Navbar from '@/components/Navbar';
 import ContactForm from '@/components/ContactForm';
+import BlackHoleLogo from '@/components/BlackHoleLogo';
 
 export default function ContactPage() {
   return (
@@ -57,8 +58,8 @@ export default function ContactPage() {
                   </div>
                   <div>
                     <h3 className="text-lg font-medium mb-1">Email</h3>
-                    <p className="text-gray-400">contact@studiomusic.fr</p>
-                    <p className="text-gray-400">reservation@studiomusic.fr</p>
+                    <p className="text-gray-400">contact@kasarstudio.fr</p>
+                    <p className="text-gray-400">reservation@kasarstudio.fr</p>
                   </div>
                 </div>
                 
@@ -83,8 +84,9 @@ export default function ContactPage() {
                   className="object-cover"
                 />
                 <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
-                  <div className="bg-primary text-white px-4 py-2 rounded-lg font-medium">
-                    Studio Music
+                  <div className="bg-primary text-white px-4 py-2 rounded-lg font-medium flex items-center">
+                    <BlackHoleLogo className="mr-2" size={20} />
+                    Kasar Studio
                   </div>
                 </div>
               </div>
@@ -135,8 +137,9 @@ export default function ContactPage() {
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div className="mb-6 md:mb-0">
               <h3 className="text-2xl font-bold text-white flex items-center">
-                <span className="text-primary mr-2">Studio</span>
-                <span>Music</span>
+                <BlackHoleLogo className="text-primary mr-2" size={24} />
+                <span className="text-primary mr-1">Kasar</span>
+                <span>Studio</span>
               </h3>
               <p className="text-gray-400 mt-2">Votre partenaire musical professionnel</p>
             </div>
@@ -144,7 +147,7 @@ export default function ContactPage() {
             <div className="flex flex-col md:flex-row gap-8">
               <div>
                 <h4 className="text-white font-medium mb-3">Contact</h4>
-                <p className="text-gray-400">contact@studiomusic.fr</p>
+                <p className="text-gray-400">contact@kasarstudio.fr</p>
                 <p className="text-gray-400">+33 1 23 45 67 89</p>
               </div>
               
@@ -163,7 +166,7 @@ export default function ContactPage() {
           </div>
           
           <div className="mt-10 pt-6 border-t border-gray-800 text-center text-gray-500 text-sm">
-            © {new Date().getFullYear()} Studio Music. Tous droits réservés.
+            © {new Date().getFullYear()} Kasar Studio. Tous droits réservés.
           </div>
         </div>
       </footer>

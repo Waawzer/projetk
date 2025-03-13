@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { FiMenu, FiX, FiMusic, FiCalendar, FiDollarSign, FiMail } from 'react-icons/fi';
+import BlackHoleLogo from './BlackHoleLogo';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -47,8 +48,9 @@ const Navbar = () => {
       <div className="container mx-auto px-4 py-4">
         <div className="flex justify-between items-center">
           <Link href="/" className="text-2xl font-bold text-white flex items-center" onClick={closeMenu}>
-            <span className="text-primary mr-2">Studio</span>
-            <span>Music</span>
+            <BlackHoleLogo className="text-primary mr-2" size={28} />
+            <span className="text-primary mr-1">Kasar</span>
+            <span>Studio</span>
           </Link>
 
           {/* Desktop Navigation */}

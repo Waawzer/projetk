@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { FiMusic, FiHeadphones, FiMic, FiSliders, FiCalendar } from 'react-icons/fi';
 import AudioPlayer from '@/components/AudioPlayer';
 import Navbar from '@/components/Navbar';
+import BlackHoleLogo from '@/components/BlackHoleLogo';
 
 // Mock data for tracks (in a real app, this would come from the API)
 const mockTracks = [
@@ -60,8 +61,10 @@ export default function Home() {
         </div>
         
         <div className="container mx-auto px-4 z-10 text-center">
-          <h1 className="text-4xl md:text-6xl font-bold mb-6 text-white">
-            Studio <span className="text-primary">Music</span>
+          <h1 className="text-4xl md:text-6xl font-bold mb-6 text-white flex items-center justify-center">
+            <BlackHoleLogo className="text-primary mr-3" size={48} />
+            <span className="text-primary mr-2">Kasar</span>
+            <span>Studio</span>
           </h1>
           <p className="text-xl md:text-2xl text-gray-300 mb-8 max-w-3xl mx-auto">
             Donnez vie à votre musique dans notre studio d'enregistrement professionnel
@@ -175,8 +178,9 @@ export default function Home() {
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div className="mb-6 md:mb-0">
               <h3 className="text-2xl font-bold text-white flex items-center">
-                <span className="text-primary mr-2">Studio</span>
-                <span>Music</span>
+                <BlackHoleLogo className="text-primary mr-2" size={24} />
+                <span className="text-primary mr-1">Kasar</span>
+                <span>Studio</span>
               </h3>
               <p className="text-gray-400 mt-2">Votre partenaire musical professionnel</p>
             </div>
@@ -184,7 +188,7 @@ export default function Home() {
             <div className="flex flex-col md:flex-row gap-8">
               <div>
                 <h4 className="text-white font-medium mb-3">Contact</h4>
-                <p className="text-gray-400">contact@studiomusic.fr</p>
+                <p className="text-gray-400">contact@kasarstudio.fr</p>
                 <p className="text-gray-400">+33 1 23 45 67 89</p>
               </div>
               
@@ -203,7 +207,7 @@ export default function Home() {
           </div>
           
           <div className="mt-10 pt-6 border-t border-gray-800 text-center text-gray-500 text-sm">
-            © {new Date().getFullYear()} Studio Music. Tous droits réservés.
+            © {new Date().getFullYear()} Kasar Studio. Tous droits réservés.
           </div>
         </div>
       </footer>
