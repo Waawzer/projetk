@@ -20,14 +20,11 @@ interface PricingPlan {
   order: number;
 }
 
-interface PageProps {
-  params: {
-    id: string;
-  };
-  searchParams?: { [key: string]: string | string[] | undefined };
-}
-
-export default async function EditPricingPage({ params }: PageProps) {
+export default function EditPricingPage({ 
+  params 
+}: { 
+  params: { id: string } 
+}) {
   const router = useRouter();
   const { id } = params;
   
