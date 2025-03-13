@@ -1,95 +1,108 @@
+'use client';
+
 import Image from "next/image";
 import Link from 'next/link';
+import { useState, useEffect } from 'react';
 import { FiMusic, FiHeadphones, FiMic, FiSliders, FiCalendar } from 'react-icons/fi';
 import AudioPlayer from '@/components/AudioPlayer';
 import Navbar from '@/components/Navbar';
 import BlackHoleLogo from '@/components/BlackHoleLogo';
 
+// Définition du type Track pour correspondre à l'interface attendue par AudioPlayer
+interface Track {
+  id: string;
+  title: string;
+  artist: string;
+  coverImage: string;
+  audioUrl: string;
+  duration: number;
+}
+
 // Données d'exemple pour les musiques
-const exampleTracks = [
+const exampleTracks: Track[] = [
   {
-    _id: '1',
+    id: '1',
     title: 'Midnight Dreams',
     artist: 'Sarah Johnson',
     coverImage: 'https://images.unsplash.com/photo-1496293455970-f8581aae0e3b?q=80&w=500&h=500&auto=format&fit=crop',
     audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
     duration: 238,
-    genre: 'Pop',
-    releaseDate: '2023-01-15',
-    featured: true,
-    createdAt: '2023-01-10T14:30:00',
   },
   {
-    _id: '2',
+    id: '2',
     title: 'Urban Echoes',
     artist: 'The Rhythm Collective',
     coverImage: 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=500&h=500&auto=format&fit=crop',
     audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3',
     duration: 184,
-    genre: 'Hip Hop',
-    releaseDate: '2023-02-20',
-    featured: false,
-    createdAt: '2023-02-15T10:15:00',
   },
   {
-    _id: '3',
+    id: '3',
     title: 'Electric Sunset',
     artist: 'Neon Waves',
     coverImage: 'https://images.unsplash.com/photo-1459749411175-04bf5292ceea?q=80&w=500&h=500&auto=format&fit=crop',
     audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3',
     duration: 210,
-    genre: 'Electronic',
-    releaseDate: '2023-03-05',
-    featured: true,
-    createdAt: '2023-03-01T16:45:00',
   },
   {
-    _id: '4',
+    id: '4',
     title: 'Acoustic Memories',
     artist: 'Emma Taylor',
     coverImage: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?q=80&w=500&h=500&auto=format&fit=crop',
     audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3',
     duration: 195,
-    genre: 'Acoustic',
-    releaseDate: '2023-02-10',
-    featured: false,
-    createdAt: '2023-02-05T09:30:00',
   },
 ];
 
-// Fonction pour récupérer les musiques depuis l'API
-async function getTracks() {
-  try {
-    // Récupérer les musiques depuis l'API
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || ''}/api/tracks`, { 
-      cache: 'no-store' 
-    });
+export default function Home() {
+  const [tracks, setTracks] = useState<Track[]>(exampleTracks);
+  const [isLoading, setIsLoading] = useState(true);
+  
+  useEffect(() => {
+    const fetchTracks = async () => {
+      try {
+        setIsLoading(true);
+        // Récupérer les musiques depuis l'API
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || ''}/api/tracks`, { 
+          cache: 'no-store' 
+        });
+        
+        if (!res.ok) {
+          console.warn('Impossible de récupérer les musiques depuis l\'API, utilisation des données d\'exemple');
+          setTracks(exampleTracks);
+          return;
+        }
+        
+        const data = await res.json();
+        
+        // Si aucune musique n'est retournée par l'API, utiliser les données d'exemple
+        if (!data || data.length === 0) {
+          console.warn('Aucune musique retournée par l\'API, utilisation des données d\'exemple');
+          setTracks(exampleTracks);
+        } else {
+          // Transformer les données pour correspondre à l'interface Track
+          const formattedTracks: Track[] = data.map((track: any) => ({
+            id: track._id || track.id,
+            title: track.title,
+            artist: track.artist,
+            coverImage: track.coverImage,
+            audioUrl: track.audioUrl,
+            duration: track.duration
+          }));
+          setTracks(formattedTracks);
+        }
+      } catch (error) {
+        console.error('Erreur lors de la récupération des musiques:', error);
+        // En cas d'erreur, retourner les données d'exemple
+        console.warn('Utilisation des données d\'exemple suite à une erreur');
+        setTracks(exampleTracks);
+      } finally {
+        setIsLoading(false);
+      }
+    };
     
-    if (!res.ok) {
-      console.warn('Impossible de récupérer les musiques depuis l\'API, utilisation des données d\'exemple');
-      return exampleTracks;
-    }
-    
-    const tracks = await res.json();
-    
-    // Si aucune musique n'est retournée par l'API, utiliser les données d'exemple
-    if (!tracks || tracks.length === 0) {
-      console.warn('Aucune musique retournée par l\'API, utilisation des données d\'exemple');
-      return exampleTracks;
-    }
-    
-    return tracks;
-  } catch (error) {
-    console.error('Erreur lors de la récupération des musiques:', error);
-    // En cas d'erreur, retourner les données d'exemple
-    console.warn('Utilisation des données d\'exemple suite à une erreur');
-    return exampleTracks;
-  }
-}
-
-export default async function Home() {
-  // Récupérer les musiques depuis l'API ou utiliser les données d'exemple
-  const tracks = await getTracks();
+    fetchTracks();
+  }, []);
   
   return (
     <main className="min-h-screen bg-background">
