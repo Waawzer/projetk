@@ -84,13 +84,7 @@ const BookingForm = () => {
       // In a real application, you would:
       // 1. Process the payment using data.paymentMethod
       // 2. Send the booking data to your API
-      // const response = await fetch('/api/bookings', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify(data),
-      // });
-      
-      // if (!response.ok) throw new Error('Une erreur est survenue lors de la réservation.');
+      console.log('Booking data:', data);
       
       setBookingSuccess(true);
       reset();
