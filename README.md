@@ -1,36 +1,100 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Studio Music - Application Web
 
-## Getting Started
+Une application web moderne pour un studio d'enregistrement musical, permettant aux utilisateurs de découvrir les services, consulter les tarifs, contacter le studio et réserver des sessions.
 
-First, run the development server:
+## Fonctionnalités
 
+- **Page d'accueil** : Présentation du studio avec un player audio intégré permettant d'afficher la pochette des morceaux produits et de les lire facilement.
+- **Page Tarifs** : Présentation des différentes formules avec une interface propre et claire.
+- **Page Contact** : Formulaire de contact avec champs pour nom, email, message et type de prestation.
+- **Système de réservation** : Les utilisateurs peuvent réserver des créneaux horaires avec paiement d'acompte en ligne.
+- **Back-office** : Interface d'administration pour gérer les tarifs, les morceaux et les réservations.
+
+## Technologies utilisées
+
+- **Frontend** : React.js, Next.js, TailwindCSS
+- **Backend** : API Routes de Next.js
+- **Base de données** : MongoDB avec Mongoose
+- **Paiement** : Intégration PayPal et Stripe
+- **Calendrier** : Intégration Google Calendar API
+
+## Prérequis
+
+- Node.js 18.0.0 ou supérieur
+- MongoDB (local ou Atlas)
+- Compte Google pour l'API Calendar (optionnel)
+- Comptes PayPal et Stripe pour les paiements (optionnel)
+
+## Installation
+
+1. Clonez le dépôt :
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/votre-utilisateur/studio-music.git
+cd studio-music
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Installez les dépendances :
+```bash
+npm install
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+3. Créez un fichier `.env.local` à la racine du projet avec les variables d'environnement suivantes :
+```
+MONGODB_URI=votre_uri_mongodb
+NEXT_PUBLIC_STRIPE_PUBLIC_KEY=votre_cle_publique_stripe
+STRIPE_SECRET_KEY=votre_cle_secrete_stripe
+NEXT_PUBLIC_PAYPAL_CLIENT_ID=votre_client_id_paypal
+GOOGLE_CLIENT_ID=votre_client_id_google
+GOOGLE_CLIENT_SECRET=votre_client_secret_google
+GOOGLE_CALENDAR_ID=votre_id_calendrier_google
+NEXTAUTH_URL=http://localhost:3000
+NEXTAUTH_SECRET=votre_secret_nextauth
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+4. Lancez le serveur de développement :
+```bash
+npm run dev
+```
 
-## Learn More
+5. Ouvrez [http://localhost:3000](http://localhost:3000) dans votre navigateur.
 
-To learn more about Next.js, take a look at the following resources:
+## Structure du projet
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```
+studio-music/
+├── public/            # Fichiers statiques
+│   ├── src/
+│   │   ├── app/           # Pages de l'application
+│   │   │   ├── api/       # Routes API
+│   │   │   ├── admin/     # Interface d'administration
+│   │   │   ├── contact/   # Page de contact
+│   │   │   ├── reservation/ # Page de réservation
+│   │   │   └── tarifs/    # Page des tarifs
+│   │   ├── components/    # Composants React réutilisables
+│   │   ├── lib/           # Utilitaires et fonctions
+│   │   └── models/        # Modèles Mongoose
+│   └── ...
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Déploiement
 
-## Deploy on Vercel
+L'application peut être déployée sur Vercel, Netlify ou tout autre service compatible avec Next.js.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```bash
+npm run build
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Fonctionnalités à venir
+
+- Système d'authentification pour les clients réguliers
+- Historique des sessions pour les clients
+- Galerie de photos et vidéos du studio
+- Blog avec des articles sur la production musicale
+
+## Licence
+
+Ce projet est sous licence MIT. Voir le fichier `LICENSE` pour plus de détails.
+
+## Contact
+
+Pour toute question ou suggestion, n'hésitez pas à nous contacter à contact@studiomusic.fr.

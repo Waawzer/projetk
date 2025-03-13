@@ -1,103 +1,212 @@
 import Image from "next/image";
+import Link from 'next/link';
+import { FiMusic, FiHeadphones, FiMic, FiSliders, FiCalendar } from 'react-icons/fi';
+import AudioPlayer from '@/components/AudioPlayer';
+import Navbar from '@/components/Navbar';
+
+// Mock data for tracks (in a real app, this would come from the API)
+const mockTracks = [
+  {
+    id: '1',
+    title: 'Midnight Dreams',
+    artist: 'Sarah Johnson',
+    coverImage: 'https://images.unsplash.com/photo-1496293455970-f8581aae0e3b?q=80&w=500&h=500&auto=format&fit=crop',
+    audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
+    duration: 238,
+  },
+  {
+    id: '2',
+    title: 'Urban Echoes',
+    artist: 'The Rhythm Collective',
+    coverImage: 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=500&h=500&auto=format&fit=crop',
+    audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3',
+    duration: 184,
+  },
+  {
+    id: '3',
+    title: 'Electric Sunset',
+    artist: 'Neon Waves',
+    coverImage: 'https://images.unsplash.com/photo-1459749411175-04bf5292ceea?q=80&w=500&h=500&auto=format&fit=crop',
+    audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3',
+    duration: 210,
+  },
+  {
+    id: '4',
+    title: 'Acoustic Memories',
+    artist: 'Emma Taylor',
+    coverImage: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?q=80&w=500&h=500&auto=format&fit=crop',
+    audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3',
+    duration: 195,
+  },
+];
 
 export default function Home() {
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+    <main className="min-h-screen bg-background">
+      <Navbar />
+      
+      {/* Hero Section */}
+      <section className="relative h-screen flex items-center justify-center overflow-hidden">
+        {/* Background Image with Overlay */}
+        <div className="absolute inset-0 z-0">
+          <Image 
+            src="https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?q=80&w=2000&auto=format&fit=crop"
+            alt="Studio d'enregistrement"
+            fill
+            className="object-cover"
+            priority
+          />
+          <div className="absolute inset-0 bg-black/70 backdrop-blur-sm"></div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
+        
+        <div className="container mx-auto px-4 z-10 text-center">
+          <h1 className="text-4xl md:text-6xl font-bold mb-6 text-white">
+            Studio <span className="text-primary">Music</span>
+          </h1>
+          <p className="text-xl md:text-2xl text-gray-300 mb-8 max-w-3xl mx-auto">
+            Donnez vie à votre musique dans notre studio d'enregistrement professionnel
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link 
+              href="/reservation" 
+              className="bg-primary hover:bg-primary-hover text-white px-8 py-3 rounded-lg font-medium flex items-center justify-center"
+            >
+              <FiCalendar className="mr-2" />
+              Réserver une session
+            </Link>
+            <Link 
+              href="/tarifs" 
+              className="bg-transparent border border-white/30 hover:bg-white/10 text-white px-8 py-3 rounded-lg font-medium"
+            >
+              Voir nos tarifs
+            </Link>
+          </div>
+        </div>
+      </section>
+      
+      {/* About Section */}
+      <section className="py-20 bg-gradient-to-b from-background to-card">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">Notre Studio</h2>
+            <p className="text-gray-400 max-w-3xl mx-auto">
+              Un espace créatif équipé des meilleurs outils pour donner vie à vos projets musicaux
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div className="card text-center p-6 flex flex-col items-center">
+              <div className="w-16 h-16 bg-primary/20 rounded-full flex items-center justify-center mb-4">
+                <FiMic className="text-primary" size={28} />
+              </div>
+              <h3 className="text-xl font-bold mb-2">Enregistrement</h3>
+              <p className="text-gray-400">
+                Microphones haut de gamme et acoustique parfaite pour capturer chaque nuance de votre son.
+              </p>
+            </div>
+            
+            <div className="card text-center p-6 flex flex-col items-center">
+              <div className="w-16 h-16 bg-primary/20 rounded-full flex items-center justify-center mb-4">
+                <FiSliders className="text-primary" size={28} />
+              </div>
+              <h3 className="text-xl font-bold mb-2">Mixage</h3>
+              <p className="text-gray-400">
+                Équilibre parfait entre les différentes pistes pour créer un son harmonieux et professionnel.
+              </p>
+            </div>
+            
+            <div className="card text-center p-6 flex flex-col items-center">
+              <div className="w-16 h-16 bg-primary/20 rounded-full flex items-center justify-center mb-4">
+                <FiHeadphones className="text-primary" size={28} />
+              </div>
+              <h3 className="text-xl font-bold mb-2">Mastering</h3>
+              <p className="text-gray-400">
+                Finalisation de votre projet pour un son cohérent sur toutes les plateformes d'écoute.
+              </p>
+            </div>
+            
+            <div className="card text-center p-6 flex flex-col items-center">
+              <div className="w-16 h-16 bg-primary/20 rounded-full flex items-center justify-center mb-4">
+                <FiMusic className="text-primary" size={28} />
+              </div>
+              <h3 className="text-xl font-bold mb-2">Production</h3>
+              <p className="text-gray-400">
+                Accompagnement artistique complet pour développer votre univers musical unique.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+      
+      {/* Music Player Section */}
+      <section className="py-20 bg-card">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">Nos Productions</h2>
+            <p className="text-gray-400 max-w-3xl mx-auto">
+              Découvrez quelques-uns des projets réalisés dans notre studio
+            </p>
+          </div>
+          
+          <AudioPlayer tracks={mockTracks} />
+        </div>
+      </section>
+      
+      {/* CTA Section */}
+      <section className="py-20 bg-gradient-to-b from-card to-background">
+        <div className="container mx-auto px-4 text-center">
+          <h2 className="text-3xl md:text-4xl font-bold mb-6">Prêt à donner vie à votre projet ?</h2>
+          <p className="text-gray-400 max-w-3xl mx-auto mb-8">
+            Réservez dès maintenant une session dans notre studio et bénéficiez de notre expertise pour réaliser votre vision musicale.
+          </p>
+          <Link 
+            href="/reservation" 
+            className="bg-primary hover:bg-primary-hover text-white px-8 py-3 rounded-lg font-medium inline-flex items-center"
+          >
+            <FiCalendar className="mr-2" />
+            Réserver une session
+          </Link>
+        </div>
+      </section>
+      
+      {/* Footer */}
+      <footer className="py-10 bg-background border-t border-gray-800">
+        <div className="container mx-auto px-4">
+          <div className="flex flex-col md:flex-row justify-between items-center">
+            <div className="mb-6 md:mb-0">
+              <h3 className="text-2xl font-bold text-white flex items-center">
+                <span className="text-primary mr-2">Studio</span>
+                <span>Music</span>
+              </h3>
+              <p className="text-gray-400 mt-2">Votre partenaire musical professionnel</p>
+            </div>
+            
+            <div className="flex flex-col md:flex-row gap-8">
+              <div>
+                <h4 className="text-white font-medium mb-3">Contact</h4>
+                <p className="text-gray-400">contact@studiomusic.fr</p>
+                <p className="text-gray-400">+33 1 23 45 67 89</p>
+              </div>
+              
+              <div>
+                <h4 className="text-white font-medium mb-3">Adresse</h4>
+                <p className="text-gray-400">123 Rue de la Musique</p>
+                <p className="text-gray-400">75001 Paris, France</p>
+              </div>
+              
+              <div>
+                <h4 className="text-white font-medium mb-3">Horaires</h4>
+                <p className="text-gray-400">Lun - Sam: 9h - 22h</p>
+                <p className="text-gray-400">Dimanche: Sur rendez-vous</p>
+              </div>
+            </div>
+          </div>
+          
+          <div className="mt-10 pt-6 border-t border-gray-800 text-center text-gray-500 text-sm">
+            © {new Date().getFullYear()} Studio Music. Tous droits réservés.
+          </div>
+        </div>
       </footer>
-    </div>
+    </main>
   );
 }
