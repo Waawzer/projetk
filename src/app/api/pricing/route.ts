@@ -1,16 +1,29 @@
 import { NextResponse } from 'next/server';
 import dbConnect from '@/lib/mongodb';
-import Pricing from '@/models/Pricing';
+import PricingPlan from '@/models/PricingPlan';
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
     await dbConnect();
     
-    // Get pricing plans sorted by order
-    const pricingPlans = await Pricing.find()
+    // Get query parameters
+    const { searchParams } = new URL(request.url);
+    const popular = searchParams.get('popular');
+    
+    // Build query
+    const query: Record<string, boolean> = {};
+    if (popular === 'true') {
+      query.popular = true;
+    }
+    
+    // Get pricing plans
+    const pricingPlans = await PricingPlan.find(query)
       .sort({ order: 1 });
     
-    return NextResponse.json(pricingPlans);
+    // Convertir les documents Mongoose en objets simples
+    const formattedPlans = pricingPlans.map(plan => plan.toObject());
+    
+    return NextResponse.json(formattedPlans);
   } catch (error) {
     console.error('Error fetching pricing plans:', error);
     return NextResponse.json(

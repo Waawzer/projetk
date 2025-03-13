@@ -1,47 +1,62 @@
 import mongoose from 'mongoose';
 
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/kasar-studio';
+const MONGODB_URI = process.env.MONGODB_URI;
 
 if (!MONGODB_URI) {
   throw new Error(
-    'Please define the MONGODB_URI environment variable inside .env.local'
+    'Veuillez définir la variable d\'environnement MONGODB_URI dans le fichier .env.local'
   );
 }
 
 /**
- * Global is used here to maintain a cached connection across hot reloads
- * in development. This prevents connections growing exponentially
- * during API Route usage.
+ * Variables globales utilisées pour mettre en cache la connexion à MongoDB.
  */
-interface MongooseCache {
-  conn: typeof mongoose | null;
-  promise: Promise<typeof mongoose> | null;
+declare global {
+  var mongooseConnection: {
+    isConnected?: number;
+  };
 }
 
-// @ts-expect-error - Global mongoose cache
-let cached: MongooseCache = global.mongoose;
-
-if (!cached) {
-  // @ts-expect-error - Global mongoose cache
-  cached = global.mongoose = { conn: null, promise: null };
-}
-
-async function dbConnect() {
-  if (cached.conn) {
-    return cached.conn;
+/**
+ * Fonction pour se connecter à MongoDB
+ */
+export async function connectToDatabase() {
+  if (global.mongooseConnection && global.mongooseConnection.isConnected) {
+    console.log('Utilisation de la connexion existante');
+    return;
   }
 
-  if (!cached.promise) {
-    const opts = {
-      bufferCommands: false,
+  try {
+    const db = await mongoose.connect(MONGODB_URI!);
+    
+    global.mongooseConnection = {
+      isConnected: db.connections[0].readyState,
     };
-
-    cached.promise = mongoose.connect(MONGODB_URI, opts).then((mongoose) => {
-      return mongoose;
-    });
+    
+    console.log('Nouvelle connexion à MongoDB établie');
+  } catch (error) {
+    console.error('Erreur de connexion à MongoDB:', error);
+    throw error;
   }
-  cached.conn = await cached.promise;
-  return cached.conn;
 }
 
+/**
+ * Fonction pour déconnecter de MongoDB
+ */
+export async function disconnectFromDatabase() {
+  if (!global.mongooseConnection || !global.mongooseConnection.isConnected) {
+    return;
+  }
+  
+  try {
+    await mongoose.disconnect();
+    global.mongooseConnection.isConnected = 0;
+    console.log('Déconnexion de MongoDB réussie');
+  } catch (error) {
+    console.error('Erreur lors de la déconnexion de MongoDB:', error);
+  }
+}
+
+// Export par défaut pour la compatibilité avec les imports existants
+const dbConnect = connectToDatabase;
 export default dbConnect; 

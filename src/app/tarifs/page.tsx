@@ -1,15 +1,28 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { FiArrowRight } from 'react-icons/fi';
 import Navbar from '@/components/Navbar';
 import PricingCard from '@/components/PricingCard';
 import BlackHoleLogo from '@/components/BlackHoleLogo';
 
-// Mock data for pricing plans (in a real app, this would come from the API)
-const pricingPlans = [
+interface PricingPlan {
+  _id: string;
+  title: string;
+  price: number;
+  description: string;
+  features: {
+    text: string;
+    included: boolean;
+  }[];
+  popular: boolean;
+}
+
+// Données d'exemple pour les tarifs
+const examplePricingPlans: PricingPlan[] = [
   {
-    id: '1',
+    _id: '1',
     title: 'Enregistrement',
     price: 60,
     description: 'Idéal pour les artistes souhaitant enregistrer leurs morceaux avec un équipement professionnel.',
@@ -24,7 +37,7 @@ const pricingPlans = [
     popular: false,
   },
   {
-    id: '2',
+    _id: '2',
     title: 'Production Complète',
     price: 120,
     description: 'Notre formule la plus populaire pour une production professionnelle de A à Z.',
@@ -40,7 +53,7 @@ const pricingPlans = [
     popular: true,
   },
   {
-    id: '3',
+    _id: '3',
     title: 'Mixage',
     price: 50,
     description: 'Pour les artistes ayant déjà enregistré leurs pistes et souhaitant un mixage professionnel.',
@@ -55,7 +68,7 @@ const pricingPlans = [
     popular: false,
   },
   {
-    id: '4',
+    _id: '4',
     title: 'Mastering',
     price: 40,
     description: 'La touche finale pour donner à votre musique un son professionnel prêt pour la distribution.',
@@ -72,6 +85,54 @@ const pricingPlans = [
 ];
 
 export default function PricingPage() {
+  const [pricingPlans, setPricingPlans] = useState<PricingPlan[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchPricingPlans = async () => {
+      try {
+        const response = await fetch('/api/pricing');
+        
+        if (!response.ok) {
+          console.warn('Impossible de récupérer les tarifs depuis l\'API, utilisation des données d\'exemple');
+          setPricingPlans(examplePricingPlans);
+          return;
+        }
+        
+        const data = await response.json();
+        
+        // Si aucun tarif n'est retourné par l'API, utiliser les données d'exemple
+        if (!data || data.length === 0) {
+          console.warn('Aucun tarif retourné par l\'API, utilisation des données d\'exemple');
+          setPricingPlans(examplePricingPlans);
+          return;
+        }
+        
+        setPricingPlans(data);
+      } catch (error) {
+        console.error('Erreur lors de la récupération des tarifs:', error);
+        // En cas d'erreur, retourner les données d'exemple
+        console.warn('Utilisation des données d\'exemple suite à une erreur');
+        setPricingPlans(examplePricingPlans);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    fetchPricingPlans();
+  }, []);
+
+  if (isLoading) {
+    return (
+      <main className="min-h-screen bg-background">
+        <Navbar />
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+        </div>
+      </main>
+    );
+  }
+
   return (
     <main className="min-h-screen bg-background">
       <Navbar />
@@ -92,7 +153,7 @@ export default function PricingPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {pricingPlans.map((plan) => (
               <PricingCard
-                key={plan.id}
+                key={plan._id}
                 title={plan.title}
                 price={plan.price}
                 description={plan.description}

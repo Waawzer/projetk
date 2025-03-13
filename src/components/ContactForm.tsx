@@ -28,19 +28,17 @@ const ContactForm = () => {
     setSubmitError('');
     
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
       
-      // In a real application, you would send the data to your API
-      // const response = await fetch('/api/contact', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify(data),
-      // });
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Une erreur est survenue lors de l\'envoi du message.');
+      }
       
-      // if (!response.ok) throw new Error('Une erreur est survenue lors de l\'envoi du message.');
-      
-      console.log('Form data submitted:', data);
       setSubmitSuccess(true);
       reset();
       

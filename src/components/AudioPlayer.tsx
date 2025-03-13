@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
-import { FiPlay, FiPause, FiSkipForward, FiSkipBack, FiVolume2, FiVolumeX } from 'react-icons/fi';
+import { FiPlay, FiPause, FiSkipForward, FiSkipBack, FiVolume2, FiVolumeX, FiMusic, FiHeart } from 'react-icons/fi';
 
 interface Track {
   id: string;
@@ -25,14 +25,15 @@ const AudioPlayer = ({ tracks }: AudioPlayerProps) => {
   const [isMuted, setIsMuted] = useState(false);
   const [duration, setDuration] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
+  const [isLiked, setIsLiked] = useState<boolean[]>(new Array(tracks.length).fill(false));
 
   const audioRef = useRef<HTMLAudioElement>(null);
   const progressBarRef = useRef<HTMLDivElement>(null);
+  const [showPlaylist, setShowPlaylist] = useState(false);
 
   const currentTrack = tracks[currentTrackIndex];
 
   useEffect(() => {
-    // Reset player state when track changes
     if (audioRef.current) {
       setProgress(0);
       setCurrentTime(0);
@@ -129,83 +130,133 @@ const AudioPlayer = ({ tracks }: AudioPlayerProps) => {
     return `${minutes}:${seconds.toString().padStart(2, '0')}`;
   };
 
+  const toggleLike = (index: number) => {
+    const newLiked = [...isLiked];
+    newLiked[index] = !newLiked[index];
+    setIsLiked(newLiked);
+  };
+
+  const playTrack = (index: number) => {
+    if (currentTrackIndex === index) {
+      togglePlayPause();
+    } else {
+      setCurrentTrackIndex(index);
+      setIsPlaying(true);
+    }
+  };
+
   return (
-    <div className="w-full max-w-4xl mx-auto bg-card rounded-xl overflow-hidden shadow-2xl">
-      <div className="flex flex-col md:flex-row">
-        {/* Album Cover */}
-        <div className="relative w-full md:w-1/3 aspect-square">
-          <Image 
-            src={currentTrack.coverImage} 
-            alt={`${currentTrack.title} by ${currentTrack.artist}`}
-            fill
-            className="object-cover"
-          />
-        </div>
-        
-        {/* Player Controls */}
-        <div className="w-full md:w-2/3 p-6 flex flex-col justify-between">
-          <div>
-            <h3 className="text-2xl font-bold text-white mb-1">{currentTrack.title}</h3>
-            <p className="text-gray-400 mb-6">{currentTrack.artist}</p>
-          </div>
-          
-          {/* Progress Bar */}
-          <div className="mb-4">
-            <div 
-              ref={progressBarRef}
-              className="h-2 bg-gray-700 rounded-full cursor-pointer overflow-hidden"
-              onClick={handleProgressChange}
-            >
-              <div 
-                className="h-full bg-primary rounded-full transition-all duration-100"
-                style={{ width: `${progress}%` }}
-              ></div>
+    <div className="w-full max-w-7xl mx-auto space-y-8">
+      {/* Grid of Tracks */}
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        {tracks.map((track, index) => (
+          <div key={track.id} className="group relative aspect-square">
+            {/* Track Cover */}
+            <div className="relative w-full h-full rounded-xl overflow-hidden">
+              <Image
+                src={track.coverImage}
+                alt={`${track.title} by ${track.artist}`}
+                fill
+                className="object-cover transition-transform duration-500 group-hover:scale-110"
+              />
+              {/* Overlay */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300">
+                <div className="absolute inset-0 flex flex-col items-center justify-center p-4">
+                  <button
+                    onClick={() => playTrack(index)}
+                    className="bg-white/10 backdrop-blur-sm hover:bg-white/20 text-white rounded-full w-16 h-16 flex items-center justify-center transition-all duration-300 transform hover:scale-110 mb-4"
+                  >
+                    {isPlaying && currentTrackIndex === index ? (
+                      <FiPause size={24} />
+                    ) : (
+                      <FiPlay size={24} className="ml-1" />
+                    )}
+                  </button>
+                  <h3 className="text-white font-bold text-center line-clamp-1">{track.title}</h3>
+                  <p className="text-gray-300 text-sm text-center line-clamp-1">{track.artist}</p>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      toggleLike(index);
+                    }}
+                    className={`mt-2 transition-colors duration-200 ${
+                      isLiked[index] ? 'text-red-500' : 'text-white hover:text-red-500'
+                    }`}
+                  >
+                    <FiHeart size={20} className={isLiked[index] ? 'fill-current' : ''} />
+                  </button>
+                </div>
+              </div>
             </div>
-            <div className="flex justify-between text-xs text-gray-400 mt-1">
+          </div>
+        ))}
+      </div>
+
+      {/* Mini Player */}
+      <div className="fixed bottom-0 left-0 right-0 bg-gradient-to-r from-background/95 via-card/95 to-background/95 backdrop-blur-md border-t border-white/5 p-4">
+        <div className="max-w-7xl mx-auto flex items-center gap-4">
+          {/* Current Track Info */}
+          <div className="flex items-center gap-3 flex-1">
+            <div className="relative w-12 h-12 rounded-lg overflow-hidden">
+              <Image
+                src={currentTrack.coverImage}
+                alt={currentTrack.title}
+                fill
+                className="object-cover"
+              />
+            </div>
+            <div>
+              <h4 className="font-medium text-white line-clamp-1">{currentTrack.title}</h4>
+              <p className="text-sm text-gray-400">{currentTrack.artist}</p>
+            </div>
+          </div>
+
+          {/* Controls */}
+          <div className="flex items-center gap-4">
+            <button
+              onClick={handlePrevious}
+              className="text-gray-400 hover:text-white transition-colors"
+            >
+              <FiSkipBack size={20} />
+            </button>
+            
+            <button
+              onClick={togglePlayPause}
+              className="bg-primary hover:bg-primary-hover text-white rounded-full w-10 h-10 flex items-center justify-center transition-all duration-300"
+            >
+              {isPlaying ? <FiPause size={18} /> : <FiPlay size={18} className="ml-1" />}
+            </button>
+            
+            <button
+              onClick={handleNext}
+              className="text-gray-400 hover:text-white transition-colors"
+            >
+              <FiSkipForward size={20} />
+            </button>
+          </div>
+
+          {/* Progress and Volume */}
+          <div className="flex items-center gap-4 flex-1 justify-end">
+            <div className="flex items-center gap-2 text-xs text-gray-400">
               <span>{formatTime(currentTime)}</span>
+              <div 
+                ref={progressBarRef}
+                className="w-32 h-1 bg-gray-700/50 rounded-full cursor-pointer"
+                onClick={handleProgressChange}
+              >
+                <div 
+                  className="h-full bg-primary rounded-full"
+                  style={{ width: `${progress}%` }}
+                />
+              </div>
               <span>{formatTime(duration)}</span>
             </div>
-          </div>
-          
-          {/* Controls */}
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-6">
-              <button 
-                onClick={handlePrevious}
-                className="text-gray-400 hover:text-white transition-colors"
-                aria-label="Previous track"
-              >
-                <FiSkipBack size={20} />
-              </button>
-              
-              <button 
-                onClick={togglePlayPause}
-                className="bg-primary hover:bg-primary-hover text-white rounded-full w-12 h-12 flex items-center justify-center transition-colors"
-                aria-label={isPlaying ? "Pause" : "Play"}
-              >
-                {isPlaying ? <FiPause size={20} /> : <FiPlay size={20} className="ml-1" />}
-              </button>
-              
-              <button 
-                onClick={handleNext}
-                className="text-gray-400 hover:text-white transition-colors"
-                aria-label="Next track"
-              >
-                <FiSkipForward size={20} />
-              </button>
-            </div>
-            
-            {/* Volume Control */}
-            <div className="flex items-center space-x-2">
-              <button 
-                onClick={toggleMute}
-                className="text-gray-400 hover:text-white transition-colors"
-                aria-label={isMuted ? "Unmute" : "Mute"}
-              >
+
+            <div className="flex items-center gap-2">
+              <button onClick={toggleMute} className="text-gray-400 hover:text-white">
                 {isMuted ? <FiVolumeX size={20} /> : <FiVolume2 size={20} />}
               </button>
-              
-              <input 
+              <input
                 type="range"
                 min="0"
                 max="1"
@@ -213,52 +264,17 @@ const AudioPlayer = ({ tracks }: AudioPlayerProps) => {
                 value={isMuted ? 0 : volume}
                 onChange={handleVolumeChange}
                 className="w-20 accent-primary"
-                aria-label="Volume"
               />
             </div>
           </div>
         </div>
       </div>
-      
-      {/* Track List */}
-      <div className="bg-card-hover p-4">
-        <h4 className="text-sm font-medium text-gray-400 mb-2">Playlist</h4>
-        <div className="space-y-2 max-h-48 overflow-y-auto">
-          {tracks.map((track, index) => (
-            <div 
-              key={track.id}
-              className={`flex items-center p-2 rounded-md cursor-pointer transition-colors ${
-                currentTrackIndex === index 
-                  ? 'bg-primary/20 text-primary' 
-                  : 'hover:bg-card text-gray-300'
-              }`}
-              onClick={() => setCurrentTrackIndex(index)}
-            >
-              <div className="relative w-10 h-10 mr-3 flex-shrink-0">
-                <Image 
-                  src={track.coverImage} 
-                  alt={track.title}
-                  fill
-                  className="object-cover rounded"
-                />
-              </div>
-              <div className="flex-grow">
-                <p className="text-sm font-medium">{track.title}</p>
-                <p className="text-xs text-gray-500">{track.artist}</p>
-              </div>
-              <span className="text-xs text-gray-500">{formatTime(track.duration)}</span>
-            </div>
-          ))}
-        </div>
-      </div>
-      
-      <audio 
+
+      <audio
         ref={audioRef}
         src={currentTrack.audioUrl}
         onTimeUpdate={handleTimeUpdate}
         onEnded={handleNext}
-        onLoadedMetadata={handleTimeUpdate}
-        className="hidden"
       />
     </div>
   );

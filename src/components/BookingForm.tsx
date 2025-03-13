@@ -78,13 +78,38 @@ const BookingForm = () => {
     setBookingError('');
     
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      // Format the date and time for the API
+      const bookingDate = new Date(data.date);
+      const [hours, minutes] = data.time.split(':').map(Number);
+      bookingDate.setHours(hours, minutes, 0);
       
-      // In a real application, you would:
-      // 1. Process the payment using data.paymentMethod
-      // 2. Send the booking data to your API
-      console.log('Booking data:', data);
+      // Prepare booking data
+      const bookingData = {
+        name: data.name,
+        email: data.email,
+        phone: data.phone,
+        date: bookingDate.toISOString(),
+        startTime: data.time,
+        duration: parseInt(data.duration),
+        service: data.service,
+        notes: data.notes,
+        totalPrice: getTotalPrice(),
+        depositAmount: getDepositAmount(),
+        depositPaid: false,
+        status: 'pending'
+      };
+      
+      // Send booking data to API
+      const response = await fetch('/api/bookings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(bookingData),
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Une erreur est survenue lors de la création de la réservation.');
+      }
       
       setBookingSuccess(true);
       reset();

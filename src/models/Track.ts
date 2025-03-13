@@ -5,9 +5,9 @@ export interface ITrack extends Document {
   artist: string;
   coverImage: string;
   audioUrl: string;
-  duration: number;
+  duration: string;
   genre: string;
-  releaseDate: Date;
+  releaseDate: string;
   featured: boolean;
   createdAt: Date;
   updatedAt: Date;
@@ -19,13 +19,11 @@ const TrackSchema: Schema = new Schema(
       type: String,
       required: [true, 'Le titre est requis'],
       trim: true,
-      maxlength: [100, 'Le titre ne peut pas dépasser 100 caractères'],
     },
     artist: {
       type: String,
       required: [true, 'L\'artiste est requis'],
       trim: true,
-      maxlength: [100, 'Le nom de l\'artiste ne peut pas dépasser 100 caractères'],
     },
     coverImage: {
       type: String,
@@ -36,9 +34,8 @@ const TrackSchema: Schema = new Schema(
       required: [true, 'L\'URL audio est requise'],
     },
     duration: {
-      type: Number,
+      type: String,
       required: [true, 'La durée est requise'],
-      min: [0, 'La durée doit être positive'],
     },
     genre: {
       type: String,
@@ -46,8 +43,8 @@ const TrackSchema: Schema = new Schema(
       trim: true,
     },
     releaseDate: {
-      type: Date,
-      default: Date.now,
+      type: String,
+      required: [true, 'La date de sortie est requise'],
     },
     featured: {
       type: Boolean,
@@ -59,5 +56,5 @@ const TrackSchema: Schema = new Schema(
   }
 );
 
-// Check if the model is already defined to prevent overwriting during hot reloads
+// Vérifier si le modèle existe déjà pour éviter les erreurs en développement avec hot-reload
 export default mongoose.models.Track || mongoose.model<ITrack>('Track', TrackSchema); 
