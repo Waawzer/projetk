@@ -225,9 +225,9 @@ export default function Home() {
                     <div className="absolute inset-0 flex flex-col items-center justify-center p-4">
                       <button
                         onClick={() => handleTrackSelect(index)}
-                        className="bg-white/10 backdrop-blur-sm hover:bg-white/20 text-white rounded-full w-12 h-12 md:w-16 md:h-16 flex items-center justify-center transition-all duration-300 transform hover:scale-110 mb-2 md:mb-4"
+                        className="bg-white/5 hover:bg-white/10 text-white rounded-full w-12 h-12 md:w-16 md:h-16 flex items-center justify-center transition-all duration-300 transform hover:scale-110 mb-2 md:mb-4"
                       >
-                        <FiPlay size={20} className="ml-1 md:ml-0 md:text-2xl" />
+                        <FiPlay size={20} className="translate-x-[1px] md:translate-x-[2px] md:text-2xl" />
                       </button>
                       <h3 className="text-white font-bold text-center text-sm md:text-base line-clamp-1">{track.title}</h3>
                       <p className="text-gray-300 text-xs md:text-sm text-center line-clamp-1">{track.artist}</p>

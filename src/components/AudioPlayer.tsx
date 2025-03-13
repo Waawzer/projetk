@@ -178,9 +178,9 @@ const AudioPlayer = ({ tracks, initialTrackIndex, onClose }: AudioPlayerProps) =
           
           <button
             onClick={togglePlayPause}
-            className="bg-primary hover:bg-primary-hover text-white rounded-full w-10 h-10 flex items-center justify-center transition-all duration-300"
+            className="bg-white/5 hover:bg-white/10 text-white rounded-full w-10 h-10 flex items-center justify-center transition-all duration-300"
           >
-            {isPlaying ? <FiPause size={18} /> : <FiPlay size={18} className="ml-1" />}
+            {isPlaying ? <FiPause size={18} /> : <FiPlay size={18} className="translate-x-[1px]" />}
           </button>
           
           <button
