@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
-import { FiMusic, FiHeadphones, FiMic, FiSliders, FiCalendar } from 'react-icons/fi';
+import { FiMusic, FiHeadphones, FiMic, FiSliders, FiCalendar, FiPlay } from 'react-icons/fi';
 import AudioPlayer from '@/components/AudioPlayer';
 import Navbar from '@/components/Navbar';
 import BlackHoleLogo from '@/components/BlackHoleLogo';
@@ -48,6 +48,7 @@ const exampleTracks: TrackDTO[] = [
 export default function Home() {
   const [tracks, setTracks] = useState<TrackDTO[]>(exampleTracks);
   const [isLoading, setIsLoading] = useState(true);
+  const [selectedTrackIndex, setSelectedTrackIndex] = useState<number | null>(null);
   
   useEffect(() => {
     const fetchTracks = async () => {
@@ -95,6 +96,10 @@ export default function Home() {
     fetchTracks();
   }, []);
   
+  const handleTrackSelect = (index: number) => {
+    setSelectedTrackIndex(index);
+  };
+
   return (
     <main className="min-h-screen bg-background">
       <Navbar />
@@ -204,7 +209,45 @@ export default function Home() {
             </p>
           </div>
           
-          <AudioPlayer tracks={tracks} />
+          {/* Grid of Tracks */}
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-8">
+            {tracks.map((track, index) => (
+              <div key={track.id} className="group relative aspect-square">
+                <div className="relative w-full h-full rounded-xl overflow-hidden">
+                  <Image
+                    src={track.coverImage}
+                    alt={`${track.title} by ${track.artist}`}
+                    fill
+                    className="object-cover transition-transform duration-500 group-hover:scale-110"
+                  />
+                  {/* Overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300">
+                    <div className="absolute inset-0 flex flex-col items-center justify-center p-4">
+                      <button
+                        onClick={() => handleTrackSelect(index)}
+                        className="bg-white/10 backdrop-blur-sm hover:bg-white/20 text-white rounded-full w-16 h-16 flex items-center justify-center transition-all duration-300 transform hover:scale-110 mb-4"
+                      >
+                        <FiPlay size={24} className="ml-1" />
+                      </button>
+                      <h3 className="text-white font-bold text-center line-clamp-1">{track.title}</h3>
+                      <p className="text-gray-300 text-sm text-center line-clamp-1">{track.artist}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+          
+          {/* Audio Player */}
+          {selectedTrackIndex !== null && (
+            <div className="mt-8">
+              <AudioPlayer 
+                tracks={tracks} 
+                initialTrackIndex={selectedTrackIndex}
+                onClose={() => setSelectedTrackIndex(null)}
+              />
+            </div>
+          )}
         </div>
       </section>
       
