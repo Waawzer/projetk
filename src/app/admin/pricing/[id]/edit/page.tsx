@@ -23,10 +23,10 @@ interface PricingPlan {
 export default function EditPricingPage({ 
   params 
 }: { 
-  params: { id: string } 
+  params: Promise<{ id: string }> 
 }) {
   const router = useRouter();
-  const { id } = params;
+  const [id, setId] = useState<string>('');
   
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -43,8 +43,25 @@ export default function EditPricingPage({
   const [popular, setPopular] = useState(false);
   const [order, setOrder] = useState(0);
   
+  // Récupérer l'ID depuis les paramètres
+  useEffect(() => {
+    const getParams = async () => {
+      try {
+        const resolvedParams = await params;
+        setId(resolvedParams.id);
+      } catch (error) {
+        console.error('Error resolving params:', error);
+        setFormError('Erreur lors de la récupération des paramètres');
+      }
+    };
+    
+    getParams();
+  }, [params]);
+  
   // Charger les données du tarif
   useEffect(() => {
+    if (!id) return;
+    
     const fetchPricingPlan = async () => {
       try {
         setIsLoading(true);

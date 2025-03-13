@@ -9,16 +9,32 @@ import { FiArrowLeft, FiCalendar } from 'react-icons/fi';
 export default function ServicePage({ 
   params 
 }: { 
-  params: { slug: string } 
+  params: Promise<{ slug: string }> 
 }) {
   const router = useRouter();
-  const { slug } = params;
+  const [slug, setSlug] = useState<string>('');
   
   const [service, setService] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
   
   useEffect(() => {
+    const getParams = async () => {
+      try {
+        const resolvedParams = await params;
+        setSlug(resolvedParams.slug);
+      } catch (error) {
+        console.error('Error resolving params:', error);
+        setError('Erreur lors de la récupération des paramètres');
+      }
+    };
+    
+    getParams();
+  }, [params]);
+  
+  useEffect(() => {
+    if (!slug) return;
+    
     const fetchService = async () => {
       try {
         setIsLoading(true);

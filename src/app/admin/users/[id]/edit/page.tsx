@@ -8,10 +8,10 @@ import { FiSave, FiArrowLeft } from 'react-icons/fi';
 export default function EditUserPage({ 
   params 
 }: { 
-  params: { id: string } 
+  params: Promise<{ id: string }> 
 }) {
   const router = useRouter();
-  const { id } = params;
+  const [id, setId] = useState<string>('');
   
   const [isLoading, setIsLoading] = useState(true);
   const [user, setUser] = useState<any>(null);
@@ -22,7 +22,24 @@ export default function EditUserPage({
   const [email, setEmail] = useState('');
   const [role, setRole] = useState('user');
   
+  // Récupérer l'ID depuis les paramètres
   useEffect(() => {
+    const getParams = async () => {
+      try {
+        const resolvedParams = await params;
+        setId(resolvedParams.id);
+      } catch (error) {
+        console.error('Error resolving params:', error);
+        setError('Erreur lors de la récupération des paramètres');
+      }
+    };
+    
+    getParams();
+  }, [params]);
+  
+  useEffect(() => {
+    if (!id) return;
+    
     const fetchUser = async () => {
       try {
         setIsLoading(true);
