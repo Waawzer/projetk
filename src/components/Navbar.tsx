@@ -59,115 +59,94 @@ const Navbar = () => {
   ];
 
   return (
-    <nav 
-      className={`fixed top-0 left-0 w-full z-[60] transition-all duration-500 ${
-        scrolled ? 'bg-black/80 backdrop-blur-md shadow-lg' : 'bg-transparent'
-      }`}
-    >
-      {/* Barre de progression horizontale */}
-      <div 
-        className={`h-0.5 bg-gradient-to-r from-primary via-white to-primary transition-transform duration-500 ${
-          scrolled ? 'scale-x-100' : 'scale-x-0'
-        }`} 
-      />
-
-      <div className="container mx-auto px-4">
-        <div className="flex justify-between items-center h-16 md:h-20">
-          {/* Logo */}
-          <Link 
-            href="/" 
-            className="relative group flex items-center"
-            onClick={closeMenu}
-          >
-            <div className="absolute -inset-2 bg-white/5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-            <BlackHoleLogo className="text-primary mr-2 transition-transform group-hover:scale-110 duration-300" size={28} />
-            <span className="text-primary font-bold text-xl tracking-wide mr-1">Kasar</span>
-            <span className="font-bold text-xl tracking-wide">Studio</span>
-          </Link>
-
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-1">
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={`relative group px-4 py-2 rounded-lg transition-colors duration-300 ${
-                  pathname === link.href
-                    ? 'text-primary'
-                    : 'text-gray-300 hover:text-white'
-                }`}
-              >
-                <div className="absolute inset-0 bg-white/5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                <div className="relative flex items-center">
-                  <span className="mr-2">{link.icon}</span>
-                  <span className="font-medium">{link.label}</span>
-                </div>
-                {pathname === link.href && (
-                  <div className="absolute bottom-0 left-0 w-full h-0.5 bg-primary rounded-full" />
-                )}
-              </Link>
-            ))}
-          </div>
-
-          {/* Mobile Menu Button */}
-          <button
-            className="md:hidden relative group p-2"
-            onClick={toggleMenu}
-            aria-label="Toggle menu"
-          >
-            <div className="absolute -inset-2 bg-white/5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-            <div className="relative text-white">
-              {isOpen ? <FiX size={24} /> : <FiMenu size={24} />}
-            </div>
-          </button>
-        </div>
-      </div>
-
-      {/* Mobile Menu Overlay */}
-      <div 
-        className={`fixed inset-0 bg-black transition-opacity duration-300 ${
-          isOpen ? 'opacity-95' : 'opacity-0 pointer-events-none'
-        }`} 
-        style={{ 
-          zIndex: 65,
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0
-        }}
-      />
-
-      {/* Mobile Menu Content */}
-      <div
-        className={`fixed inset-0 z-[66] transition-all duration-500 ${
-          isOpen 
-            ? 'opacity-100 pointer-events-auto' 
-            : 'opacity-0 pointer-events-none'
+    <>
+      {/* Navbar principal */}
+      <nav 
+        className={`fixed top-0 left-0 w-full z-[60] transition-all duration-500 ${
+          scrolled ? 'bg-black/80 backdrop-blur-md shadow-lg' : 'bg-transparent'
         }`}
-        style={{ 
-          visibility: isOpen ? 'visible' : 'hidden',
-          transitionDelay: isOpen ? '150ms' : '0ms'
-        }}
       >
-        <div className="flex flex-col h-full pt-20 pb-8 px-6">
+        {/* Barre de progression horizontale */}
+        <div 
+          className={`h-0.5 bg-gradient-to-r from-primary via-white to-primary transition-transform duration-500 ${
+            scrolled ? 'scale-x-100' : 'scale-x-0'
+          }`} 
+        />
+
+        <div className="container mx-auto px-4">
+          <div className="flex justify-between items-center h-16 md:h-20">
+            {/* Logo */}
+            <Link 
+              href="/" 
+              className="relative group flex items-center"
+              onClick={closeMenu}
+            >
+              <div className="absolute -inset-2 bg-white/5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              <BlackHoleLogo className="text-primary mr-2 transition-transform group-hover:scale-110 duration-300" size={28} />
+              <span className="text-primary font-bold text-xl tracking-wide mr-1">Kasar</span>
+              <span className="font-bold text-xl tracking-wide">Studio</span>
+            </Link>
+
+            {/* Desktop Navigation */}
+            <div className="hidden md:flex items-center space-x-1">
+              {navLinks.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className={`relative group px-4 py-2 rounded-lg transition-colors duration-300 ${
+                    pathname === link.href
+                      ? 'text-primary'
+                      : 'text-gray-300 hover:text-white'
+                  }`}
+                >
+                  <div className="absolute inset-0 bg-white/5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  <div className="relative flex items-center">
+                    <span className="mr-2">{link.icon}</span>
+                    <span className="font-medium">{link.label}</span>
+                  </div>
+                  {pathname === link.href && (
+                    <div className="absolute bottom-0 left-0 w-full h-0.5 bg-primary rounded-full" />
+                  )}
+                </Link>
+              ))}
+            </div>
+
+            {/* Mobile Menu Button */}
+            <button
+              className="md:hidden relative group p-2 z-[100]"
+              onClick={toggleMenu}
+              aria-label="Toggle menu"
+            >
+              <div className="absolute -inset-2 bg-white/5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              <div className="relative text-white">
+                {isOpen ? <FiX size={24} /> : <FiMenu size={24} />}
+              </div>
+            </button>
+          </div>
+        </div>
+      </nav>
+
+      {/* Menu mobile séparé */}
+      <div 
+        className={`fixed inset-0 bg-black z-[90] transition-transform duration-300 ease-in-out ${
+          isOpen ? 'translate-y-0' : 'translate-y-[-100%]'
+        }`}
+      >
+        <div className="container mx-auto px-4 flex flex-col h-full pt-20 pb-8">
           {/* Navigation Links */}
-          <div className="flex-1 flex flex-col items-center justify-center space-y-6">
+          <div className="flex-1 flex flex-col items-center justify-center space-y-8">
             {navLinks.map((link, index) => (
               <Link
                 key={link.href}
                 href={link.href}
                 onClick={closeMenu}
-                className={`group relative flex items-center text-2xl font-medium transition-all duration-300 ${
+                className={`group flex items-center text-2xl font-medium transition-all duration-300 ${
                   pathname === link.href
-                    ? 'text-primary translate-x-0'
+                    ? 'text-primary'
                     : 'text-gray-300 hover:text-white hover:translate-x-2'
                 }`}
-                style={{
-                  transitionDelay: isOpen ? `${150 + index * 100}ms` : '0ms'
-                }}
               >
-                <span className="mr-4 opacity-50 group-hover:opacity-100 transition-opacity">
+                <span className="mr-4 opacity-70 group-hover:opacity-100 transition-opacity">
                   {link.icon}
                 </span>
                 {link.label}
@@ -176,8 +155,8 @@ const Navbar = () => {
           </div>
 
           {/* Social Links */}
-          <div className="flex justify-center items-center space-x-6 pt-8 border-t border-white/10">
-            {socialLinks.map((link, index) => (
+          <div className="flex justify-center items-center space-x-8 pt-8 border-t border-white/10">
+            {socialLinks.map((link) => (
               <a
                 key={link.label}
                 href={link.href}
@@ -192,7 +171,7 @@ const Navbar = () => {
           </div>
         </div>
       </div>
-    </nav>
+    </>
   );
 };
 
