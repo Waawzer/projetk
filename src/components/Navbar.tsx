@@ -96,56 +96,74 @@ const Navbar = () => {
       </div>
 
       {/* Mobile Navigation Menu */}
-      <div
-        className={`md:hidden fixed inset-0 bg-black/95 backdrop-blur-lg z-[65] transition-all duration-300 ease-in-out ${
-          isOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
-        }`}
-        style={{ 
-          position: 'fixed', 
-          top: 0, 
-          left: 0, 
-          right: 0, 
-          bottom: 0,
-          visibility: isOpen ? 'visible' : 'hidden'
-        }}
-      >
-        {/* Bouton de fermeture en haut à droite */}
-        <button
-          className="absolute top-4 right-4 text-white p-2 z-[70]"
-          onClick={closeMenu}
-          aria-label="Fermer le menu"
+      <>
+        {/* Overlay noir */}
+        <div 
+          className={`md:hidden fixed inset-0 bg-black transition-opacity duration-300 ${
+            isOpen ? 'opacity-95' : 'opacity-0 pointer-events-none'
+          }`}
+          style={{ 
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            zIndex: 65
+          }}
+        />
+
+        {/* Contenu du menu */}
+        <div
+          className={`md:hidden fixed inset-0 z-[66] transition-opacity duration-300 ${
+            isOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+          }`}
+          style={{ 
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            visibility: isOpen ? 'visible' : 'hidden'
+          }}
         >
-          <FiX size={28} />
-        </button>
-        
-        {/* Logo en haut */}
-        <div className="flex justify-center pt-16 pb-8">
-          <div className="flex items-center text-2xl font-bold">
-            <BlackHoleLogo className="text-primary mr-2" size={32} />
-            <span className="text-primary mr-1">Kasar</span>
-            <span className="text-white">Studio</span>
+          {/* Bouton de fermeture en haut à droite */}
+          <button
+            className="absolute top-4 right-4 text-white p-2"
+            onClick={closeMenu}
+            aria-label="Fermer le menu"
+          >
+            <FiX size={28} />
+          </button>
+          
+          {/* Logo en haut */}
+          <div className="flex justify-center pt-16 pb-8">
+            <div className="flex items-center text-2xl font-bold">
+              <BlackHoleLogo className="text-primary mr-2" size={32} />
+              <span className="text-primary mr-1">Kasar</span>
+              <span className="text-white">Studio</span>
+            </div>
+          </div>
+          
+          {/* Liens de navigation */}
+          <div className="flex flex-col items-center justify-center min-h-[60vh] pb-20 space-y-6">
+            {navLinks.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={`flex items-center text-xl font-medium transition-colors duration-300 px-4 py-2 rounded-lg ${
+                  pathname === link.href
+                    ? 'text-primary bg-primary/10'
+                    : 'text-gray-300 hover:text-white hover:bg-white/5'
+                }`}
+                onClick={closeMenu}
+              >
+                {link.icon}
+                {link.label}
+              </Link>
+            ))}
           </div>
         </div>
-        
-        {/* Liens de navigation */}
-        <div className="flex flex-col items-center justify-center min-h-[60vh] pb-20 space-y-6">
-          {navLinks.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className={`flex items-center text-xl font-medium transition-colors duration-300 px-4 py-2 rounded-lg ${
-                pathname === link.href
-                  ? 'text-primary bg-primary/10'
-                  : 'text-gray-300 hover:text-white hover:bg-white/5'
-              }`}
-              onClick={closeMenu}
-            >
-              {link.icon}
-              {link.label}
-            </Link>
-          ))}
-        </div>
-      </div>
+      </>
     </nav>
   );
 };
