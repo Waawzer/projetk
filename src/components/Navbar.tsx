@@ -54,13 +54,13 @@ const Navbar = () => {
 
   return (
     <nav 
-      className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${
+      className={`fixed top-0 left-0 w-full z-[60] transition-all duration-300 ${
         scrolled ? 'bg-black/90 backdrop-blur-md shadow-lg' : 'bg-transparent'
       }`}
     >
       <div className="container mx-auto px-4 py-4">
         <div className="flex justify-between items-center">
-          <Link href="/" className="text-xl md:text-2xl font-bold text-white flex items-center" onClick={closeMenu}>
+          <Link href="/" className="text-xl md:text-2xl font-bold text-white flex items-center relative z-[70]" onClick={closeMenu}>
             <BlackHoleLogo className="text-primary mr-2" size={24} />
             <span className="text-primary mr-1">Kasar</span>
             <span>Studio</span>
@@ -86,7 +86,7 @@ const Navbar = () => {
 
           {/* Mobile Navigation Toggle */}
           <button
-            className="md:hidden text-white focus:outline-none p-2"
+            className="md:hidden text-white focus:outline-none p-2 relative z-[70]"
             onClick={toggleMenu}
             aria-label="Toggle menu"
           >
@@ -97,13 +97,14 @@ const Navbar = () => {
 
       {/* Mobile Navigation Menu */}
       <div
-        className={`md:hidden fixed inset-0 bg-black/95 backdrop-blur-lg z-40 transition-all duration-300 ease-in-out ${
-          isOpen ? 'opacity-100 visible' : 'opacity-0 invisible'
+        className={`md:hidden fixed inset-0 bg-black/95 backdrop-blur-lg z-[65] transition-transform duration-300 ease-in-out ${
+          isOpen ? 'translate-y-0' : 'translate-y-[-100%]'
         }`}
+        style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0 }}
       >
         {/* Bouton de fermeture en haut à droite */}
         <button
-          className="absolute top-4 right-4 text-white p-2 z-50"
+          className="absolute top-4 right-4 text-white p-2 z-[70]"
           onClick={closeMenu}
           aria-label="Fermer le menu"
         >
@@ -120,7 +121,7 @@ const Navbar = () => {
         </div>
         
         {/* Liens de navigation */}
-        <div className="flex flex-col items-center justify-center h-full pb-20 space-y-6">
+        <div className="flex flex-col items-center justify-center min-h-[60vh] pb-20 space-y-6">
           {navLinks.map((link) => (
             <Link
               key={link.href}
