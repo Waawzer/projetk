@@ -140,89 +140,104 @@ const AudioPlayer = ({ tracks, initialTrackIndex, onClose }: AudioPlayerProps) =
   };
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 bg-gradient-to-r from-background/95 via-card/95 to-background/95 backdrop-blur-md border-t border-white/5 p-4">
-      <div className="max-w-7xl mx-auto flex items-center gap-4">
-        {/* Close Button */}
-        <button
-          onClick={onClose}
-          className="text-gray-400 hover:text-white transition-colors p-2"
-          aria-label="Fermer le lecteur"
-        >
-          <FiX size={20} />
-        </button>
-
-        {/* Current Track Info */}
-        <div className="flex items-center gap-3 flex-1">
-          <div className="relative w-12 h-12 rounded-lg overflow-hidden">
-            <Image
-              src={currentTrack.coverImage}
-              alt={currentTrack.title}
-              fill
-              className="object-cover"
-            />
-          </div>
-          <div>
-            <h4 className="font-medium text-white line-clamp-1">{currentTrack.title}</h4>
-            <p className="text-sm text-gray-400">{currentTrack.artist}</p>
-          </div>
-        </div>
-
-        {/* Controls */}
-        <div className="flex items-center gap-4">
-          <button
-            onClick={handlePrevious}
-            className="text-gray-400 hover:text-white transition-colors"
-          >
-            <FiSkipBack size={20} />
-          </button>
-          
-          <button
-            onClick={togglePlayPause}
-            className="bg-white/5 hover:bg-white/10 text-white rounded-full w-10 h-10 flex items-center justify-center transition-all duration-300"
-          >
-            {isPlaying ? <FiPause size={18} /> : <FiPlay size={18} className="translate-x-[1px]" />}
-          </button>
-          
-          <button
-            onClick={handleNext}
-            className="text-gray-400 hover:text-white transition-colors"
-          >
-            <FiSkipForward size={20} />
-          </button>
-        </div>
-
-        {/* Progress and Volume */}
-        <div className="flex items-center gap-4 flex-1 justify-end">
-          <div className="flex items-center gap-2 text-xs text-gray-400">
-            <span>{formatTime(currentTime)}</span>
-            <div 
-              ref={progressBarRef}
-              className="w-32 h-1 bg-gray-700/50 rounded-full cursor-pointer"
-              onClick={handleProgressChange}
-            >
-              <div 
-                className="h-full bg-primary rounded-full"
-                style={{ width: `${progress}%` }}
+    <div className="fixed bottom-0 left-0 right-0 bg-gradient-to-r from-background/95 via-card/95 to-background/95 backdrop-blur-md border-t border-white/5 p-2 md:p-4">
+      <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center gap-2 md:gap-4">
+        {/* Top Row for Mobile: Track Info + Close */}
+        <div className="w-full md:w-auto flex items-center gap-3">
+          <div className="flex items-center gap-3 flex-1">
+            <div className="relative w-10 h-10 md:w-12 md:h-12 rounded-lg overflow-hidden">
+              <Image
+                src={currentTrack.coverImage}
+                alt={currentTrack.title}
+                fill
+                className="object-cover"
               />
             </div>
-            <span>{formatTime(duration)}</span>
+            <div className="min-w-0 flex-1">
+              <h4 className="font-medium text-white text-sm md:text-base line-clamp-1">{currentTrack.title}</h4>
+              <p className="text-xs md:text-sm text-gray-400 line-clamp-1">{currentTrack.artist}</p>
+            </div>
+          </div>
+          <button
+            onClick={onClose}
+            className="text-gray-400 hover:text-white transition-colors p-2 md:hidden"
+            aria-label="Fermer le lecteur"
+          >
+            <FiX className="w-5 h-5" />
+          </button>
+        </div>
+
+        {/* Bottom Row for Mobile: Controls + Progress */}
+        <div className="w-full md:w-auto flex flex-col md:flex-row items-center gap-2 md:gap-4">
+          {/* Controls */}
+          <div className="flex items-center gap-4 justify-center w-full md:w-auto">
+            <button
+              onClick={handlePrevious}
+              className="text-white hover:bg-white/5 transition-colors border border-white/20 hover:border-white/40 rounded-full w-9 h-9 md:w-10 md:h-10 flex items-center justify-center"
+            >
+              <FiSkipBack className="w-4 h-4 md:w-5 md:h-5" />
+            </button>
+            
+            <button
+              onClick={togglePlayPause}
+              className="text-white hover:bg-white/5 transition-colors border border-white/20 hover:border-white/40 rounded-full w-10 h-10 md:w-12 md:h-12 flex items-center justify-center"
+            >
+              {isPlaying ? 
+                <FiPause className="w-5 h-5 md:w-6 md:h-6" /> : 
+                <FiPlay className="w-5 h-5 md:w-6 md:h-6 translate-x-[1px]" />
+              }
+            </button>
+            
+            <button
+              onClick={handleNext}
+              className="text-white hover:bg-white/5 transition-colors border border-white/20 hover:border-white/40 rounded-full w-9 h-9 md:w-10 md:h-10 flex items-center justify-center"
+            >
+              <FiSkipForward className="w-4 h-4 md:w-5 md:h-5" />
+            </button>
           </div>
 
-          <div className="flex items-center gap-2">
-            <button onClick={toggleMute} className="text-gray-400 hover:text-white">
-              {isMuted ? <FiVolumeX size={20} /> : <FiVolume2 size={20} />}
-            </button>
-            <input
-              type="range"
-              min="0"
-              max="1"
-              step="0.01"
-              value={isMuted ? 0 : volume}
-              onChange={handleVolumeChange}
-              className="w-20 accent-primary"
-            />
+          {/* Progress and Volume */}
+          <div className="flex items-center gap-4 w-full md:flex-1 md:justify-end px-2 md:px-0">
+            <div className="flex items-center gap-2 text-xs text-gray-400 flex-1 md:flex-initial">
+              <span className="w-8 text-right">{formatTime(currentTime)}</span>
+              <div 
+                ref={progressBarRef}
+                className="flex-1 md:w-32 h-1 bg-gray-700/50 rounded-full cursor-pointer"
+                onClick={handleProgressChange}
+              >
+                <div 
+                  className="h-full bg-white/60 rounded-full"
+                  style={{ width: `${progress}%` }}
+                />
+              </div>
+              <span className="w-8">{formatTime(duration)}</span>
+            </div>
+
+            <div className="hidden md:flex items-center gap-2">
+              <button onClick={toggleMute} className="text-gray-400 hover:text-white">
+                {isMuted ? <FiVolumeX className="w-5 h-5" /> : <FiVolume2 className="w-5 h-5" />}
+              </button>
+              <input
+                type="range"
+                min="0"
+                max="1"
+                step="0.01"
+                value={isMuted ? 0 : volume}
+                onChange={handleVolumeChange}
+                className="w-20 accent-white"
+              />
+            </div>
           </div>
         </div>
+
+        {/* Close button for desktop */}
+        <button
+          onClick={onClose}
+          className="hidden md:block text-gray-400 hover:text-white transition-colors p-2"
+          aria-label="Fermer le lecteur"
+        >
+          <FiX className="w-5 h-5" />
+        </button>
       </div>
 
       <audio

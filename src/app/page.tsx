@@ -130,14 +130,14 @@ export default function Home() {
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link 
               href="/reservation" 
-              className="bg-primary hover:bg-primary-hover text-white px-8 py-3 rounded-lg font-medium flex items-center justify-center"
+              className="bg-transparent border border-white/20 hover:border-white/40 hover:bg-white/5 text-white px-8 py-3 rounded-lg font-medium flex items-center justify-center"
             >
               <FiCalendar className="mr-2" />
               Réserver une session
             </Link>
             <Link 
               href="/tarifs" 
-              className="bg-transparent border border-white/30 hover:bg-white/10 text-white px-8 py-3 rounded-lg font-medium"
+              className="bg-transparent border border-white/20 hover:border-white/40 hover:bg-white/5 text-white px-8 py-3 rounded-lg font-medium"
             >
               Voir nos tarifs
             </Link>
@@ -157,8 +157,8 @@ export default function Home() {
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             <div className="card text-center p-6 flex flex-col items-center">
-              <div className="w-16 h-16 bg-primary/20 rounded-full flex items-center justify-center mb-4">
-                <FiMic className="text-primary" size={28} />
+              <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mb-4">
+                <FiMic className="text-white" size={28} />
               </div>
               <h3 className="text-xl font-bold mb-2">Enregistrement</h3>
               <p className="text-gray-400">
@@ -167,8 +167,8 @@ export default function Home() {
             </div>
             
             <div className="card text-center p-6 flex flex-col items-center">
-              <div className="w-16 h-16 bg-primary/20 rounded-full flex items-center justify-center mb-4">
-                <FiSliders className="text-primary" size={28} />
+              <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mb-4">
+                <FiSliders className="text-white" size={28} />
               </div>
               <h3 className="text-xl font-bold mb-2">Mixage</h3>
               <p className="text-gray-400">
@@ -177,8 +177,8 @@ export default function Home() {
             </div>
             
             <div className="card text-center p-6 flex flex-col items-center">
-              <div className="w-16 h-16 bg-primary/20 rounded-full flex items-center justify-center mb-4">
-                <FiHeadphones className="text-primary" size={28} />
+              <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mb-4">
+                <FiHeadphones className="text-white" size={28} />
               </div>
               <h3 className="text-xl font-bold mb-2">Mastering</h3>
               <p className="text-gray-400">
@@ -187,8 +187,8 @@ export default function Home() {
             </div>
             
             <div className="card text-center p-6 flex flex-col items-center">
-              <div className="w-16 h-16 bg-primary/20 rounded-full flex items-center justify-center mb-4">
-                <FiMusic className="text-primary" size={28} />
+              <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mb-4">
+                <FiMusic className="text-white" size={28} />
               </div>
               <h3 className="text-xl font-bold mb-2">Production</h3>
               <p className="text-gray-400">
@@ -221,13 +221,13 @@ export default function Home() {
                     className="object-cover transition-transform duration-500 group-hover:scale-110"
                   />
                   {/* Overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent md:opacity-0 md:group-hover:opacity-100 transition-all duration-300">
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent opacity-80 md:opacity-0 md:group-hover:opacity-90 transition-all duration-300">
                     <div className="absolute inset-0 flex flex-col items-center justify-center p-4">
                       <button
                         onClick={() => handleTrackSelect(index)}
-                        className="bg-white/5 hover:bg-white/10 text-white rounded-full w-12 h-12 md:w-16 md:h-16 flex items-center justify-center transition-all duration-300 transform hover:scale-110 mb-2 md:mb-4"
+                        className="text-white hover:bg-white/5 transition-colors border border-white/20 hover:border-white/40 rounded-full w-12 h-12 md:w-16 md:h-16 flex items-center justify-center transform hover:scale-110 mb-2 md:mb-4"
                       >
-                        <FiPlay size={20} className="translate-x-[1px] md:translate-x-[2px] md:text-2xl" />
+                        <FiPlay className="w-5 h-5 md:w-6 md:h-6 translate-x-[1px]" />
                       </button>
                       <h3 className="text-white font-bold text-center text-sm md:text-base line-clamp-1">{track.title}</h3>
                       <p className="text-gray-300 text-xs md:text-sm text-center line-clamp-1">{track.artist}</p>
@@ -260,7 +260,7 @@ export default function Home() {
           </p>
           <Link 
             href="/reservation" 
-            className="bg-primary hover:bg-primary-hover text-white px-8 py-3 rounded-lg font-medium inline-flex items-center"
+            className="bg-transparent border border-white/20 hover:border-white/40 hover:bg-white/5 text-white px-8 py-3 rounded-lg font-medium inline-flex items-center"
           >
             <FiCalendar className="mr-2" />
             Réserver une session
