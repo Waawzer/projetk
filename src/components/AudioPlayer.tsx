@@ -173,36 +173,36 @@ const AudioPlayer = ({ tracks, initialTrackIndex, onClose }: AudioPlayerProps) =
           <div className="flex items-center gap-4 justify-center w-full md:w-auto">
             <button
               onClick={handlePrevious}
-              className="text-white hover:bg-white/5 transition-colors border border-white/20 hover:border-white/40 rounded-full w-9 h-9 md:w-10 md:h-10 flex items-center justify-center"
+              className="text-white hover:bg-white/5 transition-colors border border-white/20 hover:border-white/40 rounded-full w-12 h-12 md:w-14 md:h-14 flex items-center justify-center"
             >
-              <FiSkipBack className="w-4 h-4 md:w-5 md:h-5" />
+              <FiSkipBack size={32} />
             </button>
             
             <button
               onClick={togglePlayPause}
-              className="text-white hover:bg-white/5 transition-colors border border-white/20 hover:border-white/40 rounded-full w-10 h-10 md:w-12 md:h-12 flex items-center justify-center"
+              className="text-white hover:bg-white/5 transition-colors border border-white/20 hover:border-white/40 rounded-full w-14 h-14 md:w-16 md:h-16 flex items-center justify-center"
             >
               {isPlaying ? 
-                <FiPause className="w-5 h-5 md:w-6 md:h-6" /> : 
-                <FiPlay className="w-5 h-5 md:w-6 md:h-6 translate-x-[1px]" />
+                <FiPause size={40} /> : 
+                <FiPlay size={40} className="translate-x-[1px]" />
               }
             </button>
             
             <button
               onClick={handleNext}
-              className="text-white hover:bg-white/5 transition-colors border border-white/20 hover:border-white/40 rounded-full w-9 h-9 md:w-10 md:h-10 flex items-center justify-center"
+              className="text-white hover:bg-white/5 transition-colors border border-white/20 hover:border-white/40 rounded-full w-12 h-12 md:w-14 md:h-14 flex items-center justify-center"
             >
-              <FiSkipForward className="w-4 h-4 md:w-5 md:h-5" />
+              <FiSkipForward size={32} />
             </button>
           </div>
 
           {/* Progress and Volume */}
           <div className="flex items-center gap-4 w-full md:flex-1 md:justify-end px-2 md:px-0">
             <div className="flex items-center gap-2 text-xs text-gray-400 flex-1 md:flex-initial">
-              <span className="w-8 text-right">{formatTime(currentTime)}</span>
+              <span className="w-10 text-right">{formatTime(currentTime)}</span>
               <div 
                 ref={progressBarRef}
-                className="flex-1 md:w-32 h-1 bg-gray-700/50 rounded-full cursor-pointer"
+                className="flex-1 md:w-48 h-1.5 bg-gray-700/50 rounded-full cursor-pointer"
                 onClick={handleProgressChange}
               >
                 <div 
@@ -210,12 +210,12 @@ const AudioPlayer = ({ tracks, initialTrackIndex, onClose }: AudioPlayerProps) =
                   style={{ width: `${progress}%` }}
                 />
               </div>
-              <span className="w-8">{formatTime(duration)}</span>
+              <span className="w-10">{formatTime(duration)}</span>
             </div>
 
             <div className="hidden md:flex items-center gap-2">
               <button onClick={toggleMute} className="text-gray-400 hover:text-white">
-                {isMuted ? <FiVolumeX className="w-5 h-5" /> : <FiVolume2 className="w-5 h-5" />}
+                {isMuted ? <FiVolumeX className="w-6 h-6" /> : <FiVolume2 className="w-6 h-6" />}
               </button>
               <input
                 type="range"
@@ -224,7 +224,7 @@ const AudioPlayer = ({ tracks, initialTrackIndex, onClose }: AudioPlayerProps) =
                 step="0.01"
                 value={isMuted ? 0 : volume}
                 onChange={handleVolumeChange}
-                className="w-20 accent-white"
+                className="w-24 accent-white"
               />
             </div>
           </div>
