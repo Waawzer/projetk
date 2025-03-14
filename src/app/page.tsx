@@ -119,11 +119,21 @@ export default function Home() {
     const isElementInView = (el: HTMLElement, offset = 0) => {
       if (!el) return false;
       const rect = el.getBoundingClientRect();
-      // Ajuster le seuil pour les appareils mobiles
-      const mobileThreshold = window.innerWidth < 768 ? window.innerHeight * 0.2 : offset;
+      
+      // Ajuster le seuil pour les appareils mobiles - utiliser un pourcentage plus élevé
+      const isMobile = window.innerWidth < 768;
+      const threshold = isMobile ? window.innerHeight * 0.3 : offset;
+      
+      // Calculer le pourcentage de visibilité de l'élément
+      const elementHeight = rect.height;
+      const visibleHeight = Math.min(window.innerHeight, rect.bottom) - Math.max(0, rect.top);
+      const visibilityPercentage = Math.max(0, visibleHeight) / elementHeight;
+      
+      // L'élément est considéré comme visible s'il est suffisamment dans la fenêtre
       return (
-        rect.top <= window.innerHeight - mobileThreshold &&
-        rect.bottom >= 0
+        rect.top <= window.innerHeight - threshold &&
+        rect.bottom >= threshold &&
+        visibilityPercentage > 0.1 // Au moins 10% de l'élément doit être visible
       );
     };
     
@@ -143,8 +153,8 @@ export default function Home() {
         about: aboutSectionRef.current ? isElementInView(aboutSectionRef.current, 100) : false,
         music: musicSectionRef.current ? isElementInView(musicSectionRef.current, 100) : false,
         cta: ctaSectionRef.current ? isElementInView(ctaSectionRef.current, 100) : false,
-        services: serviceRefs.current.map(ref => ref ? isElementInView(ref, 100) : false),
-        tracks: trackRefs.current.map(ref => ref ? isElementInView(ref, 100) : false)
+        services: serviceRefs.current.map(ref => ref ? isElementInView(ref, 50) : false),
+        tracks: trackRefs.current.map(ref => ref ? isElementInView(ref, 50) : false)
       }));
     };
     
@@ -224,7 +234,7 @@ export default function Home() {
       {/* About Section */}
       <section 
         ref={aboutSectionRef}
-        className={`py-20 bg-gradient-to-b from-background to-card transition-all duration-1000 ease-in-out ${
+        className={`py-20 bg-gradient-to-b from-background to-card transition-all duration-1500 ease-in-out ${
           visibleSections.about ? 'opacity-100' : 'opacity-0'
         }`}
       >
@@ -250,13 +260,13 @@ export default function Home() {
               <div 
                 key={service.title}
                 ref={el => { serviceRefs.current[index] = el; }}
-                className={`card text-center p-6 flex flex-col items-center transition-all duration-700 ease-in-out ${
+                className={`card text-center p-6 flex flex-col items-center transition-all duration-1000 ease-in-out ${
                   visibleSections.services[index] 
                     ? 'translate-y-0 opacity-100' 
                     : 'translate-y-8 opacity-0'
                 }`}
                 style={{ 
-                  transitionDelay: `${index * 100}ms`,
+                  transitionDelay: `${index * 150}ms`,
                   willChange: 'transform, opacity'
                 }}
               >
@@ -276,7 +286,7 @@ export default function Home() {
       {/* Music Player Section */}
       <section 
         ref={musicSectionRef}
-        className={`py-20 bg-card transition-all duration-1000 ease-in-out ${
+        className={`py-20 bg-card transition-all duration-1500 ease-in-out ${
           visibleSections.music ? 'opacity-100' : 'opacity-0'
         }`}
       >
@@ -298,12 +308,12 @@ export default function Home() {
               <div 
                 key={track.id} 
                 ref={el => { trackRefs.current[index] = el; }}
-                className={`group relative aspect-square transition-all duration-700 ${
+                className={`group relative aspect-square transition-all duration-1000 ease-in-out ${
                   visibleSections.tracks[index] 
                     ? 'translate-y-0 opacity-100 rotate-0' 
                     : 'translate-y-16 opacity-0 rotate-3'
                 }`}
-                style={{ transitionDelay: `${index * 100}ms` }}
+                style={{ transitionDelay: `${index * 150}ms` }}
               >
                 <div className="relative w-full h-full rounded-xl overflow-hidden">
                   <Image
@@ -346,7 +356,7 @@ export default function Home() {
       {/* CTA Section */}
       <section 
         ref={ctaSectionRef}
-        className={`py-20 bg-gradient-to-b from-card to-background transition-all duration-1000 ${
+        className={`py-20 bg-gradient-to-b from-card to-background transition-all duration-1500 ${
           visibleSections.cta ? 'opacity-100 scale-100' : 'opacity-0 scale-95'
         }`}
       >
