@@ -125,20 +125,30 @@ const Navbar = () => {
 
       {/* Mobile Menu Overlay */}
       <div 
-        className={`fixed inset-0 bg-gradient-to-b from-black to-background transition-opacity duration-500 ${
-          isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
+        className={`fixed inset-0 bg-black transition-opacity duration-300 ${
+          isOpen ? 'opacity-95' : 'opacity-0 pointer-events-none'
         }`} 
-        style={{ zIndex: 65 }}
+        style={{ 
+          zIndex: 65,
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0
+        }}
       />
 
       {/* Mobile Menu Content */}
       <div
         className={`fixed inset-0 z-[66] transition-all duration-500 ${
           isOpen 
-            ? 'opacity-100 pointer-events-auto translate-y-0' 
-            : 'opacity-0 pointer-events-none translate-y-4'
+            ? 'opacity-100 pointer-events-auto' 
+            : 'opacity-0 pointer-events-none'
         }`}
-        style={{ visibility: isOpen ? 'visible' : 'hidden' }}
+        style={{ 
+          visibility: isOpen ? 'visible' : 'hidden',
+          transitionDelay: isOpen ? '150ms' : '0ms'
+        }}
       >
         <div className="flex flex-col h-full pt-20 pb-8 px-6">
           {/* Navigation Links */}
@@ -151,10 +161,10 @@ const Navbar = () => {
                 className={`group relative flex items-center text-2xl font-medium transition-all duration-300 ${
                   pathname === link.href
                     ? 'text-primary translate-x-0'
-                    : 'text-gray-400 hover:text-white hover:translate-x-2'
+                    : 'text-gray-300 hover:text-white hover:translate-x-2'
                 }`}
                 style={{
-                  transitionDelay: `${index * 100}ms`
+                  transitionDelay: isOpen ? `${150 + index * 100}ms` : '0ms'
                 }}
               >
                 <span className="mr-4 opacity-50 group-hover:opacity-100 transition-opacity">
