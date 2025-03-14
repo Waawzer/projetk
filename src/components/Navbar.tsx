@@ -82,7 +82,7 @@ const Navbar = () => {
               className="relative group flex items-center"
               onClick={closeMenu}
             >
-              <Logo width={120} height={40} className="transition-transform duration-300 group-hover:scale-110" />
+              <Logo size={40} className="transition-transform duration-300 group-hover:scale-110" />
             </Link>
 
             {/* Desktop Navigation */}
