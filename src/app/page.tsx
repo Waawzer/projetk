@@ -6,7 +6,7 @@ import { useState, useEffect, useRef } from 'react';
 import { FiMusic, FiHeadphones, FiMic, FiSliders, FiCalendar, FiPlay } from 'react-icons/fi';
 import AudioPlayer from '@/components/AudioPlayer';
 import Navbar from '@/components/Navbar';
-import BlackHoleLogo from '@/components/BlackHoleLogo';
+import BrandLogo from '@/components/BrandLogo';
 import { TrackDTO } from '@/types/track';
 
 // Données d'exemple pour les musiques
@@ -191,9 +191,7 @@ export default function Home() {
         
         <div className="container mx-auto px-4 z-10 text-center">
           <h1 className="text-4xl md:text-6xl font-bold mb-6 text-white flex items-center justify-center animate-fade-in">
-            <BlackHoleLogo className="text-primary mr-3" size={48} />
-            <span className="text-primary mr-2">Kasar</span>
-            <span>Studio</span>
+            <BrandLogo width={280} height={80} className="animate-fade-in" />
           </h1>
           <p className="text-xl md:text-2xl text-gray-300 mb-8 max-w-3xl mx-auto animate-slide-up">
             Donnez vie à votre musique dans notre studio d'enregistrement professionnel
@@ -373,9 +371,7 @@ export default function Home() {
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div className="mb-6 md:mb-0">
               <h3 className="text-2xl font-bold text-white flex items-center">
-                <BlackHoleLogo className="text-primary mr-2" size={24} />
-                <span className="text-primary mr-1">Kasar</span>
-                <span>Studio</span>
+                <BrandLogo width={150} height={40} />
               </h3>
               <p className="text-gray-400 mt-2">Votre partenaire musical professionnel</p>
             </div>

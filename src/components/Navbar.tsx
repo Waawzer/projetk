@@ -4,7 +4,8 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { FiMenu, FiX, FiMusic, FiCalendar, FiDollarSign, FiMail, FiInstagram, FiYoutube, FiTwitter } from 'react-icons/fi';
-import BlackHoleLogo from './BlackHoleLogo';
+import Logo from './Logo';
+import BrandLogo from './BrandLogo';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -81,10 +82,7 @@ const Navbar = () => {
               className="relative group flex items-center"
               onClick={closeMenu}
             >
-              <div className="absolute -inset-2 bg-white/5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-              <BlackHoleLogo className="text-primary mr-2 transition-transform group-hover:scale-110 duration-300" size={28} />
-              <span className="text-primary font-bold text-xl tracking-wide mr-1">Kasar</span>
-              <span className="font-bold text-xl tracking-wide">Studio</span>
+              <BrandLogo width={120} height={40} className="transition-transform duration-300 group-hover:scale-110" />
             </Link>
 
             {/* Desktop Navigation */}
@@ -93,16 +91,15 @@ const Navbar = () => {
                 <Link
                   key={link.href}
                   href={link.href}
-                  className={`relative group px-4 py-2 rounded-lg transition-colors duration-300 ${
+                  className={`px-4 py-2 rounded-lg transition-colors duration-300 ${
                     pathname === link.href
                       ? 'text-primary'
                       : 'text-gray-300 hover:text-white'
                   }`}
                 >
-                  <div className="absolute inset-0 bg-white/5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                  <div className="relative flex items-center">
-                    <span className="mr-2">{link.icon}</span>
-                    <span className="font-medium">{link.label}</span>
+                  <div className="relative flex items-center group">
+                    <span className="mr-2 transition-transform duration-300 group-hover:scale-110">{link.icon}</span>
+                    <span className="font-medium transition-transform duration-300 group-hover:scale-110">{link.label}</span>
                   </div>
                   {pathname === link.href && (
                     <div className="absolute bottom-0 left-0 w-full h-0.5 bg-primary rounded-full" />
@@ -113,12 +110,11 @@ const Navbar = () => {
 
             {/* Mobile Menu Button */}
             <button
-              className="md:hidden relative group p-2 z-[100]"
+              className="md:hidden relative p-2 z-[100]"
               onClick={toggleMenu}
               aria-label="Toggle menu"
             >
-              <div className="absolute -inset-2 bg-white/5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-              <div className="relative text-white">
+              <div className="text-white transition-transform duration-300 hover:scale-110">
                 {isOpen ? <FiX size={24} /> : <FiMenu size={24} />}
               </div>
             </button>
@@ -146,10 +142,10 @@ const Navbar = () => {
                     : 'text-gray-300 hover:text-white hover:translate-x-2'
                 }`}
               >
-                <span className="mr-4 opacity-70 group-hover:opacity-100 transition-opacity">
+                <span className="mr-4 transition-transform duration-300 group-hover:scale-110">
                   {link.icon}
                 </span>
-                {link.label}
+                <span className="transition-transform duration-300 group-hover:scale-110">{link.label}</span>
               </Link>
             ))}
           </div>
