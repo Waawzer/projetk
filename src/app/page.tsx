@@ -2,12 +2,12 @@
 
 import Image from "next/image";
 import Link from 'next/link';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { FiMusic, FiHeadphones, FiMic, FiSliders, FiCalendar, FiPlay } from 'react-icons/fi';
 import AudioPlayer from '@/components/AudioPlayer';
 import Navbar from '@/components/Navbar';
 import BlackHoleLogo from '@/components/BlackHoleLogo';
-import { Track, TrackDTO } from '@/types/track';
+import { TrackDTO } from '@/types/track';
 
 // Données d'exemple pour les musiques
 const exampleTracks: TrackDTO[] = [
@@ -50,6 +50,23 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(true);
   const [selectedTrackIndex, setSelectedTrackIndex] = useState<number | null>(null);
   
+  // Refs pour les animations au scroll
+  const aboutSectionRef = useRef<HTMLElement>(null);
+  const musicSectionRef = useRef<HTMLElement>(null);
+  const ctaSectionRef = useRef<HTMLElement>(null);
+  const heroImageRef = useRef<HTMLDivElement>(null);
+  const serviceRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const trackRefs = useRef<(HTMLDivElement | null)[]>([]);
+  
+  // État pour suivre les éléments visibles
+  const [visibleSections, setVisibleSections] = useState({
+    about: false,
+    music: false,
+    cta: false,
+    services: Array(4).fill(false),
+    tracks: Array(tracks.length).fill(false)
+  });
+  
   useEffect(() => {
     const fetchTracks = async () => {
       try {
@@ -73,7 +90,7 @@ export default function Home() {
           setTracks(exampleTracks);
         } else {
           // Transformer les données pour correspondre à l'interface TrackDTO
-          const formattedTracks: TrackDTO[] = data.map((track: Track) => ({
+          const formattedTracks: TrackDTO[] = data.map((track: any) => ({
             id: track._id.toString(),
             title: track.title,
             artist: track.artist,
@@ -96,6 +113,50 @@ export default function Home() {
     fetchTracks();
   }, []);
   
+  // Effet pour les animations au scroll
+  useEffect(() => {
+    // Fonction pour vérifier si un élément est visible
+    const isElementInView = (el: HTMLElement, offset = 0) => {
+      if (!el) return false;
+      const rect = el.getBoundingClientRect();
+      return (
+        rect.top <= window.innerHeight - offset &&
+        rect.bottom >= 0
+      );
+    };
+    
+    // Fonction pour mettre à jour les éléments visibles
+    const handleScroll = () => {
+      // Effet parallaxe pour l'image de fond du hero
+      if (heroImageRef.current) {
+        const scrollPos = window.scrollY;
+        heroImageRef.current.style.transform = `translateY(${scrollPos * 0.4}px)`;
+      }
+      
+      // Vérifier les sections principales
+      setVisibleSections(prev => ({
+        ...prev,
+        about: aboutSectionRef.current ? isElementInView(aboutSectionRef.current, 100) : false,
+        music: musicSectionRef.current ? isElementInView(musicSectionRef.current, 100) : false,
+        cta: ctaSectionRef.current ? isElementInView(ctaSectionRef.current, 100) : false,
+        services: serviceRefs.current.map(ref => ref ? isElementInView(ref, 100) : false),
+        tracks: trackRefs.current.map(ref => ref ? isElementInView(ref, 100) : false)
+      }));
+    };
+    
+    // Initialiser les refs pour les tracks
+    trackRefs.current = trackRefs.current.slice(0, tracks.length);
+    
+    // Ajouter l'écouteur d'événement
+    window.addEventListener('scroll', handleScroll);
+    // Déclencher une fois au chargement
+    handleScroll();
+    
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, [tracks.length]);
+  
   const handleTrackSelect = (index: number) => {
     setSelectedTrackIndex(index);
   };
@@ -106,113 +167,133 @@ export default function Home() {
       
       {/* Hero Section */}
       <section className="relative h-screen flex items-center justify-center overflow-hidden">
-        {/* Background Image with Overlay */}
-        <div className="absolute inset-0 z-0">
-        <Image
+        {/* Background Image with Parallax Effect */}
+        <div className="absolute inset-0 z-0" ref={heroImageRef}>
+          <Image
             src="https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?q=80&w=2000&auto=format&fit=crop"
             alt="Studio d'enregistrement"
             fill
             className="object-cover"
-          priority
-        />
+            priority
+          />
           <div className="absolute inset-0 bg-black/70 backdrop-blur-sm"></div>
         </div>
         
         <div className="container mx-auto px-4 z-10 text-center">
-          <h1 className="text-4xl md:text-6xl font-bold mb-6 text-white flex items-center justify-center">
+          <h1 className="text-4xl md:text-6xl font-bold mb-6 text-white flex items-center justify-center animate-fade-in">
             <BlackHoleLogo className="text-primary mr-3" size={48} />
             <span className="text-primary mr-2">Kasar</span>
             <span>Studio</span>
           </h1>
-          <p className="text-xl md:text-2xl text-gray-300 mb-8 max-w-3xl mx-auto">
+          <p className="text-xl md:text-2xl text-gray-300 mb-8 max-w-3xl mx-auto animate-slide-up">
             Donnez vie à votre musique dans notre studio d'enregistrement professionnel
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center animate-fade-in" style={{ animationDelay: '0.5s' }}>
             <Link 
               href="/reservation" 
-              className="bg-transparent border border-white/20 hover:border-white/40 hover:bg-white/5 text-white px-8 py-3 rounded-lg font-medium flex items-center justify-center"
+              className="bg-transparent border border-white/20 hover:border-white/40 hover:bg-white/5 text-white px-8 py-3 rounded-lg font-medium flex items-center justify-center transition-all duration-300 hover:scale-105"
             >
               <FiCalendar className="mr-2" />
               Réserver une session
             </Link>
             <Link 
               href="/tarifs" 
-              className="bg-transparent border border-white/20 hover:border-white/40 hover:bg-white/5 text-white px-8 py-3 rounded-lg font-medium"
+              className="bg-transparent border border-white/20 hover:border-white/40 hover:bg-white/5 text-white px-8 py-3 rounded-lg font-medium transition-all duration-300 hover:scale-105"
             >
               Voir nos tarifs
             </Link>
           </div>
         </div>
+        
+        {/* Scroll indicator */}
+        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
+          <div className="w-8 h-12 rounded-full border-2 border-white/30 flex items-start justify-center">
+            <div className="w-1 h-3 bg-white/60 rounded-full mt-2 animate-scroll-down"></div>
+          </div>
+        </div>
       </section>
       
       {/* About Section */}
-      <section className="py-20 bg-gradient-to-b from-background to-card">
+      <section 
+        ref={aboutSectionRef}
+        className={`py-20 bg-gradient-to-b from-background to-card transition-opacity duration-1000 ${
+          visibleSections.about ? 'opacity-100' : 'opacity-0'
+        }`}
+      >
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Notre Studio</h2>
-            <p className="text-gray-400 max-w-3xl mx-auto">
-              Un espace créatif équipé des meilleurs outils pour donner vie à vos projets musicaux
-            </p>
+            <div className={`transition-transform duration-700 ${
+              visibleSections.about ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'
+            }`}>
+              <h2 className="text-3xl md:text-4xl font-bold mb-4">Notre Studio</h2>
+              <p className="text-gray-400 max-w-3xl mx-auto">
+                Un espace créatif équipé des meilleurs outils pour donner vie à vos projets musicaux
+              </p>
+            </div>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            <div className="card text-center p-6 flex flex-col items-center">
-              <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mb-4">
-                <FiMic className="text-white" size={28} />
+            {[
+              { icon: <FiMic size={28} />, title: "Enregistrement", desc: "Microphones haut de gamme et acoustique parfaite pour capturer chaque nuance de votre son." },
+              { icon: <FiSliders size={28} />, title: "Mixage", desc: "Équilibre parfait entre les différentes pistes pour créer un son harmonieux et professionnel." },
+              { icon: <FiHeadphones size={28} />, title: "Mastering", desc: "Finalisation de votre projet pour un son cohérent sur toutes les plateformes d'écoute." },
+              { icon: <FiMusic size={28} />, title: "Production", desc: "Accompagnement artistique complet pour développer votre univers musical unique." }
+            ].map((service, index) => (
+              <div 
+                key={service.title}
+                ref={el => { serviceRefs.current[index] = el; }}
+                className={`card text-center p-6 flex flex-col items-center transition-all duration-700 ${
+                  visibleSections.services[index] 
+                    ? 'translate-y-0 opacity-100' 
+                    : 'translate-y-16 opacity-0'
+                }`}
+                style={{ transitionDelay: `${index * 150}ms` }}
+              >
+                <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mb-4 transition-transform duration-500 hover:scale-110">
+                  <div className="text-white">{service.icon}</div>
+                </div>
+                <h3 className="text-xl font-bold mb-2">{service.title}</h3>
+                <p className="text-gray-400">
+                  {service.desc}
+                </p>
               </div>
-              <h3 className="text-xl font-bold mb-2">Enregistrement</h3>
-              <p className="text-gray-400">
-                Microphones haut de gamme et acoustique parfaite pour capturer chaque nuance de votre son.
-              </p>
-            </div>
-            
-            <div className="card text-center p-6 flex flex-col items-center">
-              <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mb-4">
-                <FiSliders className="text-white" size={28} />
-              </div>
-              <h3 className="text-xl font-bold mb-2">Mixage</h3>
-              <p className="text-gray-400">
-                Équilibre parfait entre les différentes pistes pour créer un son harmonieux et professionnel.
-              </p>
-            </div>
-            
-            <div className="card text-center p-6 flex flex-col items-center">
-              <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mb-4">
-                <FiHeadphones className="text-white" size={28} />
-              </div>
-              <h3 className="text-xl font-bold mb-2">Mastering</h3>
-              <p className="text-gray-400">
-                Finalisation de votre projet pour un son cohérent sur toutes les plateformes d'écoute.
-              </p>
-            </div>
-            
-            <div className="card text-center p-6 flex flex-col items-center">
-              <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mb-4">
-                <FiMusic className="text-white" size={28} />
-              </div>
-              <h3 className="text-xl font-bold mb-2">Production</h3>
-              <p className="text-gray-400">
-                Accompagnement artistique complet pour développer votre univers musical unique.
-              </p>
-            </div>
+            ))}
           </div>
         </div>
       </section>
       
       {/* Music Player Section */}
-      <section className="py-20 bg-card">
+      <section 
+        ref={musicSectionRef}
+        className={`py-20 bg-card transition-opacity duration-1000 ${
+          visibleSections.music ? 'opacity-100' : 'opacity-0'
+        }`}
+      >
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Nos Productions</h2>
-            <p className="text-gray-400 max-w-3xl mx-auto">
-              Découvrez quelques-uns des projets réalisés dans notre studio
-            </p>
+            <div className={`transition-transform duration-700 ${
+              visibleSections.music ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'
+            }`}>
+              <h2 className="text-3xl md:text-4xl font-bold mb-4">Nos Productions</h2>
+              <p className="text-gray-400 max-w-3xl mx-auto">
+                Découvrez quelques-uns des projets réalisés dans notre studio
+              </p>
+            </div>
           </div>
           
           {/* Grid of Tracks */}
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-8">
             {tracks.map((track, index) => (
-              <div key={track.id} className="group relative aspect-square">
+              <div 
+                key={track.id} 
+                ref={el => { trackRefs.current[index] = el; }}
+                className={`group relative aspect-square transition-all duration-700 ${
+                  visibleSections.tracks[index] 
+                    ? 'translate-y-0 opacity-100 rotate-0' 
+                    : 'translate-y-16 opacity-0 rotate-3'
+                }`}
+                style={{ transitionDelay: `${index * 100}ms` }}
+              >
                 <div className="relative w-full h-full rounded-xl overflow-hidden">
                   <Image
                     src={track.coverImage}
@@ -252,7 +333,12 @@ export default function Home() {
       </section>
       
       {/* CTA Section */}
-      <section className="py-20 bg-gradient-to-b from-card to-background">
+      <section 
+        ref={ctaSectionRef}
+        className={`py-20 bg-gradient-to-b from-card to-background transition-all duration-1000 ${
+          visibleSections.cta ? 'opacity-100 scale-100' : 'opacity-0 scale-95'
+        }`}
+      >
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-3xl md:text-4xl font-bold mb-6">Prêt à donner vie à votre projet ?</h2>
           <p className="text-gray-400 max-w-3xl mx-auto mb-8">
@@ -260,7 +346,7 @@ export default function Home() {
           </p>
           <Link 
             href="/reservation" 
-            className="bg-transparent border border-white/20 hover:border-white/40 hover:bg-white/5 text-white px-8 py-3 rounded-lg font-medium inline-flex items-center"
+            className="bg-transparent border border-white/20 hover:border-white/40 hover:bg-white/5 text-white px-8 py-3 rounded-lg font-medium inline-flex items-center transition-all duration-300 hover:scale-110"
           >
             <FiCalendar className="mr-2" />
             Réserver une session
