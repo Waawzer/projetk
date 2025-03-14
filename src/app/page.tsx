@@ -119,8 +119,10 @@ export default function Home() {
     const isElementInView = (el: HTMLElement, offset = 0) => {
       if (!el) return false;
       const rect = el.getBoundingClientRect();
+      // Ajuster le seuil pour les appareils mobiles
+      const mobileThreshold = window.innerWidth < 768 ? window.innerHeight * 0.2 : offset;
       return (
-        rect.top <= window.innerHeight - offset &&
+        rect.top <= window.innerHeight - mobileThreshold &&
         rect.bottom >= 0
       );
     };
@@ -130,7 +132,9 @@ export default function Home() {
       // Effet parallaxe pour l'image de fond du hero
       if (heroImageRef.current) {
         const scrollPos = window.scrollY;
-        heroImageRef.current.style.transform = `translateY(${scrollPos * 0.4}px)`;
+        // Réduire l'effet de parallaxe sur mobile
+        const parallaxFactor = window.innerWidth < 768 ? 0.2 : 0.4;
+        heroImageRef.current.style.transform = `translateY(${scrollPos * parallaxFactor}px)`;
       }
       
       // Vérifier les sections principales
@@ -152,8 +156,14 @@ export default function Home() {
     // Déclencher une fois au chargement
     handleScroll();
     
+    // Déclencher à nouveau après un court délai pour s'assurer que tout est chargé
+    const timer = setTimeout(() => {
+      handleScroll();
+    }, 300);
+    
     return () => {
       window.removeEventListener('scroll', handleScroll);
+      clearTimeout(timer);
     };
   }, [tracks.length]);
   
@@ -216,13 +226,13 @@ export default function Home() {
       {/* About Section */}
       <section 
         ref={aboutSectionRef}
-        className={`py-20 bg-gradient-to-b from-background to-card transition-opacity duration-1000 ${
+        className={`py-20 bg-gradient-to-b from-background to-card transition-all duration-1000 ease-in-out ${
           visibleSections.about ? 'opacity-100' : 'opacity-0'
         }`}
       >
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
-            <div className={`transition-transform duration-700 ${
+            <div className={`transition-all duration-700 ease-in-out ${
               visibleSections.about ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'
             }`}>
               <h2 className="text-3xl md:text-4xl font-bold mb-4">Notre Studio</h2>
@@ -242,12 +252,15 @@ export default function Home() {
               <div 
                 key={service.title}
                 ref={el => { serviceRefs.current[index] = el; }}
-                className={`card text-center p-6 flex flex-col items-center transition-all duration-700 ${
+                className={`card text-center p-6 flex flex-col items-center transition-all duration-700 ease-in-out ${
                   visibleSections.services[index] 
                     ? 'translate-y-0 opacity-100' 
-                    : 'translate-y-16 opacity-0'
+                    : 'translate-y-8 opacity-0'
                 }`}
-                style={{ transitionDelay: `${index * 150}ms` }}
+                style={{ 
+                  transitionDelay: `${index * 100}ms`,
+                  willChange: 'transform, opacity'
+                }}
               >
                 <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mb-4 transition-transform duration-500 hover:scale-110">
                   <div className="text-white">{service.icon}</div>
@@ -265,7 +278,7 @@ export default function Home() {
       {/* Music Player Section */}
       <section 
         ref={musicSectionRef}
-        className={`py-20 bg-card transition-opacity duration-1000 ${
+        className={`py-20 bg-card transition-all duration-1000 ease-in-out ${
           visibleSections.music ? 'opacity-100' : 'opacity-0'
         }`}
       >
