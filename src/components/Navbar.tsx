@@ -97,10 +97,17 @@ const Navbar = () => {
 
       {/* Mobile Navigation Menu */}
       <div
-        className={`md:hidden fixed inset-0 bg-black/95 backdrop-blur-lg z-[65] transition-transform duration-300 ease-in-out ${
-          isOpen ? 'translate-y-0' : 'translate-y-[-100%]'
+        className={`md:hidden fixed inset-0 bg-black/95 backdrop-blur-lg z-[65] transition-all duration-300 ease-in-out ${
+          isOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
         }`}
-        style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0 }}
+        style={{ 
+          position: 'fixed', 
+          top: 0, 
+          left: 0, 
+          right: 0, 
+          bottom: 0,
+          visibility: isOpen ? 'visible' : 'hidden'
+        }}
       >
         {/* Bouton de fermeture en haut à droite */}
         <button
