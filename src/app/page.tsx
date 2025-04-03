@@ -8,8 +8,13 @@ import AudioPlayer from '@/components/AudioPlayer';
 import Navbar from '@/components/Navbar';
 import BrandLogo from '@/components/BrandLogo';
 import { TrackDTO } from '@/types/track';
+import { getPlaylistTracks } from '@/lib/spotify';
 
-// Données d'exemple pour les musiques
+// Playlist ID de votre compte Spotify que vous souhaitez afficher
+// Vous pouvez le récupérer depuis l'URL de votre playlist Spotify
+const FEATURED_PLAYLIST_ID = 'YOUR_PLAYLIST_ID'; // Remplacez par votre ID de playlist
+
+// Données d'exemple pour les musiques (utilisées comme fallback)
 const exampleTracks: TrackDTO[] = [
   {
     id: '1',
@@ -71,38 +76,21 @@ export default function Home() {
     const fetchTracks = async () => {
       try {
         setIsLoading(true);
-        // Récupérer les musiques depuis l'API
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || ''}/api/tracks`, { 
-          cache: 'no-store' 
-        });
         
-        if (!res.ok) {
-          console.warn('Impossible de récupérer les musiques depuis l\'API, utilisation des données d\'exemple');
-          setTracks(exampleTracks);
-          return;
-        }
+        // Tenter de récupérer les tracks depuis Spotify
+        const spotifyTracks = await getPlaylistTracks(FEATURED_PLAYLIST_ID);
         
-        const data = await res.json();
-        
-        // Si aucune musique n'est retournée par l'API, utiliser les données d'exemple
-        if (!data || data.length === 0) {
-          console.warn('Aucune musique retournée par l\'API, utilisation des données d\'exemple');
-          setTracks(exampleTracks);
+        if (spotifyTracks && spotifyTracks.length > 0) {
+          console.log('Tracks récupérées depuis Spotify:', spotifyTracks.length);
+          setTracks(spotifyTracks);
         } else {
-          // Transformer les données pour correspondre à l'interface TrackDTO
-          const formattedTracks: TrackDTO[] = data.map((track: any) => ({
-            id: track._id.toString(),
-            title: track.title,
-            artist: track.artist,
-            coverImage: track.coverImage,
-            audioUrl: track.audioUrl,
-            duration: track.duration
-          }));
-          setTracks(formattedTracks);
+          console.warn('Aucune track récupérée depuis Spotify, utilisation des données d\'exemple');
+          // Fallback aux données d'exemple si aucune track Spotify n'est disponible
+          setTracks(exampleTracks);
         }
       } catch (error) {
-        console.error('Erreur lors de la récupération des musiques:', error);
-        // En cas d'erreur, retourner les données d'exemple
+        console.error('Erreur lors de la récupération des tracks Spotify:', error);
+        // En cas d'erreur, fallback aux données d'exemple
         console.warn('Utilisation des données d\'exemple suite à une erreur');
         setTracks(exampleTracks);
       } finally {

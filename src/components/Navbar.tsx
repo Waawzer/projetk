@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { FiMenu, FiX, FiMusic, FiCalendar, FiDollarSign, FiMail, FiInstagram, FiYoutube, FiTwitter } from 'react-icons/fi';
+import { FiMenu, FiX, FiMusic, FiCalendar, FiDollarSign, FiMail, FiInstagram, FiYoutube, FiTwitter, FiHeadphones } from 'react-icons/fi';
 import Logo from './Logo';
 import BrandLogo from './BrandLogo';
 
@@ -48,6 +48,7 @@ const Navbar = () => {
 
   const navLinks = [
     { href: '/', label: 'Accueil', icon: <FiMusic /> },
+    { href: '/musique', label: 'Musique', icon: <FiHeadphones /> },
     { href: '/tarifs', label: 'Tarifs', icon: <FiDollarSign /> },
     { href: '/reservation', label: 'Réservation', icon: <FiCalendar /> },
     { href: '/contact', label: 'Contact', icon: <FiMail /> },
