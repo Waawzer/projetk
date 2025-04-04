@@ -253,6 +253,7 @@ const TimeSlotPicker: React.FC<TimeSlotPickerProps> = ({
                       : "bg-card-hover border-gray-700 hover:border-primary/50"
                   }`}
                   onClick={() => onTimeSlotSelect(slot.start)}
+                  type="button"
                 >
                   <FiClock
                     className={`mb-1 ${

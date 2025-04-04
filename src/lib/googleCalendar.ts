@@ -247,9 +247,14 @@ export async function createCalendarEvent(
   try {
     const calendar = getCalendarClient();
 
+    // Ajouter l'email au descriptif si fourni (au lieu d'inviter)
+    const enhancedDescription = email
+      ? `${description}\n\nEmail du client: ${email}`
+      : description;
+
     const event: calendar_v3.Schema$Event = {
       summary,
-      description,
+      description: enhancedDescription,
       start: {
         dateTime: startDateTime.toISOString(),
         timeZone: "Europe/Paris",
@@ -260,17 +265,23 @@ export async function createCalendarEvent(
       },
     };
 
-    // Ajouter l'invité si un email est fourni
-    if (email) {
-      event.attendees = [{ email }];
+    // Ne pas ajouter d'invités car cela nécessite une délégation à l'échelle du domaine
+    // que nous n'avons probablement pas configurée
+    // Nous allons simplement ajouter l'email au descriptif de l'événement
+
+    // Tentative de création de l'événement sans invités
+    try {
+      const response = await calendar.events.insert({
+        calendarId: CALENDAR_ID,
+        requestBody: event,
+      });
+
+      console.log("Événement créé avec succès sans invités");
+      return response.data;
+    } catch (error) {
+      console.error("Erreur lors de la création de l'événement:", error);
+      throw error;
     }
-
-    const response = await calendar.events.insert({
-      calendarId: CALENDAR_ID,
-      requestBody: event,
-    });
-
-    return response.data;
   } catch (error) {
     console.error(
       "Erreur lors de la création de l'événement dans le calendrier:",
