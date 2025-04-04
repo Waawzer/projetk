@@ -144,7 +144,7 @@ export default function FormationsPage() {
                       <FiUsers className="text-primary mr-2" />
                       <h4 className="font-medium">Format</h4>
                     </div>
-                    <p>1 personne</p>
+                    <p>cours individuel en présentiel</p>
                   </div>
                 </div>
 

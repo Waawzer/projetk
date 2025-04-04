@@ -3,7 +3,8 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { FiMenu, FiX, FiInstagram, FiYoutube, FiTwitter } from "react-icons/fi";
+import { FiMenu, FiX, FiInstagram, FiYoutube } from "react-icons/fi";
+import { FaSpotify } from "react-icons/fa";
 import Logo from "./Logo";
 
 const Navbar = () => {
@@ -47,7 +48,6 @@ const Navbar = () => {
 
   const navLinks = [
     { href: "/", label: "Accueil" },
-
     { href: "/tarifs", label: "Enregistrement" },
     { href: "/formations", label: "Formations" },
     {
@@ -61,18 +61,18 @@ const Navbar = () => {
   const socialLinks = [
     {
       href: "https://instagram.com",
-      icon: <FiInstagram size={20} />,
+      icon: <FiInstagram size={22} />,
       label: "Instagram",
     },
     {
       href: "https://youtube.com",
-      icon: <FiYoutube size={20} />,
+      icon: <FiYoutube size={22} />,
       label: "YouTube",
     },
     {
-      href: "https://twitter.com",
-      icon: <FiTwitter size={20} />,
-      label: "Twitter",
+      href: "https://open.spotify.com",
+      icon: <FaSpotify size={22} />,
+      label: "Spotify",
     },
   ];
 
@@ -145,11 +145,21 @@ const Navbar = () => {
 
       {/* Menu mobile séparé */}
       <div
-        className={`fixed inset-0 bg-black z-[90] transition-transform duration-300 ease-in-out ${
-          isOpen ? "translate-y-0" : "translate-y-[-100%]"
+        className={`fixed inset-0 bg-black z-[90] transition-all duration-500 ease-in-out ${
+          isOpen
+            ? "opacity-100 scale-100"
+            : "opacity-0 scale-95 pointer-events-none"
         }`}
       >
         <div className="container mx-auto px-4 flex flex-col h-full pt-20 pb-8">
+          {/* Bouton de fermeture en haut à droite */}
+          <button
+            onClick={closeMenu}
+            className="absolute top-6 right-6 w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors"
+          >
+            <FiX size={24} className="text-white" />
+          </button>
+
           {/* Navigation Links */}
           <div className="flex-1 flex flex-col items-center justify-center space-y-8">
             {navLinks.map((link) => (
@@ -170,15 +180,15 @@ const Navbar = () => {
             ))}
           </div>
 
-          {/* Social Links */}
-          <div className="flex justify-center items-center space-x-8 pt-8 border-t border-white/10">
+          {/* Social Links - Remontés avec plus d'espace et redessinés */}
+          <div className="flex justify-center items-center space-x-8 pt-12 pb-8 mt-auto">
             {socialLinks.map((link) => (
               <a
                 key={link.label}
                 href={link.href}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-gray-400 hover:text-white transition-colors duration-300"
+                className="text-gray-400 hover:text-primary w-12 h-12 flex items-center justify-center bg-white/5 rounded-full hover:bg-white/10 transition-all duration-300 hover:scale-110"
                 aria-label={link.label}
               >
                 {link.icon}
