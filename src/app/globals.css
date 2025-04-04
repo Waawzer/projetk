@@ -53,7 +53,7 @@ a:hover {
   color: rgba(255, 255, 255, 0.8);
 }
 
-button, 
+button,
 .button {
   background: transparent;
   color: white;
@@ -94,8 +94,12 @@ button:hover,
 
 /* Animations */
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 .animate-fade-in {
@@ -103,8 +107,14 @@ button:hover,
 }
 
 @keyframes slideUp {
-  from { transform: translateY(20px); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }
 
 .animate-slide-up {
@@ -114,9 +124,18 @@ button:hover,
 }
 
 @keyframes scrollDown {
-  0% { transform: translateY(0); opacity: 0.8; }
-  50% { transform: translateY(6px); opacity: 1; }
-  100% { transform: translateY(0); opacity: 0.8; }
+  0% {
+    transform: translateY(0);
+    opacity: 0.8;
+  }
+  50% {
+    transform: translateY(6px);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 0.8;
+  }
 }
 
 .animate-scroll-down {
@@ -124,9 +143,15 @@ button:hover,
 }
 
 @keyframes pulse {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.05); }
-  100% { transform: scale(1); }
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
 
 .animate-pulse-slow {
@@ -134,21 +159,29 @@ button:hover,
 }
 
 @keyframes shimmer {
-  0% { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
 }
 
 .animate-shimmer {
-  background: linear-gradient(90deg, 
-    rgba(255, 255, 255, 0) 0%, 
-    rgba(255, 255, 255, 0.05) 50%, 
-    rgba(255, 255, 255, 0) 100%);
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.05) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
   background-size: 200% 100%;
   animation: shimmer 3s infinite;
 }
 
 /* Form styles */
-input, textarea, select {
+input,
+textarea,
+select {
   background: var(--card);
   color: var(--foreground);
   border: 1px solid var(--border);
@@ -159,7 +192,9 @@ input, textarea, select {
   transition: border-color 0.2s ease;
 }
 
-input:focus, textarea:focus, select:focus {
+input:focus,
+textarea:focus,
+select:focus {
   outline: none;
   border-color: rgba(255, 255, 255, 0.4);
 }
@@ -179,16 +214,16 @@ label {
   .pt-32 {
     padding-top: 5rem !important;
   }
-  
+
   .h-screen {
     height: 100vh;
     height: calc(var(--vh, 1vh) * 100);
   }
-  
+
   h1.text-4xl {
     font-size: 2.25rem !important;
   }
-  
+
   h2.text-3xl {
     font-size: 1.875rem !important;
   }
@@ -212,4 +247,82 @@ label {
   .h-screen {
     height: -webkit-fill-available;
   }
+}
+
+/* Styles pour react-datepicker */
+.react-datepicker {
+  font-family: inherit !important;
+  border-radius: 0.5rem !important;
+  border-color: #374151 !important;
+  background-color: #1f2937 !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+}
+
+.react-datepicker__header {
+  background-color: #111827 !important;
+  border-bottom-color: #374151 !important;
+  padding-top: 0.75rem !important;
+  border-top-left-radius: 0.5rem !important;
+  border-top-right-radius: 0.5rem !important;
+}
+
+.react-datepicker__current-month,
+.react-datepicker__day-name,
+.react-datepicker-time__header {
+  color: #f3f4f6 !important;
+}
+
+.react-datepicker__day {
+  color: #d1d5db !important;
+  border-radius: 50% !important;
+  transition: background-color 0.2s, color 0.2s !important;
+}
+
+.react-datepicker__day:hover:not(.react-datepicker__day--disabled) {
+  background-color: #374151 !important;
+  color: white !important;
+}
+
+.react-datepicker__day--selected {
+  background-color: var(--color-primary) !important;
+  color: white !important;
+}
+
+.react-datepicker__day--keyboard-selected {
+  background-color: var(--color-primary) !important;
+  color: white !important;
+}
+
+.react-datepicker__day--disabled {
+  color: #4b5563 !important;
+}
+
+.react-datepicker__navigation {
+  top: 0.75rem !important;
+}
+
+.react-datepicker__navigation-icon::before {
+  border-color: #9ca3af !important;
+}
+
+.react-datepicker__month-select,
+.react-datepicker__year-select {
+  background-color: #1f2937 !important;
+  color: #f3f4f6 !important;
+  border: 1px solid #374151 !important;
+  border-radius: 0.375rem !important;
+  padding: 0.25rem 0.5rem !important;
+}
+
+.react-datepicker__month-select option,
+.react-datepicker__year-select option {
+  background-color: #1f2937 !important;
+  color: #f3f4f6 !important;
+}
+
+/* Styles pour les jours avec disponibilité */
+.react-datepicker__day--availability {
+  background-color: rgba(var(--color-primary-rgb), 0.1) !important;
+  color: rgb(var(--color-primary-rgb)) !important;
 }
