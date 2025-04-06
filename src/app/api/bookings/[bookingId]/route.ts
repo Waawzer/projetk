@@ -1,9 +1,9 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import dbConnect from "@/lib/mongodb";
 import Booking from "@/models/Booking";
 
 export async function GET(
-  request: Request,
+  request: NextRequest,
   { params }: { params: { bookingId: string } }
 ) {
   try {

@@ -206,7 +206,8 @@ export async function PATCH(request: NextRequest) {
 }
 
 // Fonction pour marquer les réservations passées comme terminées
-export async function checkAndUpdateCompletedBookings() {
+// Rendre la fonction non-exportée
+async function checkAndUpdateCompletedBookings() {
   try {
     await dbConnect();
 
