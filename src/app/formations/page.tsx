@@ -4,6 +4,7 @@ import { useRef } from "react";
 import { motion } from "framer-motion";
 import { FiCheck, FiMusic, FiBookOpen, FiUsers } from "react-icons/fi";
 import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 import Link from "next/link";
 
 export default function FormationsPage() {
@@ -172,6 +173,7 @@ export default function FormationsPage() {
           </div>
         </div>
       </motion.section>
+      <Footer />
     </main>
   );
 }

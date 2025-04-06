@@ -5,6 +5,7 @@ import { FiMapPin, FiPhone, FiMail, FiClock } from "react-icons/fi";
 import Navbar from "@/components/Navbar";
 import ContactForm from "@/components/ContactForm";
 import BlackHoleLogo from "@/components/BlackHoleLogo";
+import Footer from "@/components/Footer";
 
 export default function ContactPage() {
   return (
@@ -18,8 +19,8 @@ export default function ContactPage() {
             Contactez-nous
           </h1>
           <p className="text-xl text-gray-400 max-w-3xl mx-auto">
-            Une question, un projet ou une demande spécifique ? N'hésitez pas à
-            nous contacter.
+            Une question, un projet ou une demande spécifique ? N&apos;hésitez
+            pas à nous contacter.
           </p>
         </div>
       </section>
@@ -41,8 +42,9 @@ export default function ContactPage() {
                   </div>
                   <div>
                     <h3 className="text-lg font-medium mb-1">Adresse</h3>
-                    <p className="text-gray-400">123 Rue de la Musique</p>
-                    <p className="text-gray-400">75001 Paris, France</p>
+                    <p className="text-gray-400">
+                      Villeurbanne, secteur Charpennes
+                    </p>
                   </div>
                 </div>
 
@@ -73,8 +75,7 @@ export default function ContactPage() {
                   </div>
                   <div>
                     <h3 className="text-lg font-medium mb-1">Horaires</h3>
-                    <p className="text-gray-400">Lundi - Samedi: 9h - 22h</p>
-                    <p className="text-gray-400">Dimanche: Sur rendez-vous</p>
+                    <p className="text-gray-400">Lundi - Samedi: 10h - 22h</p>
                   </div>
                 </div>
               </div>
@@ -144,9 +145,9 @@ export default function ContactPage() {
               </h3>
               <p className="text-gray-400">
                 Oui, nous proposons des tarifs dégressifs pour les projets
-                nécessitant plusieurs jours d'enregistrement ou de production.
-                Contactez-nous pour discuter de votre projet et obtenir un devis
-                personnalisé.
+                nécessitant plusieurs jours d&apos;enregistrement ou de
+                production. Contactez-nous pour discuter de votre projet et
+                obtenir un devis personnalisé.
               </p>
             </div>
           </div>
@@ -154,46 +155,7 @@ export default function ContactPage() {
       </section>
 
       {/* Footer */}
-      <footer className="py-10 bg-background border-t border-gray-800">
-        <div className="container mx-auto px-4">
-          <div className="flex flex-col md:flex-row justify-between items-center">
-            <div className="mb-6 md:mb-0">
-              <h3 className="text-2xl font-bold text-white flex items-center">
-                <BlackHoleLogo className="text-primary mr-2" size={24} />
-                <span className="text-primary mr-1">Kasar</span>
-                <span>Studio</span>
-              </h3>
-              <p className="text-gray-400 mt-2">
-                Votre partenaire musical professionnel
-              </p>
-            </div>
-
-            <div className="flex flex-col md:flex-row gap-8">
-              <div>
-                <h4 className="text-white font-medium mb-3">Contact</h4>
-                <p className="text-gray-400">contact@kasarstudio.fr</p>
-                <p className="text-gray-400">+33 1 23 45 67 89</p>
-              </div>
-
-              <div>
-                <h4 className="text-white font-medium mb-3">Adresse</h4>
-                <p className="text-gray-400">123 Rue de la Musique</p>
-                <p className="text-gray-400">75001 Paris, France</p>
-              </div>
-
-              <div>
-                <h4 className="text-white font-medium mb-3">Horaires</h4>
-                <p className="text-gray-400">Lun - Sam: 9h - 22h</p>
-                <p className="text-gray-400">Dimanche: Sur rendez-vous</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="mt-10 pt-6 border-t border-gray-800 text-center text-gray-500 text-sm">
-            © {new Date().getFullYear()} Kasar Studio. Tous droits réservés.
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </main>
   );
 }

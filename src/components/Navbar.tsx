@@ -48,7 +48,7 @@ const Navbar = () => {
 
   const navLinks = [
     { href: "/", label: "Accueil" },
-    { href: "/tarifs", label: "Enregistrement" },
+    { href: "/enregistrement", label: "Enregistrement" },
     { href: "/formations", label: "Formations" },
     {
       href: "/cours-particuliers",

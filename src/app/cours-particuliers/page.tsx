@@ -11,6 +11,7 @@ import {
   FiBookOpen,
 } from "react-icons/fi";
 import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 import Link from "next/link";
 
 export default function CoursParticuliersPage() {
@@ -250,6 +251,7 @@ export default function CoursParticuliersPage() {
           </div>
         </div>
       </motion.section>
+      <Footer />
     </main>
   );
 }

@@ -1,55 +1,59 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { FiMusic, FiDollarSign, FiCalendar, FiMail, FiHome, FiLogOut, FiMenu, FiX } from 'react-icons/fi';
-import BlackHoleLogo from '@/components/BlackHoleLogo';
+import { useState, useEffect } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import {
+  FiDollarSign,
+  FiCalendar,
+  FiMail,
+  FiHome,
+  FiLogOut,
+  FiMenu,
+  FiX,
+} from "react-icons/fi";
+import BlackHoleLogo from "@/components/BlackHoleLogo";
 
 // Dans une application réelle, vous utiliseriez NextAuth.js ou un autre système d'authentification
 // Ceci est une implémentation simplifiée pour la démonstration
-const AdminLayout = ({
-  children,
-}: {
-  children: React.ReactNode;
-}) => {
+const AdminLayout = ({ children }: { children: React.ReactNode }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const pathname = usePathname();
 
   // Simuler la vérification d'authentification
   useEffect(() => {
     const checkAuth = () => {
-      const token = localStorage.getItem('admin_token');
+      const token = localStorage.getItem("admin_token");
       if (token) {
         setIsAuthenticated(true);
       }
       setIsLoading(false);
     };
-    
+
     checkAuth();
   }, []);
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // Dans une application réelle, vous feriez une requête API pour vérifier les identifiants
     // Pour cette démonstration, nous utilisons des identifiants codés en dur
-    if (username === 'admin' && password === 'password') {
-      localStorage.setItem('admin_token', 'demo_token_123');
+    if (username === "admin" && password === "password") {
+      localStorage.setItem("admin_token", "demo_token_123");
       setIsAuthenticated(true);
-      setError('');
+      setError("");
     } else {
-      setError('Identifiants incorrects');
+      setError("Identifiants incorrects");
     }
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('admin_token');
+    localStorage.removeItem("admin_token");
     setIsAuthenticated(false);
   };
 
@@ -58,11 +62,26 @@ const AdminLayout = ({
   };
 
   const navLinks = [
-    { href: '/admin', label: 'Tableau de bord', icon: <FiHome className="mr-2" /> },
-    { href: '/admin/tracks', label: 'Musiques', icon: <FiMusic className="mr-2" /> },
-    { href: '/admin/pricing', label: 'Tarifs', icon: <FiDollarSign className="mr-2" /> },
-    { href: '/admin/bookings', label: 'Réservations', icon: <FiCalendar className="mr-2" /> },
-    { href: '/admin/messages', label: 'Messages', icon: <FiMail className="mr-2" /> },
+    {
+      href: "/admin",
+      label: "Tableau de bord",
+      icon: <FiHome className="mr-2" />,
+    },
+    {
+      href: "/admin/pricing",
+      label: "Tarifs",
+      icon: <FiDollarSign className="mr-2" />,
+    },
+    {
+      href: "/admin/bookings",
+      label: "Réservations",
+      icon: <FiCalendar className="mr-2" />,
+    },
+    {
+      href: "/admin/messages",
+      label: "Messages",
+      icon: <FiMail className="mr-2" />,
+    },
   ];
 
   if (isLoading) {
@@ -82,19 +101,24 @@ const AdminLayout = ({
               <BlackHoleLogo size={40} className="text-primary" />
             </div>
             <h1 className="text-2xl font-bold">Administration</h1>
-            <p className="text-gray-400 mt-2">Connectez-vous pour accéder au tableau de bord</p>
+            <p className="text-gray-400 mt-2">
+              Connectez-vous pour accéder au tableau de bord
+            </p>
           </div>
-          
+
           {error && (
             <div className="bg-red-500/10 border border-red-500/30 text-red-500 p-3 rounded-md text-sm">
               {error}
             </div>
           )}
-          
+
           <form onSubmit={handleLogin} className="space-y-6">
             <div>
-              <label htmlFor="username" className="block text-sm font-medium text-gray-300">
-                Nom d'utilisateur
+              <label
+                htmlFor="username"
+                className="block text-sm font-medium text-gray-300"
+              >
+                Nom d&apos;utilisateur
               </label>
               <input
                 id="username"
@@ -106,9 +130,12 @@ const AdminLayout = ({
                 className="mt-1 block w-full px-3 py-2 bg-card border border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary"
               />
             </div>
-            
+
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-300">
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium text-gray-300"
+              >
                 Mot de passe
               </label>
               <input
@@ -121,7 +148,7 @@ const AdminLayout = ({
                 className="mt-1 block w-full px-3 py-2 bg-card border border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary"
               />
             </div>
-            
+
             <div>
               <button
                 type="submit"
@@ -131,11 +158,16 @@ const AdminLayout = ({
               </button>
             </div>
           </form>
-          
+
           <div className="text-center text-sm text-gray-400 mt-4">
             <p>Pour la démonstration :</p>
-            <p>Nom d'utilisateur : <span className="text-primary">admin</span></p>
-            <p>Mot de passe : <span className="text-primary">password</span></p>
+            <p>
+              Nom d&apos;utilisateur :{" "}
+              <span className="text-primary">admin</span>
+            </p>
+            <p>
+              Mot de passe : <span className="text-primary">password</span>
+            </p>
           </div>
         </div>
       </div>
@@ -161,8 +193,8 @@ const AdminLayout = ({
                   href={link.href}
                   className={`flex items-center px-4 py-2 text-sm font-medium rounded-md ${
                     pathname === link.href
-                      ? 'bg-primary/10 text-primary'
-                      : 'text-gray-300 hover:bg-gray-800 hover:text-white'
+                      ? "bg-primary/10 text-primary"
+                      : "text-gray-300 hover:bg-gray-800 hover:text-white"
                   }`}
                 >
                   {link.icon}
@@ -189,7 +221,7 @@ const AdminLayout = ({
           </div>
         </div>
       </div>
-      
+
       {/* Mobile header */}
       <div className="flex flex-col flex-1 overflow-hidden">
         <div className="md:hidden flex items-center justify-between bg-card border-b border-gray-800 p-4">
@@ -204,7 +236,7 @@ const AdminLayout = ({
             {isMobileMenuOpen ? <FiX size={24} /> : <FiMenu size={24} />}
           </button>
         </div>
-        
+
         {/* Mobile menu */}
         {isMobileMenuOpen && (
           <div className="md:hidden fixed inset-0 z-40 bg-background pt-16">
@@ -215,8 +247,8 @@ const AdminLayout = ({
                   href={link.href}
                   className={`flex items-center px-4 py-3 text-base font-medium rounded-md ${
                     pathname === link.href
-                      ? 'bg-primary/10 text-primary'
-                      : 'text-gray-300 hover:bg-gray-800 hover:text-white'
+                      ? "bg-primary/10 text-primary"
+                      : "text-gray-300 hover:bg-gray-800 hover:text-white"
                   }`}
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
@@ -244,7 +276,7 @@ const AdminLayout = ({
             </nav>
           </div>
         )}
-        
+
         {/* Main content */}
         <main className="flex-1 overflow-y-auto bg-background">
           <div className="py-6">
@@ -258,4 +290,4 @@ const AdminLayout = ({
   );
 };
 
-export default AdminLayout; 
+export default AdminLayout;

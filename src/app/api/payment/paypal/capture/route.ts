@@ -78,6 +78,10 @@ export async function POST(request: NextRequest) {
     }
 
     const captureData = await response.json();
+    console.log(
+      "Données de capture PayPal:",
+      JSON.stringify(captureData, null, 2)
+    );
 
     // Mettre à jour la réservation dans la base de données
     await dbConnect();
@@ -91,135 +95,162 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Mettre à jour le statut de paiement
-    booking.depositPaid = true;
-    booking.paymentMethod = "paypal";
-    booking.paymentId = orderId;
-    booking.paymentDate = new Date();
-    booking.status = "confirmed"; // La réservation est confirmée une fois l'acompte payé
+    // Vérifier si c'est un paiement du reste ou de l'acompte
+    const paymentType = request.nextUrl.searchParams.get("type") || "deposit";
 
-    console.log("Mise à jour de la réservation avec ID:", bookingId);
-    console.log("Nouvelles valeurs:", {
-      depositPaid: booking.depositPaid,
-      paymentMethod: booking.paymentMethod,
-      paymentId: booking.paymentId,
-      paymentDate: booking.paymentDate,
-      status: booking.status,
-    });
+    console.log("Type de paiement capturé:", paymentType);
+
+    if (paymentType === "remaining") {
+      // Mettre à jour le statut de paiement du reste
+      booking.remainingPaid = true;
+      booking.remainingPaymentMethod = "paypal" as "cash" | "card" | "transfer";
+      booking.remainingPaymentDate = new Date();
+
+      console.log("Mise à jour du paiement restant avec ID:", bookingId);
+      console.log("Nouvelles valeurs:", {
+        remainingPaid: booking.remainingPaid,
+        remainingPaymentMethod: booking.remainingPaymentMethod,
+        remainingPaymentDate: booking.remainingPaymentDate,
+      });
+    } else {
+      // Mettre à jour le statut de paiement de l'acompte
+      booking.depositPaid = true;
+      booking.paymentMethod = "paypal";
+      booking.paymentId = orderId;
+      booking.paymentDate = new Date();
+      booking.status = "confirmed"; // La réservation est confirmée une fois l'acompte payé
+
+      console.log("Mise à jour de la réservation avec ID:", bookingId);
+      console.log("Nouvelles valeurs:", {
+        depositPaid: booking.depositPaid,
+        paymentMethod: booking.paymentMethod,
+        paymentId: booking.paymentId,
+        paymentDate: booking.paymentDate,
+        status: booking.status,
+      });
+
+      // MAINTENANT créer l'événement dans Google Calendar, une fois le paiement de l'acompte confirmé
+      try {
+        // Récupérer les informations nécessaires de la réservation
+        const startTime = booking.time;
+        const duration = booking.duration;
+
+        console.log(
+          "Création d'un événement dans Google Calendar avec les détails suivants:"
+        );
+        console.log("- StartTime:", startTime);
+        console.log("- Duration:", duration);
+        console.log("- Date de réservation:", booking.date);
+        console.log("- Service:", booking.service);
+        console.log("- Client:", booking.customerName);
+        console.log("- Email:", booking.customerEmail);
+
+        // Créer la date et l'heure de début
+        const bookingDate = new Date(booking.date);
+        const [hours, minutes] = startTime.split(":").map(Number);
+        bookingDate.setHours(hours, minutes, 0);
+
+        console.log("- Date et heure formatées:", bookingDate.toLocaleString());
+
+        // Créer la date et l'heure de fin
+        const endDateTime = new Date(
+          bookingDate.getTime() + duration * 60 * 60 * 1000
+        );
+
+        console.log("- Date et heure de fin:", endDateTime.toLocaleString());
+
+        // Formatage du service pour le titre
+        const serviceLabel = (() => {
+          switch (booking.service) {
+            case "recording":
+              return "Enregistrement";
+            case "mixing":
+              return "Mixage";
+            case "mastering":
+              return "Mastering";
+            case "production":
+              return "Production";
+            default:
+              return booking.service;
+          }
+        })();
+
+        // Vérifier les variables d'environnement Google Calendar
+        console.log(
+          "Vérification des variables d'environnement Google Calendar:"
+        );
+        console.log(
+          "- GOOGLE_CLIENT_EMAIL:",
+          process.env.GOOGLE_CLIENT_EMAIL ? "Configuré" : "MANQUANT"
+        );
+        console.log(
+          "- GOOGLE_PRIVATE_KEY:",
+          process.env.GOOGLE_PRIVATE_KEY ? "Configuré" : "MANQUANT"
+        );
+        console.log(
+          "- GOOGLE_CALENDAR_ID:",
+          process.env.GOOGLE_CALENDAR_ID ? "Configuré" : "MANQUANT"
+        );
+
+        // Créer un événement dans Google Calendar
+        const calendarEvent = await createCalendarEvent(
+          `[Kasar Studio] ${serviceLabel} - ${booking.customerName}`,
+          `Client: ${booking.customerName}\nEmail: ${
+            booking.customerEmail
+          }\nTéléphone: ${
+            booking.customerPhone || "Non fourni"
+          }\nDurée: ${duration}h\nNotes: ${booking.notes || "Aucune"}\nPrix: ${
+            booking.totalPrice
+          }€\nStatut: Confirmé (Payé)`,
+          bookingDate,
+          endDateTime,
+          booking.customerEmail
+        );
+
+        console.log(
+          "Événement créé dans Google Calendar avec succès:",
+          calendarEvent.id
+        );
+        console.log("Détails de l'événement:", {
+          summary: calendarEvent.summary,
+          start: calendarEvent.start,
+          end: calendarEvent.end,
+          attendees: calendarEvent.attendees,
+        });
+
+        // Mettre à jour la réservation avec l'ID de l'événement Google Calendar
+        booking.googleCalendarEventId = calendarEvent.id;
+      } catch (calendarError) {
+        console.error(
+          "Erreur lors de la création de l'événement dans Google Calendar:",
+          calendarError
+        );
+
+        // Imprimer plus de détails sur l'erreur
+        if (calendarError instanceof Error) {
+          console.error("Message d'erreur:", calendarError.message);
+          console.error("Stack trace:", calendarError.stack);
+        } else {
+          console.error("Erreur non standard:", JSON.stringify(calendarError));
+        }
+
+        // Continuer même si l'ajout au calendrier échoue
+      }
+    }
 
     // Sauvegarder dans la base de données
     await booking.save();
 
-    // MAINTENANT créer l'événement dans Google Calendar, une fois le paiement confirmé
-    try {
-      // Récupérer les informations nécessaires de la réservation
-      const startTime = booking.time;
-      const duration = booking.duration;
-
-      console.log(
-        "Création d'un événement dans Google Calendar avec les détails suivants:"
-      );
-      console.log("- StartTime:", startTime);
-      console.log("- Duration:", duration);
-      console.log("- Date de réservation:", booking.date);
-      console.log("- Service:", booking.service);
-      console.log("- Client:", booking.customerName);
-      console.log("- Email:", booking.customerEmail);
-
-      // Créer la date et l'heure de début
-      const bookingDate = new Date(booking.date);
-      const [hours, minutes] = startTime.split(":").map(Number);
-      bookingDate.setHours(hours, minutes, 0);
-
-      console.log("- Date et heure formatées:", bookingDate.toLocaleString());
-
-      // Créer la date et l'heure de fin
-      const endDateTime = new Date(
-        bookingDate.getTime() + duration * 60 * 60 * 1000
-      );
-
-      console.log("- Date et heure de fin:", endDateTime.toLocaleString());
-
-      // Formatage du service pour le titre
-      const serviceLabel = (() => {
-        switch (booking.service) {
-          case "recording":
-            return "Enregistrement";
-          case "mixing":
-            return "Mixage";
-          case "mastering":
-            return "Mastering";
-          case "production":
-            return "Production";
-          default:
-            return booking.service;
-        }
-      })();
-
-      // Vérifier les variables d'environnement Google Calendar
-      console.log(
-        "Vérification des variables d'environnement Google Calendar:"
-      );
-      console.log(
-        "- GOOGLE_CLIENT_EMAIL:",
-        process.env.GOOGLE_CLIENT_EMAIL ? "Configuré" : "MANQUANT"
-      );
-      console.log(
-        "- GOOGLE_PRIVATE_KEY:",
-        process.env.GOOGLE_PRIVATE_KEY ? "Configuré" : "MANQUANT"
-      );
-      console.log(
-        "- GOOGLE_CALENDAR_ID:",
-        process.env.GOOGLE_CALENDAR_ID ? "Configuré" : "MANQUANT"
-      );
-
-      // Créer un événement dans Google Calendar
-      const calendarEvent = await createCalendarEvent(
-        `[Kasar Studio] ${serviceLabel} - ${booking.customerName}`,
-        `Client: ${booking.customerName}\nEmail: ${
-          booking.customerEmail
-        }\nTéléphone: ${
-          booking.customerPhone || "Non fourni"
-        }\nDurée: ${duration}h\nNotes: ${booking.notes || "Aucune"}\nPrix: ${
-          booking.totalPrice
-        }€\nStatut: Confirmé (Payé)`,
-        bookingDate,
-        endDateTime,
-        booking.customerEmail
-      );
-
-      console.log(
-        "Événement créé dans Google Calendar avec succès:",
-        calendarEvent.id
-      );
-      console.log("Détails de l'événement:", {
-        summary: calendarEvent.summary,
-        start: calendarEvent.start,
-        end: calendarEvent.end,
-        attendees: calendarEvent.attendees,
-      });
-    } catch (calendarError) {
-      console.error(
-        "Erreur lors de la création de l'événement dans Google Calendar:",
-        calendarError
-      );
-
-      // Imprimer plus de détails sur l'erreur
-      if (calendarError instanceof Error) {
-        console.error("Message d'erreur:", calendarError.message);
-        console.error("Stack trace:", calendarError.stack);
-      } else {
-        console.error("Erreur non standard:", JSON.stringify(calendarError));
-      }
-
-      // Continuer même si l'ajout au calendrier échoue
-    }
+    console.log("Réservation mise à jour avec succès:", booking._id);
 
     return NextResponse.json({
       success: true,
       paymentId: orderId,
       captureId: captureData.purchase_units[0].payments.captures[0].id,
-      bookingStatus: "confirmed",
+      bookingStatus: booking.status,
+      depositPaid: booking.depositPaid,
+      paymentMethod: booking.paymentMethod,
+      type: paymentType,
     });
   } catch (error) {
     console.error("Erreur lors de la capture du paiement PayPal:", error);

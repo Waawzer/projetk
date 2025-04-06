@@ -597,3 +597,36 @@ function formatTime(date: Date): string {
     minute: "2-digit",
   });
 }
+
+// Supprimer un événement dans Google Calendar
+export async function deleteCalendarEvent(eventId: string): Promise<boolean> {
+  try {
+    if (!eventId) {
+      console.error("ID d'événement manquant pour la suppression");
+      return false;
+    }
+
+    const calendar = getCalendarClient();
+
+    console.log(
+      `Suppression de l'événement Google Calendar avec ID: ${eventId}`
+    );
+
+    await calendar.events.delete({
+      calendarId: CALENDAR_ID,
+      eventId: eventId,
+    });
+
+    console.log(`Événement Google Calendar supprimé avec succès: ${eventId}`);
+    return true;
+  } catch (error) {
+    console.error(
+      "Erreur lors de la suppression de l'événement dans Google Calendar:",
+      error
+    );
+    if (error instanceof Error) {
+      console.error("Message d'erreur:", error.message);
+    }
+    return false;
+  }
+}

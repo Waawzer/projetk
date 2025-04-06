@@ -44,6 +44,7 @@ export async function POST(request: Request) {
     const pricePerHour = getPricePerHour(body.service);
     const totalPrice = pricePerHour * duration;
     const depositAmount = totalPrice * 0.5;
+    const remainingAmount = totalPrice - depositAmount;
 
     // Adapter les noms de champs pour correspondre au modèle Booking
     // Accepter à la fois les formats customerName/customerEmail et name/email
@@ -58,7 +59,9 @@ export async function POST(request: Request) {
       duration,
       totalPrice,
       depositAmount,
+      remainingAmount,
       depositPaid: false,
+      remainingPaid: false,
       paymentMethod: body.paymentMethod,
       status: "pending",
       notes: body.notes || "",
@@ -80,6 +83,18 @@ export async function POST(request: Request) {
         { status: 400 }
       );
     }
+
+    // NOTE IMPORTANTE SUR LE PROCESSUS DE RÉSERVATION:
+    // À ce stade, nous créons une entrée dans la base de données avec un statut "pending".
+    // L'événement Google Calendar ne sera créé qu'après le paiement confirmé.
+    //
+    // Ce processus en deux étapes permet:
+    // 1. De réserver le créneau immédiatement pour éviter qu'un autre client ne le prenne
+    // 2. De garder le statut "pending" jusqu'à confirmation du paiement
+    // 3. De nettoyer régulièrement les réservations non payées via une tâche cron
+    //
+    // Une alternative serait de créer la réservation uniquement après paiement,
+    // mais cela nécessiterait un système de "hold" temporaire sur les créneaux.
 
     // Create new booking with the adapted data (sans ajouter au calendrier)
     const booking = await Booking.create(adaptedData);

@@ -34,13 +34,11 @@ export default function NewBookingPage() {
 
   // Liste des durées disponibles
   const durationOptions = [
-    { value: "60", label: "1 heure" },
+    { value: "120", label: "2 heures" },
     { value: "180", label: "3 heures" },
     { value: "240", label: "4 heures" },
-    { value: "300", label: "5 heures" },
     { value: "360", label: "6 heures" },
-    { value: "420", label: "7 heures" },
-    { value: "480", label: "8 heures" },
+    { value: "600", label: "10 heures" },
   ];
 
   // Validation de l'email
@@ -112,8 +110,6 @@ export default function NewBookingPage() {
       if (!response.ok) {
         throw new Error("Erreur lors de la création de la réservation");
       }
-
-      const data = await response.json();
 
       setFormSuccess("La réservation a été créée avec succès !");
 

@@ -4,7 +4,7 @@ import Image from "next/image";
 import { FiCalendar, FiCreditCard, FiCheckCircle } from "react-icons/fi";
 import Navbar from "@/components/Navbar";
 import BookingForm from "@/components/BookingForm";
-import BlackHoleLogo from "@/components/BlackHoleLogo";
+import Footer from "@/components/Footer";
 
 export default function ReservationPage() {
   return (
@@ -93,11 +93,11 @@ export default function ReservationPage() {
                       </div>
                       <div>
                         <h4 className="font-medium mb-1">
-                          Politique d'annulation
+                          Politique d&apos;annulation
                         </h4>
                         <p className="text-sm text-gray-400">
-                          Annulation gratuite jusqu'à 48h avant la session.
-                          Au-delà, l'acompte n'est pas remboursable.
+                          Annulation gratuite jusqu&apos;à 48h avant la session.
+                          Au-delà, l&apos;acompte n&apos;est pas remboursable.
                         </p>
                       </div>
                     </div>
@@ -148,9 +148,10 @@ export default function ReservationPage() {
                 </div>
               </div>
               <p className="text-gray-300">
-                "Une expérience incroyable ! L'équipe est professionnelle et
-                attentive, le matériel est de qualité et l'ambiance est parfaite
-                pour créer. Je recommande vivement ce studio."
+                &quot;Une expérience incroyable ! L&apos;équipe est
+                professionnelle et attentive, le matériel est de qualité et
+                l&apos;ambiance est parfaite pour créer. Je recommande vivement
+                ce studio.&quot;
               </p>
             </div>
 
@@ -171,9 +172,10 @@ export default function ReservationPage() {
                 </div>
               </div>
               <p className="text-gray-300">
-                "J'ai enregistré mon premier EP dans ce studio et je ne pouvais
-                pas être plus satisfaite. Le son est impeccable et les conseils
-                de l'ingénieur ont vraiment amélioré mes morceaux."
+                &quot;J&apos;ai enregistré mon premier EP dans ce studio et je
+                ne pouvais pas être plus satisfaite. Le son est impeccable et
+                les conseils de l&apos;ingénieur ont vraiment amélioré mes
+                morceaux.&quot;
               </p>
             </div>
 
@@ -194,10 +196,10 @@ export default function ReservationPage() {
                 </div>
               </div>
               <p className="text-gray-300">
-                "En tant que producteur, j'ai travaillé dans de nombreux
-                studios, mais celui-ci offre un rapport qualité-prix
-                exceptionnel. L'acoustique est parfaite et l'équipe est très
-                compétente."
+                &quot;En tant que producteur, j&apos;ai travaillé dans de
+                nombreux studios, mais celui-ci offre un rapport qualité-prix
+                exceptionnel. L&apos;acoustique est parfaite et l&apos;équipe
+                est très compétente.&quot;
               </p>
             </div>
           </div>
@@ -205,46 +207,7 @@ export default function ReservationPage() {
       </section>
 
       {/* Footer */}
-      <footer className="py-10 bg-background border-t border-gray-800">
-        <div className="container mx-auto px-4">
-          <div className="flex flex-col md:flex-row justify-between items-center">
-            <div className="mb-6 md:mb-0">
-              <h3 className="text-2xl font-bold text-white flex items-center">
-                <BlackHoleLogo className="text-primary mr-2" size={24} />
-                <span className="text-primary mr-1">Kasar</span>
-                <span>Studio</span>
-              </h3>
-              <p className="text-gray-400 mt-2">
-                Votre partenaire musical professionnel
-              </p>
-            </div>
-
-            <div className="flex flex-col md:flex-row gap-8">
-              <div>
-                <h4 className="text-white font-medium mb-3">Contact</h4>
-                <p className="text-gray-400">contact@kasarstudio.fr</p>
-                <p className="text-gray-400">+33 1 23 45 67 89</p>
-              </div>
-
-              <div>
-                <h4 className="text-white font-medium mb-3">Adresse</h4>
-                <p className="text-gray-400">123 Rue de la Musique</p>
-                <p className="text-gray-400">75001 Paris, France</p>
-              </div>
-
-              <div>
-                <h4 className="text-white font-medium mb-3">Horaires</h4>
-                <p className="text-gray-400">Lun - Sam: 9h - 22h</p>
-                <p className="text-gray-400">Dimanche: Sur rendez-vous</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="mt-10 pt-6 border-t border-gray-800 text-center text-gray-500 text-sm">
-            © {new Date().getFullYear()} Kasar Studio. Tous droits réservés.
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </main>
   );
 }

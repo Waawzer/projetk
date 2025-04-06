@@ -45,7 +45,7 @@ const BookingForm = () => {
     mode: "onChange",
     defaultValues: {
       service: "",
-      duration: "1",
+      duration: "2",
       paymentMethod: "card",
     },
   });
@@ -55,66 +55,8 @@ const BookingForm = () => {
 
   // Effet pour vérifier si l'utilisateur revient de PayPal (avec des paramètres dans l'URL)
   useEffect(() => {
-    const checkPayPalReturn = async () => {
-      // Vérifier si nous avons des paramètres PayPal dans l'URL
-      if (typeof window !== "undefined") {
-        const urlParams = new URLSearchParams(window.location.search);
-        const token = urlParams.get("token");
-        const payerId = urlParams.get("PayerID");
-        const bookingIdParam = urlParams.get("bookingId");
-
-        // Si nous avons un token et un PayerID, cela signifie que l'utilisateur a approuvé le paiement
-        if (token && payerId && bookingIdParam) {
-          try {
-            setIsProcessingPayPal(true);
-
-            // Capturer le paiement
-            const response = await fetch("/api/payment/paypal/capture", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                orderId: token,
-                bookingId: bookingIdParam,
-              }),
-            });
-
-            if (!response.ok) {
-              const errorData = await response.json();
-              throw new Error(
-                errorData.error || "Erreur lors de la capture du paiement"
-              );
-            }
-
-            await response.json();
-
-            // Paiement réussi - afficher le message de succès
-            setBookingSuccess(true);
-            setCurrentBookingId(bookingIdParam);
-
-            // Nettoyer les paramètres d'URL
-            window.history.replaceState(
-              {},
-              document.title,
-              window.location.pathname
-            );
-          } catch (error) {
-            console.error(
-              "Erreur lors de la finalisation du paiement PayPal:",
-              error
-            );
-            setBookingError(
-              error instanceof Error
-                ? error.message
-                : "Erreur lors du traitement du paiement"
-            );
-          } finally {
-            setIsProcessingPayPal(false);
-          }
-        }
-      }
-    };
-
-    checkPayPalReturn();
+    // Nous n'avons plus besoin de vérifier les paramètres d'URL ici
+    // car c'est maintenant la page payment/success qui s'en occupe
   }, []);
 
   // Calculate deposit amount (50% of total)
@@ -180,8 +122,8 @@ const BookingForm = () => {
           service: serviceLabel,
           customerName: data.name,
           customerEmail: data.email,
-          returnUrl: `${window.location.origin}/reservation?bookingId=${bookingId}`,
-          cancelUrl: `${window.location.origin}/reservation`,
+          returnUrl: `${window.location.origin}/payment/success?bookingId=${bookingId}&type=deposit`,
+          cancelUrl: `${window.location.origin}/payment/cancel`,
         }),
       });
 
@@ -289,7 +231,7 @@ const BookingForm = () => {
   ];
 
   const durationOptions = [
-    { value: "1", label: "1 heure" },
+    { value: "2", label: "2 heures" },
     { value: "3", label: "3 heures" },
     { value: "4", label: "4 heures" },
     { value: "6", label: "Demi-journée (6 heures)" },

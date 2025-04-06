@@ -12,10 +12,15 @@ export interface IBooking {
   totalPrice?: number;
   depositAmount?: number;
   depositPaid?: boolean;
+  remainingAmount?: number;
+  remainingPaid?: boolean;
+  remainingPaymentDate?: Date;
+  remainingPaymentMethod?: "cash" | "card" | "transfer" | "paypal";
   paymentMethod?: "card" | "paypal";
   paymentId?: string;
   paymentDate?: Date;
-  status: "pending" | "confirmed" | "cancelled";
+  googleCalendarEventId?: string;
+  status: "pending" | "confirmed" | "cancelled" | "completed";
   notes?: string;
   createdAt: Date;
   updatedAt: Date;
@@ -62,7 +67,7 @@ const BookingSchema = new Schema<IBookingDocument>(
     duration: {
       type: Number,
       required: [true, "La durée est requise"],
-      min: [1, "La durée minimale est de 1 heure"],
+      min: [1, "La durée minimale est de 2 heure"],
     },
     totalPrice: {
       type: Number,
@@ -74,6 +79,20 @@ const BookingSchema = new Schema<IBookingDocument>(
       type: Boolean,
       default: false,
     },
+    remainingAmount: {
+      type: Number,
+    },
+    remainingPaid: {
+      type: Boolean,
+      default: false,
+    },
+    remainingPaymentDate: {
+      type: Date,
+    },
+    remainingPaymentMethod: {
+      type: String,
+      enum: ["cash", "card", "transfer", "paypal"],
+    },
     paymentMethod: {
       type: String,
       enum: ["card", "paypal"],
@@ -84,11 +103,15 @@ const BookingSchema = new Schema<IBookingDocument>(
     paymentDate: {
       type: Date,
     },
+    googleCalendarEventId: {
+      type: String,
+    },
     status: {
       type: String,
       enum: {
-        values: ["pending", "confirmed", "cancelled"],
-        message: "Le statut doit être pending, confirmed ou cancelled",
+        values: ["pending", "confirmed", "cancelled", "completed"],
+        message:
+          "Le statut doit être pending, confirmed, cancelled ou completed",
       },
       default: "pending",
     },

@@ -13,6 +13,7 @@ import {
 import Navbar from "@/components/Navbar";
 import BrandLogo from "@/components/BrandLogo";
 import SpotifyPlayer from "@/components/SpotifyPlayer";
+import Footer from "@/components/Footer";
 
 // Remplacer par l'ID de votre playlist Spotify
 const FEATURED_PLAYLIST_ID = "6AyMzevO4BVYnSlS3UNeZG?si=c43fdaffeb254a81"; // ID de votre playlist personnelle
@@ -161,7 +162,7 @@ export default function Home() {
       {/* About Section */}
       <section
         ref={aboutSectionRef}
-        className={`py-20 bg-gradient-to-b from-background to-card transition-all duration-1500 ease-in-out ${
+        className={`py-28 bg-gradient-to-b from-background to-card transition-all duration-1500 ease-in-out ${
           visibleSections.about ? "opacity-100" : "opacity-0"
         }`}
       >
@@ -236,7 +237,7 @@ export default function Home() {
       {/* Spotify Player Section */}
       <section
         ref={musicSectionRef}
-        className={`py-20 bg-card transition-all duration-1500 ease-in-out ${
+        className={`py-28 bg-card transition-all duration-1500 ease-in-out ${
           visibleSections.music ? "opacity-100" : "opacity-0"
         }`}
       >
@@ -281,7 +282,7 @@ export default function Home() {
       {/* CTA Section */}
       <section
         ref={ctaSectionRef}
-        className={`py-20 bg-gradient-to-b from-card to-background transition-all duration-1500 ${
+        className={`py-28 bg-gradient-to-b from-card to-background transition-all duration-1500 ${
           visibleSections.cta ? "opacity-100 scale-100" : "opacity-0 scale-95"
         }`}
       >
@@ -304,44 +305,7 @@ export default function Home() {
       </section>
 
       {/* Footer */}
-      <footer className="py-10 bg-background border-t border-gray-800">
-        <div className="container mx-auto px-4">
-          <div className="flex flex-col md:flex-row justify-between items-center">
-            <div className="mb-6 md:mb-0">
-              <h3 className="text-2xl font-bold text-white flex items-center">
-                <BrandLogo width={150} height={40} />
-              </h3>
-              <p className="text-gray-400 mt-2">
-                Votre partenaire musical professionnel
-              </p>
-            </div>
-
-            <div className="flex flex-col md:flex-row gap-8">
-              <div>
-                <h4 className="text-white font-medium mb-3">Contact</h4>
-                <p className="text-gray-400">contact@kasarstudio.fr</p>
-                <p className="text-gray-400">+33 1 23 45 67 89</p>
-              </div>
-
-              <div>
-                <h4 className="text-white font-medium mb-3">Adresse</h4>
-                <p className="text-gray-400">123 Rue de la Musique</p>
-                <p className="text-gray-400">75001 Paris, France</p>
-              </div>
-
-              <div>
-                <h4 className="text-white font-medium mb-3">Horaires</h4>
-                <p className="text-gray-400">Lun - Sam: 9h - 22h</p>
-                <p className="text-gray-400">Dimanche: Sur rendez-vous</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="mt-10 pt-6 border-t border-gray-800 text-center text-gray-500 text-sm">
-            © {new Date().getFullYear()} Kasar Studio. Tous droits réservés.
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </main>
   );
 }
