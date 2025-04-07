@@ -16,7 +16,7 @@ export interface IBooking {
   remainingPaid?: boolean;
   remainingPaymentDate?: Date;
   remainingPaymentMethod?: "cash" | "card" | "transfer" | "paypal";
-  paymentMethod?: "card" | "paypal";
+  paymentMethod?: "cash" | "card" | "transfer" | "paypal";
   paymentId?: string;
   paymentDate?: Date;
   googleCalendarEventId?: string;
@@ -95,7 +95,7 @@ const BookingSchema = new Schema<IBookingDocument>(
     },
     paymentMethod: {
       type: String,
-      enum: ["card", "paypal"],
+      enum: ["cash", "card", "transfer", "paypal"],
     },
     paymentId: {
       type: String,

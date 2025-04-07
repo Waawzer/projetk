@@ -1,23 +1,87 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import {
   FiCheck,
   FiHome,
   FiHeadphones,
-  FiUsers,
-  FiClock,
   FiBookOpen,
+  FiDollarSign,
+  FiCalendar,
 } from "react-icons/fi";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Link from "next/link";
 
+interface Course {
+  _id: string;
+  title: string;
+  description: string;
+  longDescription: string;
+  category: string;
+  level: "débutant" | "intermédiaire" | "avancé" | "tous niveaux";
+  pricePerHour: number;
+  imageUrl: string;
+  instructor: string;
+  benefits: string[];
+  contenus: string[];
+  isActive: boolean;
+  format: "présentiel" | "distanciel" | "hybride";
+  nbSessions: number;
+}
+
 export default function CoursParticuliersPage() {
   // Animation refs
   const headerRef = useRef<HTMLElement>(null);
   const contentRef = useRef<HTMLElement>(null);
+
+  // State pour les cours
+  const [courses, setCourses] = useState<Course[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    const fetchCourses = async () => {
+      try {
+        const response = await fetch("/api/courses");
+        if (!response.ok) {
+          throw new Error("Impossible de récupérer les cours");
+        }
+        const data = await response.json();
+        // Filtrer pour n'afficher que les cours actifs
+        const activeCourses = data.filter((course: Course) => course.isActive);
+        setCourses(activeCourses);
+      } catch (err) {
+        console.error("Erreur lors du chargement des cours:", err);
+        setError("Erreur lors du chargement des cours");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchCourses();
+  }, []);
+
+  // Icônes par catégorie
+  const getCategoryIcon = (category: string) => {
+    const categoryLower = category.toLowerCase();
+    if (
+      categoryLower.includes("enregistr") ||
+      categoryLower.includes("home") ||
+      categoryLower.includes("maison")
+    ) {
+      return <FiHome className="text-primary" size={24} />;
+    } else if (
+      categoryLower.includes("mixage") ||
+      categoryLower.includes("audio") ||
+      categoryLower.includes("son")
+    ) {
+      return <FiHeadphones className="text-primary" size={24} />;
+    } else {
+      return <FiBookOpen className="text-primary" size={24} />;
+    }
+  };
 
   return (
     <main className="min-h-screen bg-background overflow-hidden">
@@ -65,182 +129,125 @@ export default function CoursParticuliersPage() {
       >
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto space-y-16">
-            {/* Cours 1: S'enregistrer chez soi */}
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-              className="relative rounded-2xl overflow-hidden border border-white/10"
-            >
-              <div className="p-8 bg-card backdrop-blur-sm">
-                <div className="flex items-center mb-4">
-                  <div className="h-12 w-12 rounded-full bg-primary/20 flex items-center justify-center mr-4">
-                    <FiHome className="text-primary" size={24} />
-                  </div>
-                  <h2 className="text-2xl md:text-3xl font-bold">
-                    S&apos;enregistrer chez soi (distanciel)
-                  </h2>
-                </div>
-
-                <p className="text-gray-300 mb-6 text-lg">
-                  Apprenez à créer votre propre studio à domicile et à maîtriser
-                  les techniques d&apos;enregistrement. Ce cours particulier
-                  vous guidera à travers toutes les étapes, de l&apos;équipement
-                  à la création de templates personnalisés.
+            {isLoading ? (
+              <div className="flex justify-center items-center py-12">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+              </div>
+            ) : error ? (
+              <div className="bg-red-500/10 border border-red-500/30 text-red-500 p-4 rounded-lg mb-6">
+                {error}
+              </div>
+            ) : courses.length === 0 ? (
+              <div className="text-center py-12">
+                <h2 className="text-2xl font-bold mb-4">
+                  Aucun cours particulier disponible pour le moment
+                </h2>
+                <p className="text-gray-400">
+                  Revenez bientôt pour découvrir nos nouveaux cours!
                 </p>
-
-                <div className="bg-card/50 p-6 rounded-xl mb-8">
-                  <h3 className="text-xl font-semibold mb-4">
-                    Ce que vous apprendrez
-                  </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="flex items-start">
-                      <span className="text-emerald-400 mr-2 mt-1">
-                        <FiCheck size={16} />
-                      </span>
-                      <span>Comment s&apos;équiper efficacement</span>
-                    </div>
-                    <div className="flex items-start">
-                      <span className="text-emerald-400 mr-2 mt-1">
-                        <FiCheck size={16} />
-                      </span>
-                      <span>Bases sur les logiciels d&apos;enregistrement</span>
-                    </div>
-                    <div className="flex items-start">
-                      <span className="text-emerald-400 mr-2 mt-1">
-                        <FiCheck size={16} />
-                      </span>
-                      <span>Techniques d&apos;enregistrement optimales</span>
-                    </div>
-                    <div className="flex items-start">
-                      <span className="text-emerald-400 mr-2 mt-1">
-                        <FiCheck size={16} />
-                      </span>
-                      <span>Création de templates personnalisés</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="flex flex-col sm:flex-row gap-4 mb-6">
-                  <div className="flex-1 bg-card/50 p-5 rounded-xl">
-                    <div className="flex items-center mb-2">
-                      <FiClock className="text-primary mr-2" />
-                      <h4 className="font-medium">Durée</h4>
-                    </div>
-                    <p>4 sessions de 1h (personnalisable)</p>
-                  </div>
-
-                  <div className="flex-1 bg-card/50 p-5 rounded-xl">
-                    <div className="flex items-center mb-2">
-                      <FiUsers className="text-primary mr-2" />
-                      <h4 className="font-medium">Format</h4>
-                    </div>
-                    <p>Cours individuel en visioconférence</p>
-                  </div>
-                </div>
-
-                <div className="flex justify-center mt-8">
-                  <Link href="/reservation">
-                    <button className="py-3 px-8 rounded-xl font-medium transition-all duration-300 bg-gradient-to-r from-purple-500 to-blue-500 hover:shadow-lg hover:shadow-purple-500/20 text-white">
-                      Réserver un cours
-                    </button>
-                  </Link>
-                </div>
               </div>
-            </motion.div>
+            ) : (
+              courses.map((course, index) => (
+                <motion.div
+                  key={course._id}
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 0.2 + index * 0.1 }}
+                  className="relative rounded-2xl overflow-hidden border border-white/10"
+                >
+                  {index === 0 && (
+                    <div className="absolute top-0 right-0 bg-gradient-to-r from-purple-500 to-blue-500 text-white text-xs font-bold px-4 py-1 rounded-bl-lg">
+                      POPULAIRE
+                    </div>
+                  )}
 
-            {/* Cours 2: Cours de mixage */}
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.4 }}
-              className="relative rounded-2xl overflow-hidden border border-white/10"
-            >
-              <div className="absolute top-0 right-0 bg-gradient-to-r from-purple-500 to-blue-500 text-white text-xs font-bold px-4 py-1 rounded-bl-lg">
-                POPULAIRE
-              </div>
+                  <div className="p-8 bg-card backdrop-blur-sm">
+                    <div className="flex items-center mb-4">
+                      <div className="h-12 w-12 rounded-full bg-primary/20 flex items-center justify-center mr-4">
+                        {getCategoryIcon(course.category)}
+                      </div>
+                      <div>
+                        <h2 className="text-2xl md:text-3xl font-bold">
+                          {course.title}
+                        </h2>
+                        <div className="text-sm text-gray-400">
+                          Catégorie: {course.category} • Niveau: {course.level}
+                        </div>
+                      </div>
+                    </div>
 
-              <div className="p-8 bg-card backdrop-blur-sm">
-                <div className="flex items-center mb-4">
-                  <div className="h-12 w-12 rounded-full bg-primary/20 flex items-center justify-center mr-4">
-                    <FiHeadphones className="text-primary" size={24} />
+                    <p className="text-gray-300 mb-6 text-lg">
+                      {course.description}
+                    </p>
+
+                    <div className="bg-card/50 p-6 rounded-xl mb-8">
+                      <h3 className="text-xl font-semibold mb-4">
+                        Ce que vous apprendrez
+                      </h3>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {course.benefits.slice(0, 4).map((benefit, idx) => (
+                          <div key={idx} className="flex items-start">
+                            <span className="text-emerald-400 mr-2 mt-1">
+                              <FiCheck size={16} />
+                            </span>
+                            <span>{benefit}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 mb-6">
+                      <div className="bg-card/50 p-5 rounded-xl">
+                        <div className="flex items-center mb-2">
+                          <FiDollarSign className="text-primary mr-2" />
+                          <h4 className="font-medium">Prix</h4>
+                        </div>
+                        <p>{course.pricePerHour}€ / heure</p>
+                      </div>
+
+                      <div className="bg-card/50 p-5 rounded-xl">
+                        <div className="flex items-center mb-2">
+                          <FiBookOpen className="text-primary mr-2" />
+                          <h4 className="font-medium">Niveau</h4>
+                        </div>
+                        <p>{course.level}</p>
+                      </div>
+
+                      <div className="bg-card/50 p-5 rounded-xl">
+                        <div className="flex items-center mb-2">
+                          <FiHome className="text-primary mr-2" />
+                          <h4 className="font-medium">Format</h4>
+                        </div>
+                        <p>{course.format}</p>
+                      </div>
+
+                      <div className="bg-card/50 p-5 rounded-xl">
+                        <div className="flex items-center mb-2">
+                          <FiCalendar className="text-primary mr-2" />
+                          <h4 className="font-medium">Sessions</h4>
+                        </div>
+                        <p>
+                          {course.nbSessions}{" "}
+                          {course.nbSessions > 1 ? "sessions" : "session"}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex justify-center mt-8">
+                      <Link href={`/cours-particuliers/${course._id}`}>
+                        <button className="py-3 px-8 rounded-xl font-medium transition-all duration-300 bg-gradient-to-r from-purple-500 to-blue-500 hover:shadow-lg hover:shadow-purple-500/20 text-white">
+                          Voir les détails
+                        </button>
+                      </Link>
+                    </div>
                   </div>
-                  <h2 className="text-2xl md:text-3xl font-bold">
-                    Cours de mixage (4h)
-                  </h2>
-                </div>
-
-                <p className="text-gray-300 mb-6 text-lg">
-                  Un cours intensif de 4 heures pour maîtriser les bases du
-                  mixage et obtenir un suivi personnalisé de vos projets. Vous
-                  aurez également accès à une communauté d&apos;artistes pour
-                  échanger et progresser ensemble.
-                </p>
-
-                <div className="bg-card/50 p-6 rounded-xl mb-8">
-                  <h3 className="text-xl font-semibold mb-4">
-                    Ce que vous apprendrez
-                  </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="flex items-start">
-                      <span className="text-emerald-400 mr-2 mt-1">
-                        <FiCheck size={16} />
-                      </span>
-                      <span>Bases essentielles du mixage</span>
-                    </div>
-                    <div className="flex items-start">
-                      <span className="text-emerald-400 mr-2 mt-1">
-                        <FiCheck size={16} />
-                      </span>
-                      <span>Suivi personnalisé de vos projets</span>
-                    </div>
-                    <div className="flex items-start">
-                      <span className="text-emerald-400 mr-2 mt-1">
-                        <FiCheck size={16} />
-                      </span>
-                      <span>Accès à une communauté d&apos;artistes</span>
-                    </div>
-                    <div className="flex items-start">
-                      <span className="text-emerald-400 mr-2 mt-1">
-                        <FiCheck size={16} />
-                      </span>
-                      <span>Feedback sur vos productions</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="flex flex-col sm:flex-row gap-4 mb-6">
-                  <div className="flex-1 bg-card/50 p-5 rounded-xl">
-                    <div className="flex items-center mb-2">
-                      <FiClock className="text-primary mr-2" />
-                      <h4 className="font-medium">Durée</h4>
-                    </div>
-                    <p>4 heures (en une ou plusieurs sessions)</p>
-                  </div>
-
-                  <div className="flex-1 bg-card/50 p-5 rounded-xl">
-                    <div className="flex items-center mb-2">
-                      <FiBookOpen className="text-primary mr-2" />
-                      <h4 className="font-medium">Niveau</h4>
-                    </div>
-                    <p>Débutant à intermédiaire</p>
-                  </div>
-                </div>
-
-                <div className="flex justify-center mt-8">
-                  <Link href="/reservation">
-                    <button className="py-3 px-8 rounded-xl font-medium transition-all duration-300 bg-gradient-to-r from-purple-500 to-blue-500 hover:shadow-lg hover:shadow-purple-500/20 text-white">
-                      Réserver un cours
-                    </button>
-                  </Link>
-                </div>
-              </div>
-            </motion.div>
+                </motion.div>
+              ))
+            )}
 
             <div className="text-center mt-12">
               <p className="text-lg text-gray-300 mb-6">
-                Vous préférez une formation en groupe ? Découvrez nos formations
-                collectives.
+                Vous préférez une formation plus complète ?
               </p>
               <Link href="/formations">
                 <button className="py-3 px-8 rounded-xl font-medium transition-all duration-300 bg-white/10 hover:bg-white/20 text-white">

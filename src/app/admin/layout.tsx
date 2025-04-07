@@ -11,6 +11,8 @@ import {
   FiLogOut,
   FiMenu,
   FiX,
+  FiMusic,
+  FiBookOpen,
 } from "react-icons/fi";
 import BlackHoleLogo from "@/components/BlackHoleLogo";
 
@@ -76,6 +78,16 @@ const AdminLayout = ({ children }: { children: React.ReactNode }) => {
       href: "/admin/bookings",
       label: "Réservations",
       icon: <FiCalendar className="mr-2" />,
+    },
+    {
+      href: "/admin/formations",
+      label: "Formations",
+      icon: <FiMusic className="mr-2" />,
+    },
+    {
+      href: "/admin/courses",
+      label: "Cours particuliers",
+      icon: <FiBookOpen className="mr-2" />,
     },
     {
       href: "/admin/messages",

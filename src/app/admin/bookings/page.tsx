@@ -49,6 +49,9 @@ export default function BookingsPage() {
   const [filterStatus, setFilterStatus] = useState<
     "all" | "pending" | "confirmed" | "cancelled" | "completed"
   >("all");
+  const [filterPayment, setFilterPayment] = useState<
+    "all" | "paid_all" | "paid_deposit" | "paid_none" | "paid_remaining"
+  >("all");
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [bookingToDelete, setBookingToDelete] = useState<Booking | null>(null);
   const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
@@ -225,6 +228,63 @@ export default function BookingsPage() {
     }
   };
 
+  // Nouvelle fonction pour mettre à jour le statut de paiement de l'acompte
+  const handleDepositPaymentChange = async (
+    bookingId: string,
+    paid: boolean,
+    method?: string
+  ) => {
+    try {
+      // Appel API pour mettre à jour le paiement de l'acompte
+      const response = await fetch("/api/admin/bookings", {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          id: bookingId,
+          depositPaid: paid,
+          paymentMethod: method || "cash",
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(
+          "Erreur lors de la mise à jour du paiement de l'acompte"
+        );
+      }
+
+      // Mise à jour de l'état local
+      setBookings(
+        bookings.map((booking) =>
+          booking._id === bookingId
+            ? {
+                ...booking,
+                depositPaid: paid,
+                paymentMethod: method || "cash",
+                paymentDate: paid ? new Date().toISOString() : undefined,
+              }
+            : booking
+        )
+      );
+
+      // Mise à jour du modal si la réservation est actuellement affichée
+      if (selectedBooking && selectedBooking._id === bookingId) {
+        setSelectedBooking({
+          ...selectedBooking,
+          depositPaid: paid,
+          paymentMethod: method || "cash",
+          paymentDate: paid ? new Date().toISOString() : undefined,
+        });
+      }
+    } catch (error) {
+      console.error(
+        "Erreur lors de la mise à jour du paiement de l'acompte:",
+        error
+      );
+    }
+  };
+
   // Nouvelle fonction pour générer un lien de paiement PayPal
   const createPayPalLink = async (booking: Booking) => {
     if (!booking.remainingAmount) return;
@@ -351,9 +411,84 @@ export default function BookingsPage() {
     }
   };
 
+  // Fonction pour déterminer le statut de paiement et la couleur associée
+  const getPaymentStatus = (booking: Booking) => {
+    // Tout payé (acompte + reste)
+    if (booking.depositPaid && booking.remainingPaid) {
+      return {
+        label: "Payé intégralement",
+        className: "bg-green-500/20 text-green-500",
+        icon: FiCheck,
+        details: "Acompte et solde payés",
+      };
+    }
+
+    // Acompte payé, reste dû
+    if (booking.depositPaid && !booking.remainingPaid) {
+      return {
+        label: "Acompte payé",
+        className: "bg-yellow-500/20 text-yellow-500",
+        icon: FiClock,
+        details: "Reste à payer",
+      };
+    }
+
+    // Rien payé
+    if (!booking.depositPaid && !booking.remainingPaid) {
+      return {
+        label: "Non payé",
+        className: "bg-red-500/20 text-red-500",
+        icon: FiXCircle,
+        details: "Acompte et solde dus",
+      };
+    }
+
+    // Cas rare: solde payé mais pas l'acompte
+    if (!booking.depositPaid && booking.remainingPaid) {
+      return {
+        label: "Solde payé",
+        className: "bg-blue-500/20 text-blue-500",
+        icon: FiCheck,
+        details: "Acompte dû",
+      };
+    }
+
+    // Par défaut
+    return {
+      label: "Statut inconnu",
+      className: "bg-gray-500/20 text-gray-500",
+      icon: FiClock,
+      details: "-",
+    };
+  };
+
   const filteredBookings = bookings.filter((booking) => {
     // Filtrer par statut
     if (filterStatus !== "all" && booking.status !== filterStatus) return false;
+
+    // Filtrer par statut de paiement
+    if (filterPayment !== "all") {
+      if (
+        filterPayment === "paid_all" &&
+        !(booking.depositPaid && booking.remainingPaid)
+      )
+        return false;
+      if (
+        filterPayment === "paid_deposit" &&
+        !(booking.depositPaid && !booking.remainingPaid)
+      )
+        return false;
+      if (
+        filterPayment === "paid_none" &&
+        (booking.depositPaid || booking.remainingPaid)
+      )
+        return false;
+      if (
+        filterPayment === "paid_remaining" &&
+        !(!booking.depositPaid && booking.remainingPaid)
+      )
+        return false;
+    }
 
     // Filtrer par terme de recherche
     const searchLower = searchTerm.toLowerCase();
@@ -412,28 +547,65 @@ export default function BookingsPage() {
               </button>
             )}
           </div>
-          <div className="flex items-center">
-            <FiFilter className="text-gray-400 mr-2" />
-            <select
-              className="bg-gray-700 text-white px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-              value={filterStatus}
-              onChange={(e) =>
-                setFilterStatus(
-                  e.target.value as
-                    | "all"
-                    | "pending"
-                    | "confirmed"
-                    | "cancelled"
-                    | "completed"
-                )
-              }
-            >
-              <option value="all">Tous les statuts</option>
-              <option value="pending">En attente</option>
-              <option value="confirmed">Confirmées</option>
-              <option value="cancelled">Annulées</option>
-              <option value="completed">Terminées</option>
-            </select>
+          <div className="flex items-center space-x-4">
+            <div className="flex items-center">
+              <FiFilter className="text-gray-400 mr-2" />
+              <select
+                className="bg-gray-700 text-white px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                value={filterStatus}
+                onChange={(e) =>
+                  setFilterStatus(
+                    e.target.value as
+                      | "all"
+                      | "pending"
+                      | "confirmed"
+                      | "cancelled"
+                      | "completed"
+                  )
+                }
+              >
+                <option value="all">Tous les statuts</option>
+                <option value="pending">En attente</option>
+                <option value="confirmed">Confirmées</option>
+                <option value="cancelled">Annulées</option>
+                <option value="completed">Terminées</option>
+              </select>
+            </div>
+            <div className="flex items-center">
+              <svg
+                className="w-5 h-5 text-gray-400 mr-2"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
+                <path
+                  d="M12 4v.01M12 8v.01M12 12v.01M12 16v.01M12 20v.01M4 12h16"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+              <select
+                className="bg-gray-700 text-white px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                value={filterPayment}
+                onChange={(e) =>
+                  setFilterPayment(
+                    e.target.value as
+                      | "all"
+                      | "paid_all"
+                      | "paid_deposit"
+                      | "paid_none"
+                      | "paid_remaining"
+                  )
+                }
+              >
+                <option value="all">Tous les paiements</option>
+                <option value="paid_all">Intégralement payé</option>
+                <option value="paid_deposit">Acompte payé uniquement</option>
+                <option value="paid_none">Non payé</option>
+                <option value="paid_remaining">Solde payé uniquement</option>
+              </select>
+            </div>
           </div>
         </div>
       </div>
@@ -475,6 +647,9 @@ export default function BookingsPage() {
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                     Statut
                   </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                    Paiement
+                  </th>
                   <th className="px-6 py-3 text-right text-xs font-medium text-gray-300 uppercase tracking-wider">
                     Actions
                   </th>
@@ -483,6 +658,7 @@ export default function BookingsPage() {
               <tbody className="divide-y divide-gray-700">
                 {filteredBookings.map((booking) => {
                   const StatusIcon = getStatusConfig(booking.status).icon;
+                  const PaymentStatus = getPaymentStatus(booking);
                   return (
                     <tr key={booking._id} className="hover:bg-gray-700/50">
                       <td className="px-6 py-4 whitespace-nowrap">
@@ -514,6 +690,14 @@ export default function BookingsPage() {
                         >
                           <StatusIcon className="mr-1" />
                           {getStatusConfig(booking.status).label}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span
+                          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${PaymentStatus.className}`}
+                        >
+                          <PaymentStatus.icon className="mr-1" />
+                          {PaymentStatus.label}
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
@@ -679,6 +863,99 @@ export default function BookingsPage() {
                       </div>
                     )}
 
+                    {selectedBooking.depositAmount && (
+                      <div className="mt-1 mb-3">
+                        {/* Boutons pour gérer le paiement de l'acompte */}
+                        {!selectedBooking.depositPaid ? (
+                          <div className="mt-2">
+                            <label className="text-sm text-gray-400 mb-2 block">
+                              Marquer l&apos;acompte comme payé:
+                            </label>
+                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 mb-2">
+                              <select
+                                className="bg-gray-700 text-white px-2 py-2 rounded-lg text-sm col-span-1"
+                                id="depositPaymentMethod"
+                                defaultValue="cash"
+                              >
+                                <option value="cash">Espèces</option>
+                                <option value="card">Carte bancaire</option>
+                                <option value="transfer">Virement</option>
+                                <option value="paypal">PayPal</option>
+                              </select>
+                              <button
+                                onClick={() => {
+                                  const method = (
+                                    document.getElementById(
+                                      "depositPaymentMethod"
+                                    ) as HTMLSelectElement
+                                  ).value;
+                                  handleDepositPaymentChange(
+                                    selectedBooking._id,
+                                    true,
+                                    method
+                                  );
+                                }}
+                                className="bg-green-500 hover:bg-green-600 text-white px-3 py-2 rounded-lg text-sm"
+                              >
+                                Marquer comme payé
+                              </button>
+                              <button
+                                onClick={() => {
+                                  // Créer un lien PayPal pour l'acompte
+                                  if (selectedBooking.depositAmount) {
+                                    createPayPalLink({
+                                      ...selectedBooking,
+                                      remainingAmount:
+                                        selectedBooking.depositAmount,
+                                    });
+                                  }
+                                }}
+                                className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-2 rounded-lg text-sm flex items-center justify-center"
+                              >
+                                <svg
+                                  className="w-4 h-4 mr-1"
+                                  viewBox="0 0 24 24"
+                                  fill="currentColor"
+                                >
+                                  <path d="M20.067 8.478c.492.88.556 2.014.3 3.327-.74 3.806-3.276 5.12-6.514 5.12h-.5a.805.805 0 0 0-.794.68l-.04.22-.63 4.876-.02.114a.804.804 0 0 1-.794.679h-2.52a.477.477 0 0 1-.47-.543l.955-6.211.01-.01a.802.802 0 0 1 .791-.679h1.666c3.559 0 6.326-1.443 7.134-5.62.003-.013.01-.027.01-.04.307-1.97-.02-3.317-1.143-4.298-4-3.358-16.599-3.358-16.599 4.536v.1c0 .535.145 1.67.398 2.857.564 2.644 1.92 7.015 1.92 7.015a.642.642 0 0 0 .631.516h3.209a.804.804 0 0 0 .794-.679l.04-.22.63-4.876a.803.803 0 0 1 .795-.68H12c3.237 0 5.772-1.313 6.514-5.12.256-1.313.192-2.447-.3-3.327" />
+                                </svg>
+                                Générer lien PayPal
+                              </button>
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="mt-2">
+                            <p className="text-xs text-gray-400">
+                              Acompte payé le{" "}
+                              {new Date(
+                                selectedBooking.paymentDate || ""
+                              ).toLocaleDateString()}
+                              par{" "}
+                              {selectedBooking.paymentMethod === "cash"
+                                ? "espèces"
+                                : selectedBooking.paymentMethod === "card"
+                                ? "carte bancaire"
+                                : selectedBooking.paymentMethod === "paypal"
+                                ? "PayPal"
+                                : "virement"}
+                            </p>
+                            <button
+                              onClick={() =>
+                                handleDepositPaymentChange(
+                                  selectedBooking._id,
+                                  false
+                                )
+                              }
+                              className="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 mt-1 rounded-lg text-sm"
+                            >
+                              Marquer acompte comme non payé
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    {/* Section pour le reste à payer */}
                     {selectedBooking.depositAmount && (
                       <div className="flex flex-col">
                         <div className="flex items-center">

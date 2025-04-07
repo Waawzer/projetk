@@ -3,7 +3,7 @@ import dbConnect from "@/lib/mongodb";
 import BookingModel from "@/models/Booking";
 import { FilterQuery } from "mongoose";
 import { IBooking, IBookingDocument } from "@/models/Booking";
-import { deleteCalendarEvent } from "@/lib/googleCalendar";
+import { deleteCalendarEvent, createCalendarEvent } from "@/lib/googleCalendar";
 
 export async function GET(request: NextRequest) {
   try {
@@ -53,7 +53,70 @@ export async function POST(request: NextRequest) {
     await dbConnect();
 
     const data = await request.json();
+
+    // Vérifier si nous devons ajouter l'événement à Google Calendar
+    const addToGoogleCalendar = data.addToGoogleCalendar;
+
+    // Supprimer le champ addToGoogleCalendar avant d'enregistrer dans MongoDB
+    if (data.addToGoogleCalendar) {
+      delete data.addToGoogleCalendar;
+    }
+
+    // Créer la réservation dans la base de données
     const newBooking = await BookingModel.create(data);
+
+    // Si demandé, ajouter l'événement à Google Calendar
+    if (addToGoogleCalendar) {
+      try {
+        // Construire le titre et la description de l'événement
+        const summary = `${
+          data.service.charAt(0).toUpperCase() + data.service.slice(1)
+        } - ${data.customerName}`;
+
+        const description = `
+Client: ${data.customerName}
+Email: ${data.customerEmail}
+${data.customerPhone ? `Téléphone: ${data.customerPhone}` : ""}
+Service: ${data.service}
+Durée: ${data.duration} heure(s)
+Prix total: ${data.totalPrice || 0}€
+ID Réservation: ${newBooking._id}
+${data.notes ? `Notes: ${data.notes}` : ""}
+        `.trim();
+
+        // Convertir la date et l'heure en objets Date pour Google Calendar
+        const [year, month, day] = data.date.split("-").map(Number);
+        const [hours, minutes] = data.time.split(":").map(Number);
+
+        const startDateTime = new Date(year, month - 1, day, hours, minutes);
+        const endDateTime = new Date(startDateTime);
+        endDateTime.setHours(endDateTime.getHours() + data.duration);
+
+        // Créer l'événement dans Google Calendar
+        const calendarEvent = await createCalendarEvent(
+          summary,
+          description,
+          startDateTime,
+          endDateTime,
+          data.customerEmail
+        );
+
+        // Mettre à jour la réservation avec l'ID de l'événement Google Calendar
+        if (calendarEvent.id) {
+          await BookingModel.findByIdAndUpdate(newBooking._id, {
+            googleCalendarEventId: calendarEvent.id,
+          });
+
+          console.log(`Événement Google Calendar créé: ${calendarEvent.id}`);
+        }
+      } catch (calendarError) {
+        console.error(
+          "Erreur lors de la création de l'événement dans Google Calendar:",
+          calendarError
+        );
+        // On continue même si la création de l'événement dans le calendrier échoue
+      }
+    }
 
     return NextResponse.json(newBooking.toJSON(), { status: 201 });
   } catch (error) {
@@ -160,7 +223,14 @@ export async function PATCH(request: NextRequest) {
     await dbConnect();
 
     const data = await request.json();
-    const { id, status, remainingPaid, remainingPaymentMethod } = data;
+    const {
+      id,
+      status,
+      remainingPaid,
+      remainingPaymentMethod,
+      depositPaid,
+      paymentMethod,
+    } = data;
 
     // Préparer les données à mettre à jour
     const updateData: Partial<IBooking> = {};
@@ -168,6 +238,21 @@ export async function PATCH(request: NextRequest) {
     // Mettre à jour le statut si fourni
     if (status) {
       updateData.status = status;
+    }
+
+    // Mettre à jour les informations de paiement d'acompte si fournies
+    if (depositPaid !== undefined) {
+      updateData.depositPaid = depositPaid;
+      if (depositPaid) {
+        updateData.paymentDate = new Date();
+        if (paymentMethod) {
+          updateData.paymentMethod = paymentMethod;
+        }
+      } else {
+        // Si on marque comme non payé, on enlève les infos de paiement
+        updateData.paymentDate = undefined;
+        updateData.paymentMethod = undefined;
+      }
     }
 
     // Mettre à jour les informations de paiement final si fournies
@@ -178,6 +263,10 @@ export async function PATCH(request: NextRequest) {
         if (remainingPaymentMethod) {
           updateData.remainingPaymentMethod = remainingPaymentMethod;
         }
+      } else {
+        // Si on marque comme non payé, on enlève les infos de paiement
+        updateData.remainingPaymentDate = undefined;
+        updateData.remainingPaymentMethod = undefined;
       }
     }
 
