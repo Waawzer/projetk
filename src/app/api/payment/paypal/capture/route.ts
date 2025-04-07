@@ -2,6 +2,163 @@ import { NextResponse, NextRequest } from "next/server";
 import dbConnect from "@/lib/mongodb";
 import Booking from "@/models/Booking";
 import { createCalendarEvent } from "@/lib/googleCalendar";
+import { Resend } from "resend";
+
+// Créer une instance de Resend pour l'envoi d'emails
+const resend = new Resend(process.env.RESEND_API_KEY);
+
+// Fonction locale pour envoyer l'email de confirmation
+async function sendBookingConfirmationEmail(data: {
+  customerName: string;
+  customerEmail: string;
+  service: string;
+  date: string;
+  time: string;
+  duration: number;
+  totalPrice?: number;
+  depositAmount?: number;
+  remainingAmount?: number;
+}) {
+  if (!process.env.RESEND_API_KEY) {
+    console.error("RESEND_API_KEY non définie");
+    throw new Error("Configuration email manquante");
+  }
+
+  if (!process.env.ADMIN_EMAIL) {
+    console.error("ADMIN_EMAIL non définie");
+    throw new Error("Email admin manquant");
+  }
+
+  try {
+    console.log(
+      "Tentative d'envoi d'email de confirmation de réservation à:",
+      data.customerEmail
+    );
+
+    const formattedDate = formatDateFr(data.date);
+    const serviceLabel = getServiceLabel(data.service);
+
+    // Email de confirmation pour le client
+    const clientResponse = await resend.emails.send({
+      from: "onboarding@resend.dev", // Utilisez cette adresse pour commencer
+      to: data.customerEmail,
+      subject: "Confirmation de votre réservation - Kasar Studio",
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eaeaea; border-radius: 5px;">
+          <h2 style="color: #6200ea; text-align: center;">Confirmation de réservation</h2>
+          <p>Cher(e) ${data.customerName},</p>
+          <p>Nous vous remercions pour votre réservation. Votre paiement initial a été confirmé et votre réservation est maintenant <strong>validée</strong>.</p>
+          
+          <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
+            <h3 style="color: #6200ea; margin-top: 0;">Détails de votre réservation</h3>
+            <p><strong>Service :</strong> ${serviceLabel}</p>
+            <p><strong>Date :</strong> ${formattedDate}</p>
+            <p><strong>Heure :</strong> ${data.time}</p>
+            <p><strong>Durée :</strong> ${data.duration} heure${
+        data.duration > 1 ? "s" : ""
+      }</p>
+            ${
+              data.totalPrice
+                ? `<p><strong>Prix total :</strong> ${data.totalPrice} €</p>`
+                : ""
+            }
+            ${
+              data.depositAmount
+                ? `<p><strong>Acompte payé :</strong> ${data.depositAmount} €</p>`
+                : ""
+            }
+            ${
+              data.remainingAmount
+                ? `<p><strong>Reste à payer :</strong> ${data.remainingAmount} €</p>`
+                : ""
+            }
+          </div>
+          
+          <p>Le solde restant sera à régler le jour de votre séance.</p>
+          
+          <p>Si vous avez des questions ou souhaitez modifier votre réservation, n'hésitez pas à nous contacter.</p>
+          
+          <p style="margin-top: 30px;">Cordialement,</p>
+          <p><strong>L'équipe Kasar Studio</strong></p>
+        </div>
+      `,
+    });
+
+    console.log(
+      "Réponse de l'envoi confirmation de réservation:",
+      clientResponse
+    );
+
+    // Email de notification pour l'administrateur
+    const adminResponse = await resend.emails.send({
+      from: "onboarding@resend.dev",
+      to: process.env.ADMIN_EMAIL,
+      subject: `Nouvelle réservation confirmée - ${serviceLabel}`,
+      html: `
+        <h2>Nouvelle réservation confirmée</h2>
+        <p><strong>Client :</strong> ${data.customerName}</p>
+        <p><strong>Email :</strong> ${data.customerEmail}</p>
+        <p><strong>Service :</strong> ${serviceLabel}</p>
+        <p><strong>Date :</strong> ${formattedDate}</p>
+        <p><strong>Heure :</strong> ${data.time}</p>
+        <p><strong>Durée :</strong> ${data.duration} heure${
+        data.duration > 1 ? "s" : ""
+      }</p>
+        ${
+          data.totalPrice
+            ? `<p><strong>Prix total :</strong> ${data.totalPrice} €</p>`
+            : ""
+        }
+        ${
+          data.depositAmount
+            ? `<p><strong>Acompte payé :</strong> ${data.depositAmount} €</p>`
+            : ""
+        }
+        ${
+          data.remainingAmount
+            ? `<p><strong>Reste à payer :</strong> ${data.remainingAmount} €</p>`
+            : ""
+        }
+      `,
+    });
+
+    console.log("Réponse de l'envoi notification admin:", adminResponse);
+
+    return { success: true };
+  } catch (error) {
+    console.error(
+      "Erreur détaillée lors de l'envoi des emails de confirmation:",
+      error
+    );
+    throw error;
+  }
+}
+
+// Fonction pour formatter la date au format français
+const formatDateFr = (dateStr: string) => {
+  const date = new Date(dateStr);
+  return date.toLocaleDateString("fr-FR", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+};
+
+// Fonction pour obtenir le libellé du service
+const getServiceLabel = (service: string) => {
+  switch (service) {
+    case "recording":
+      return "Enregistrement";
+    case "mixing":
+      return "Mixage";
+    case "mastering":
+      return "Mastering";
+    case "production":
+      return "Production";
+    default:
+      return service;
+  }
+};
 
 // PayPal API endpoints
 const PAYPAL_API_BASE =
@@ -179,47 +336,43 @@ export async function POST(request: NextRequest) {
         console.log(
           "Vérification des variables d'environnement Google Calendar:"
         );
-        console.log(
-          "- GOOGLE_CLIENT_EMAIL:",
-          process.env.GOOGLE_CLIENT_EMAIL ? "Configuré" : "MANQUANT"
-        );
-        console.log(
-          "- GOOGLE_PRIVATE_KEY:",
-          process.env.GOOGLE_PRIVATE_KEY ? "Configuré" : "MANQUANT"
-        );
-        console.log(
-          "- GOOGLE_CALENDAR_ID:",
-          process.env.GOOGLE_CALENDAR_ID ? "Configuré" : "MANQUANT"
-        );
 
-        // Créer un événement dans Google Calendar
+        if (!process.env.GOOGLE_CLIENT_EMAIL) {
+          console.error("GOOGLE_CLIENT_EMAIL manquant");
+        }
+        if (!process.env.GOOGLE_PRIVATE_KEY) {
+          console.error("GOOGLE_PRIVATE_KEY manquant");
+        }
+        if (!process.env.GOOGLE_CALENDAR_ID) {
+          console.error("GOOGLE_CALENDAR_ID manquant");
+        }
+
+        const eventDetails = {
+          summary: `${serviceLabel} - ${booking.customerName}`,
+          description: `Réservation pour ${serviceLabel}
+Client: ${booking.customerName}
+Email: ${booking.customerEmail}
+Téléphone: ${booking.customerPhone || "Non spécifié"}
+Prix total: ${booking.totalPrice || "Non spécifié"} €
+Acompte: ${booking.depositAmount || "Non spécifié"} €`,
+          startDateTime: bookingDate,
+          endDateTime: endDateTime,
+          email: booking.customerEmail,
+        };
+
         const calendarEvent = await createCalendarEvent(
-          `[Kasar Studio] ${serviceLabel} - ${booking.customerName}`,
-          `Client: ${booking.customerName}\nEmail: ${
-            booking.customerEmail
-          }\nTéléphone: ${
-            booking.customerPhone || "Non fourni"
-          }\nDurée: ${duration}h\nNotes: ${booking.notes || "Aucune"}\nPrix: ${
-            booking.totalPrice
-          }€\nStatut: Confirmé (Payé)`,
-          bookingDate,
-          endDateTime,
-          booking.customerEmail
+          eventDetails.summary,
+          eventDetails.description,
+          eventDetails.startDateTime,
+          eventDetails.endDateTime,
+          eventDetails.email
         );
 
-        console.log(
-          "Événement créé dans Google Calendar avec succès:",
-          calendarEvent.id
-        );
-        console.log("Détails de l'événement:", {
-          summary: calendarEvent.summary,
-          start: calendarEvent.start,
-          end: calendarEvent.end,
-          attendees: calendarEvent.attendees,
-        });
+        console.log("Événement créé avec succès:", calendarEvent.id);
 
-        // Mettre à jour la réservation avec l'ID de l'événement Google Calendar
-        booking.googleCalendarEventId = calendarEvent.id;
+        if (calendarEvent.id) {
+          booking.googleCalendarEventId = calendarEvent.id;
+        }
       } catch (calendarError) {
         console.error(
           "Erreur lors de la création de l'événement dans Google Calendar:",
@@ -235,6 +388,33 @@ export async function POST(request: NextRequest) {
         }
 
         // Continuer même si l'ajout au calendrier échoue
+      }
+
+      // Envoyer un email de confirmation au client
+      try {
+        console.log("Envoi de l'email de confirmation de réservation");
+
+        await sendBookingConfirmationEmail({
+          customerName: booking.customerName,
+          customerEmail: booking.customerEmail,
+          service: booking.service,
+          date: booking.date,
+          time: booking.time,
+          duration: booking.duration,
+          totalPrice: booking.totalPrice,
+          depositAmount: booking.depositAmount,
+          remainingAmount: booking.totalPrice
+            ? booking.totalPrice - (booking.depositAmount || 0)
+            : undefined,
+        });
+
+        console.log("Email de confirmation envoyé avec succès");
+      } catch (emailError) {
+        console.error(
+          "Erreur lors de l'envoi de l'email de confirmation:",
+          emailError
+        );
+        // Continuer même si l'envoi de l'email échoue
       }
     }
 

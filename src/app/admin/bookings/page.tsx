@@ -245,6 +245,8 @@ export default function BookingsPage() {
           id: bookingId,
           depositPaid: paid,
           paymentMethod: method || "cash",
+          status: paid ? "confirmed" : "pending",
+          sendConfirmationEmail: paid,
         }),
       });
 
@@ -263,6 +265,7 @@ export default function BookingsPage() {
                 depositPaid: paid,
                 paymentMethod: method || "cash",
                 paymentDate: paid ? new Date().toISOString() : undefined,
+                status: paid ? "confirmed" : "pending",
               }
             : booking
         )
@@ -275,6 +278,7 @@ export default function BookingsPage() {
           depositPaid: paid,
           paymentMethod: method || "cash",
           paymentDate: paid ? new Date().toISOString() : undefined,
+          status: paid ? "confirmed" : "pending",
         });
       }
     } catch (error) {
