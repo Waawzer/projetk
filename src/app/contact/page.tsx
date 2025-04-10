@@ -28,7 +28,7 @@ export default function ContactPage() {
       {/* Contact Section */}
       <section className="py-20 bg-card">
         <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 min-h-[600px]">
             {/* Contact Info */}
             <div>
               <h2 className="text-2xl font-bold mb-8">

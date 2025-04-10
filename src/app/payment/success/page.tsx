@@ -114,7 +114,7 @@ function PaymentSuccessContent() {
   }, [searchParams]);
 
   return (
-    <div className="flex-grow flex items-center justify-center p-4">
+    <div className="flex-grow flex items-center justify-center p-4 min-h-[600px]">
       <div className="max-w-md w-full bg-card rounded-xl shadow-lg p-6 md:p-8">
         {status === "loading" && (
           <div className="text-center">

@@ -25,94 +25,97 @@ export default function ReservationPage() {
       {/* Booking Section */}
       <section className="py-20 bg-card">
         <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
-            {/* Booking Form */}
-            <div className="lg:col-span-2">
-              <BookingForm />
-            </div>
+          <div className="max-w-6xl mx-auto min-h-[600px]">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+              {/* Booking Form */}
+              <div className="lg:col-span-2">
+                <BookingForm />
+              </div>
 
-            {/* Sidebar */}
-            <div>
-              <div className="sticky top-32">
-                <div className="bg-card-hover rounded-xl overflow-hidden mb-8">
-                  <div className="relative h-48 w-full">
-                    <Image
-                      src="https://images.unsplash.com/photo-1520523839897-bd0b52f945a0?q=80&w=600&auto=format&fit=crop"
-                      alt="Studio d'enregistrement"
-                      fill
-                      className="object-cover"
-                    />
-                  </div>
-                  <div className="p-6">
-                    <h3 className="text-xl font-bold mb-4">
-                      Pourquoi nous choisir ?
-                    </h3>
-                    <ul className="space-y-3">
-                      <li className="flex items-start">
-                        <FiCheckCircle className="text-primary mt-1 mr-3 flex-shrink-0" />
-                        <span className="text-gray-300">
-                          Équipement professionnel haut de gamme
-                        </span>
-                      </li>
-                      <li className="flex items-start">
-                        <FiCheckCircle className="text-primary mt-1 mr-3 flex-shrink-0" />
-                        <span className="text-gray-300">
-                          Ingénieurs du son expérimentés
-                        </span>
-                      </li>
-                      <li className="flex items-start">
-                        <FiCheckCircle className="text-primary mt-1 mr-3 flex-shrink-0" />
-                        <span className="text-gray-300">
-                          Acoustique parfaite pour un son optimal
-                        </span>
-                      </li>
-                      <li className="flex items-start">
-                        <FiCheckCircle className="text-primary mt-1 mr-3 flex-shrink-0" />
-                        <span className="text-gray-300">
-                          Ambiance créative et inspirante
-                        </span>
-                      </li>
-                      <li className="flex items-start">
-                        <FiCheckCircle className="text-primary mt-1 mr-3 flex-shrink-0" />
-                        <span className="text-gray-300">
-                          Accompagnement personnalisé
-                        </span>
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-
-                <div className="bg-card-hover rounded-xl p-6">
-                  <h3 className="text-xl font-bold mb-4">
-                    Informations importantes
-                  </h3>
-                  <div className="space-y-4">
-                    <div className="flex items-start">
-                      <div className="w-10 h-10 bg-primary/20 rounded-full flex items-center justify-center mr-3 flex-shrink-0">
-                        <FiCalendar className="text-primary" size={18} />
-                      </div>
-                      <div>
-                        <h4 className="font-medium mb-1">
-                          Politique d&apos;annulation
-                        </h4>
-                        <p className="text-sm text-gray-400">
-                          Annulation gratuite jusqu&apos;à 48h avant la session.
-                          Au-delà, l&apos;acompte n&apos;est pas remboursable.
-                        </p>
-                      </div>
+              {/* Sidebar */}
+              <div>
+                <div className="sticky top-32">
+                  <div className="bg-card-hover rounded-xl overflow-hidden mb-8">
+                    <div className="relative h-48 w-full">
+                      <Image
+                        src="https://images.unsplash.com/photo-1520523839897-bd0b52f945a0?q=80&w=600&auto=format&fit=crop"
+                        alt="Studio d'enregistrement"
+                        fill
+                        className="object-cover"
+                      />
                     </div>
+                    <div className="p-6">
+                      <h3 className="text-xl font-bold mb-4">
+                        Pourquoi nous choisir ?
+                      </h3>
+                      <ul className="space-y-3">
+                        <li className="flex items-start">
+                          <FiCheckCircle className="text-primary mt-1 mr-3 flex-shrink-0" />
+                          <span className="text-gray-300">
+                            Équipement professionnel haut de gamme
+                          </span>
+                        </li>
+                        <li className="flex items-start">
+                          <FiCheckCircle className="text-primary mt-1 mr-3 flex-shrink-0" />
+                          <span className="text-gray-300">
+                            Ingénieurs du son expérimentés
+                          </span>
+                        </li>
+                        <li className="flex items-start">
+                          <FiCheckCircle className="text-primary mt-1 mr-3 flex-shrink-0" />
+                          <span className="text-gray-300">
+                            Acoustique parfaite pour un son optimal
+                          </span>
+                        </li>
+                        <li className="flex items-start">
+                          <FiCheckCircle className="text-primary mt-1 mr-3 flex-shrink-0" />
+                          <span className="text-gray-300">
+                            Ambiance créative et inspirante
+                          </span>
+                        </li>
+                        <li className="flex items-start">
+                          <FiCheckCircle className="text-primary mt-1 mr-3 flex-shrink-0" />
+                          <span className="text-gray-300">
+                            Accompagnement personnalisé
+                          </span>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
 
-                    <div className="flex items-start">
-                      <div className="w-10 h-10 bg-primary/20 rounded-full flex items-center justify-center mr-3 flex-shrink-0">
-                        <FiCreditCard className="text-primary" size={18} />
+                  <div className="bg-card-hover rounded-xl p-6">
+                    <h3 className="text-xl font-bold mb-4">
+                      Informations importantes
+                    </h3>
+                    <div className="space-y-4">
+                      <div className="flex items-start">
+                        <div className="w-10 h-10 bg-primary/20 rounded-full flex items-center justify-center mr-3 flex-shrink-0">
+                          <FiCalendar className="text-primary" size={18} />
+                        </div>
+                        <div>
+                          <h4 className="font-medium mb-1">
+                            Politique d&apos;annulation
+                          </h4>
+                          <p className="text-sm text-gray-400">
+                            Annulation gratuite jusqu&apos;à 48h avant la
+                            session. Au-delà, l&apos;acompte n&apos;est pas
+                            remboursable.
+                          </p>
+                        </div>
                       </div>
-                      <div>
-                        <h4 className="font-medium mb-1">Paiement</h4>
-                        <p className="text-sm text-gray-400">
-                          Un acompte de 50% est requis pour confirmer votre
-                          réservation. Le solde est payable à la fin de la
-                          session.
-                        </p>
+
+                      <div className="flex items-start">
+                        <div className="w-10 h-10 bg-primary/20 rounded-full flex items-center justify-center mr-3 flex-shrink-0">
+                          <FiCreditCard className="text-primary" size={18} />
+                        </div>
+                        <div>
+                          <h4 className="font-medium mb-1">Paiement</h4>
+                          <p className="text-sm text-gray-400">
+                            Un acompte de 50% est requis pour confirmer votre
+                            réservation. Le solde est payable à la fin de la
+                            session.
+                          </p>
+                        </div>
                       </div>
                     </div>
                   </div>

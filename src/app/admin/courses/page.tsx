@@ -170,7 +170,7 @@ export default function CoursesAdminPage() {
   }
 
   return (
-    <div>
+    <div className="container mx-auto p-4 min-h-[600px]">
       <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8">
         <div>
           <h1 className="text-2xl font-bold">Gestion des cours particuliers</h1>

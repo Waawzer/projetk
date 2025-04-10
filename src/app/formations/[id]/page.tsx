@@ -194,7 +194,7 @@ export default function FormationDetailsPage() {
       {/* Formation Content */}
       <section className="py-12 md:py-16">
         <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto">
+          <div className="max-w-4xl mx-auto min-h-[600px]">
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
               <div className="lg:col-span-2 space-y-8">
                 {formation.longDescription && (
