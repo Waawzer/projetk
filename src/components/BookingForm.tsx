@@ -32,6 +32,7 @@ const BookingForm = () => {
   const [bookingError, setBookingError] = useState("");
   const [currentBookingId, setCurrentBookingId] = useState<string | null>(null);
   const [isProcessingPayPal, setIsProcessingPayPal] = useState(false);
+  const [isProcessingStripe, setIsProcessingStripe] = useState(false);
 
   const {
     register,
@@ -147,6 +148,62 @@ const BookingForm = () => {
     }
   };
 
+  // Fonction pour créer une session de paiement Stripe et rediriger l'utilisateur
+  const handleStripePayment = async (bookingId: string, data: FormData) => {
+    try {
+      setIsProcessingStripe(true);
+
+      // Déterminer le service label pour Stripe
+      const serviceLabel = (() => {
+        switch (data.service) {
+          case "recording":
+            return "Enregistrement";
+          case "mixing":
+            return "Mixage";
+          case "mastering":
+            return "Mastering";
+          case "production":
+            return "Production";
+          default:
+            return data.service;
+        }
+      })();
+
+      // Créer une session de paiement Stripe
+      const response = await fetch("/api/payment/stripe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          amount: getDepositAmount(),
+          bookingId: bookingId,
+          service: serviceLabel,
+          customerName: data.name,
+          customerEmail: data.email,
+          returnUrl: `${window.location.origin}/payment/success?bookingId=${bookingId}&type=deposit`,
+          cancelUrl: `${window.location.origin}/payment/cancel`,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(
+          errorData.error || "Erreur lors de la création du paiement par carte"
+        );
+      }
+
+      const paymentData = await response.json();
+
+      // Rediriger vers la page de paiement Stripe
+      window.location.href = paymentData.url;
+    } catch (error) {
+      console.error("Erreur Stripe:", error);
+      setBookingError(
+        error instanceof Error ? error.message : "Erreur lors du paiement"
+      );
+      setIsProcessingStripe(false);
+    }
+  };
+
   const onSubmit = async (data: FormData) => {
     setIsSubmitting(true);
     setBookingError("");
@@ -201,6 +258,12 @@ const BookingForm = () => {
       // Si PayPal est sélectionné, rediriger vers PayPal
       if (data.paymentMethod === "paypal") {
         await handlePayPalPayment(newBookingId, data);
+        return; // Sortir de la fonction car nous allons rediriger
+      }
+
+      // Si carte bancaire est sélectionnée, rediriger vers Stripe
+      if (data.paymentMethod === "card") {
+        await handleStripePayment(newBookingId, data);
         return; // Sortir de la fonction car nous allons rediriger
       }
 
@@ -721,15 +784,19 @@ const BookingForm = () => {
                 type="button"
                 onClick={prevStep}
                 className="bg-gray-700 hover:bg-gray-600 text-white px-6 py-3 rounded-lg"
-                disabled={isSubmitting || isProcessingPayPal}
+                disabled={
+                  isSubmitting || isProcessingPayPal || isProcessingStripe
+                }
               >
                 Retour
               </button>
               <button
                 type="submit"
-                disabled={isSubmitting || isProcessingPayPal}
+                disabled={
+                  isSubmitting || isProcessingPayPal || isProcessingStripe
+                }
                 className={`flex items-center justify-center px-6 py-3 rounded-lg ${
-                  isSubmitting || isProcessingPayPal
+                  isSubmitting || isProcessingPayPal || isProcessingStripe
                     ? "bg-primary/70 cursor-not-allowed"
                     : "bg-primary hover:bg-primary-hover"
                 }`}
@@ -762,6 +829,11 @@ const BookingForm = () => {
                   <>
                     <FaPaypal className="animate-pulse mr-2" />
                     Redirection vers PayPal...
+                  </>
+                ) : isProcessingStripe ? (
+                  <>
+                    <FiCreditCard className="animate-pulse mr-2" />
+                    Redirection vers le paiement...
                   </>
                 ) : (
                   <>

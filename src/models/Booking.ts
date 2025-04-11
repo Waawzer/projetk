@@ -16,6 +16,7 @@ export interface IBooking {
   remainingPaid?: boolean;
   remainingPaymentDate?: Date;
   remainingPaymentMethod?: "cash" | "card" | "transfer" | "paypal";
+  remainingPaymentId?: string;
   paymentMethod?: "cash" | "card" | "transfer" | "paypal";
   paymentId?: string;
   paymentDate?: Date;
@@ -92,6 +93,9 @@ const BookingSchema = new Schema<IBookingDocument>(
     remainingPaymentMethod: {
       type: String,
       enum: ["cash", "card", "transfer", "paypal"],
+    },
+    remainingPaymentId: {
+      type: String,
     },
     paymentMethod: {
       type: String,

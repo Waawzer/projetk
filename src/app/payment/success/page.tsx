@@ -14,17 +14,39 @@ function PaymentSuccessContent() {
   useEffect(() => {
     const capturePayment = async () => {
       try {
-        // Récupérer les paramètres d'URL PayPal
-        const token = searchParams.get("token");
-        const payerId = searchParams.get("PayerID");
+        // Récupérer les paramètres d'URL
+        const token = searchParams.get("token"); // PayPal
+        const payerId = searchParams.get("PayerID"); // PayPal
+        let sessionId = searchParams.get("session_id"); // Stripe
+
+        // Gestion spéciale pour le cas où l'URL contient d'autres paramètres (solution pour le problème d'URL)
+        if (!sessionId) {
+          // Vérifier si session_id est dans un autre paramètre
+          for (const [key] of Array.from(searchParams.entries())) {
+            if (key.includes("session_id")) {
+              const match = key.match(/session_id=([^&]+)/);
+              if (match && match[1]) {
+                sessionId = match[1];
+                console.log("Session ID extrait de:", key, "->", sessionId);
+                break;
+              }
+            }
+          }
+        }
 
         // Récupérer notre paramètre d'ID de réservation
         const bookingId = searchParams.get("bookingId");
         const type = searchParams.get("type") || "deposit";
 
-        console.log("URL Params:", { token, payerId, bookingId, type });
+        console.log("URL Params:", {
+          token,
+          payerId,
+          sessionId,
+          bookingId,
+          type,
+        });
 
-        // Si nous venons directement de PayPal, nous aurons un token et un PayerID
+        // Si nous venons de PayPal, nous aurons un token et un PayerID
         if (token && payerId && bookingId) {
           console.log("Capture de paiement PayPal avec token:", token);
 
@@ -49,7 +71,7 @@ function PaymentSuccessContent() {
           }
 
           const result = await response.json();
-          console.log("Résultat de la capture:", result);
+          console.log("Résultat de la capture PayPal:", result);
 
           setStatus("success");
 
@@ -60,53 +82,60 @@ function PaymentSuccessContent() {
           return;
         }
 
-        // Si nous n'avons pas de token ou payerId, mais que nous avons un bookingId
-        // Cela signifie qu'on a peut-être été redirigé ici directement
-        if (bookingId) {
-          console.log("Vérification de la réservation:", bookingId);
+        // Si nous venons de Stripe, nous aurons un session_id
+        if (sessionId && bookingId) {
+          console.log(
+            "Vérification du paiement Stripe avec sessionId:",
+            sessionId
+          );
 
-          try {
-            const checkResponse = await fetch(`/api/bookings/${bookingId}`, {
+          // Pour Stripe, le paiement est déjà capturé automatiquement
+          // Mais nous devons vérifier le statut pour confirmer
+          const response = await fetch(
+            `/api/payment/stripe/check?session_id=${sessionId}&bookingId=${bookingId}&type=${type}`,
+            {
               method: "GET",
               headers: { "Content-Type": "application/json" },
-            });
-
-            if (checkResponse.ok) {
-              const bookingData = await checkResponse.json();
-              console.log("Données de réservation:", bookingData);
-
-              if (type === "deposit" && bookingData.depositPaid) {
-                setStatus("success");
-                return;
-              } else if (type === "remaining" && bookingData.remainingPaid) {
-                setStatus("success");
-                return;
-              }
             }
-          } catch (error) {
-            console.error(
-              "Erreur lors de la vérification de la réservation:",
-              error
+          );
+
+          if (!response.ok) {
+            const errorData = await response.json();
+            console.error("Erreur de l'API Stripe:", errorData);
+            throw new Error(
+              errorData.error || "Erreur lors de la vérification du paiement"
             );
           }
+
+          const result = await response.json();
+          console.log("Résultat de la vérification Stripe:", result);
+
+          setStatus("success");
+
+          // Nettoyer l'URL
+          if (typeof window !== "undefined") {
+            window.history.replaceState({}, document.title, "/payment/success");
+          }
+          return;
         }
 
-        // Si nous arrivons ici, c'est que nous n'avons ni token PayPal valide, ni réservation confirmée
-        setStatus("error");
-        setErrorMessage(
-          "Impossible de confirmer le paiement. Veuillez contacter le support."
-        );
+        // Si nous sommes arrivés ici sans paramètres de paiement
+        if (!token && !payerId && !sessionId) {
+          // Peut-être que l'utilisateur a actualisé la page après un paiement réussi
+          setStatus("success");
+          return;
+        }
+
+        // Paramètres manquants
+        throw new Error("Paramètres de paiement manquants ou incomplets");
       } catch (error) {
-        console.error(
-          "Erreur lors de la finalisation du paiement PayPal:",
-          error
-        );
+        console.error("Erreur lors du traitement du paiement:", error);
+        setStatus("error");
         setErrorMessage(
           error instanceof Error
             ? error.message
-            : "Erreur lors du traitement du paiement"
+            : "Une erreur est survenue lors du traitement du paiement"
         );
-        setStatus("error");
       }
     };
 

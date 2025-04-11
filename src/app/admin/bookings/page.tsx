@@ -57,6 +57,7 @@ export default function BookingsPage() {
   const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
   const [showBookingModal, setShowBookingModal] = useState(false);
   const [paypalLink, setPaypalLink] = useState<string | null>(null);
+  const [stripeLink, setStripeLink] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchBookings = async () => {
@@ -136,6 +137,7 @@ export default function BookingsPage() {
     setShowBookingModal(false);
     setSelectedBooking(null);
     setPaypalLink(null);
+    setStripeLink(null);
   };
 
   const handleStatusChange = async (
@@ -295,6 +297,7 @@ export default function BookingsPage() {
 
     try {
       setPaypalLink("Génération du lien en cours...");
+      setStripeLink(null); // Réinitialiser le lien Stripe
 
       const response = await fetch("/api/payment/paypal", {
         method: "POST",
@@ -325,6 +328,44 @@ export default function BookingsPage() {
     }
   };
 
+  // Nouvelle fonction pour générer un lien de paiement Stripe
+  const createStripeLink = async (booking: Booking) => {
+    if (!booking.remainingAmount) return;
+
+    try {
+      setStripeLink("Génération du lien en cours...");
+      setPaypalLink(null); // Réinitialiser le lien PayPal
+
+      const response = await fetch("/api/payment/stripe", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          amount: booking.remainingAmount,
+          bookingId: booking._id,
+          service: getServiceLabel(booking.service),
+          customerName: booking.customerName,
+          customerEmail: booking.customerEmail,
+          paymentType: "remaining",
+          returnUrl: `${window.location.origin}/payment/success?bookingId=${booking._id}&type=remaining`,
+          cancelUrl: `${window.location.origin}/payment/cancel`,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Erreur lors de la création du lien Stripe");
+      }
+
+      const data = await response.json();
+      setStripeLink(data.url);
+    } catch (error) {
+      console.error("Erreur lors de la création du lien Stripe:", error);
+      setStripeLink(null);
+      alert("Erreur lors de la création du lien Stripe. Veuillez réessayer.");
+    }
+  };
+
   // Fonction pour copier le lien PayPal
   const copyPayPalLink = () => {
     if (!paypalLink) return;
@@ -344,6 +385,28 @@ export default function BookingsPage() {
         document.execCommand("copy");
         document.body.removeChild(textarea);
         alert("Lien PayPal copié dans le presse-papiers!");
+      });
+  };
+
+  // Fonction pour copier le lien Stripe
+  const copyStripeLink = () => {
+    if (!stripeLink) return;
+
+    navigator.clipboard
+      .writeText(stripeLink)
+      .then(() => {
+        alert("Lien Stripe copié dans le presse-papiers!");
+      })
+      .catch((err) => {
+        console.error("Erreur lors de la copie:", err);
+        // Méthode de repli
+        const textarea = document.createElement("textarea");
+        textarea.value = stripeLink;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand("copy");
+        document.body.removeChild(textarea);
+        alert("Lien Stripe copié dans le presse-papiers!");
       });
   };
 
@@ -1100,6 +1163,43 @@ export default function BookingsPage() {
               </button>
             </div>
 
+            {/* Boutons pour générer des liens de paiement */}
+            {selectedBooking &&
+              !selectedBooking.remainingPaid &&
+              selectedBooking.remainingAmount &&
+              selectedBooking.depositPaid && (
+                <div className="mt-4 grid grid-cols-2 gap-2">
+                  <button
+                    onClick={() => createPayPalLink(selectedBooking)}
+                    className="flex items-center justify-center bg-blue-800 hover:bg-blue-700 text-white text-sm py-2 px-4 rounded"
+                  >
+                    <svg
+                      className="w-5 h-5 mr-2"
+                      viewBox="0 0 24 24"
+                      fill="currentColor"
+                    >
+                      <path d="M19.554 9.488c.121.563.106 1.246-.04 2.051-.582 2.978-2.477 4.466-5.683 4.466h-.442a.666.666 0 0 0-.444.166.72.72 0 0 0-.239.427l-.041.189-.553 3.479-.021.151a.706.706 0 0 1-.247.426.666.666 0 0 1-.447.166H8.874a.395.395 0 0 1-.331-.15.457.457 0 0 1-.09-.363c.061-.373.148-.938.267-1.689.119-.75.217-1.37.297-1.859l.043-.242c.031-.19.068-.436.114-.735.046-.3.085-.536.114-.711a.28.28 0 0 1 .096-.2.282.282 0 0 1 .187-.07h1.446c.087 0 .155.011.2.035.047.023.08.069.102.137.02.068.029.111.035.194.006.083.001.163-.016.239a5.97 5.97 0 0 1-.008.071l-.147.917-.028.182a.8.8 0 0 0 .264.713c.14.108.325.16.558.16h.266c2.213 0 3.721-1.184 4.254-3.552.224-.818.305-1.593.25-2.328a2.433 2.433 0 0 0-.663-1.57c-.255-.268-.6-.49-1.027-.667z" />
+                      <path d="M18.071 6.608c-.303-.424-.723-.745-1.262-.963-.535-.217-1.19-.326-1.967-.326h-3.681a.707.707 0 0 0-.477.195.627.627 0 0 0-.224.425l-1.3 8.148-.013.087a.393.393 0 0 0 .134.33.456.456 0 0 0 .332.141h2.039l.032-.208.558-3.5c.017-.108.066-.193.144-.256a.46.46 0 0 1 .304-.096h.67c1.949 0 3.468-.394 4.553-1.179 1.085-.786 1.666-1.821 1.745-3.099.036-.694-.069-1.276-.307-1.745l-.28.047z" />
+                      <path d="M7.847 6.064a.393.393 0 0 1 .297-.138h3.683c.414 0 .784.022 1.112.069a5.13 5.13 0 0 1 .765.139c.198.053.401.126.608.219.154.068.28.131.376.185l.18.099c.07.042.117.071.14.09.176.114.33.246.464.393.134.148.243.309.326.485.099-.012.19-.018.272-.018 1.069 0 1.919.328 2.553.985.634.657.911 1.538.833 2.64-.087 1.544-.817 2.824-2.194 3.84-1.377 1.017-3.144 1.525-5.3 1.525H9.815l-1.042 6.566h-2.79l-.002-.013 1.866-11.708z" />
+                    </svg>
+                    Générer lien PayPal
+                  </button>
+                  <button
+                    onClick={() => createStripeLink(selectedBooking)}
+                    className="flex items-center justify-center bg-indigo-600 hover:bg-indigo-500 text-white text-sm py-2 px-4 rounded"
+                  >
+                    <svg
+                      className="w-5 h-5 mr-2"
+                      viewBox="0 0 24 24"
+                      fill="currentColor"
+                    >
+                      <path d="M11.453 19.902c-.338.066-.701.107-1.074.107C6.889 20.009 4 18.055 4 14.553c0-3.532 2.889-6.536 6.379-6.536 3.491 0 6.379 3.004 6.379 6.536 0 1.863-.785 3.27-2.129 4.289-.38.287-.521.602-.511.945l.04 1.315c.012.346-.248.62-.594.62-.174 0-.34-.072-.46-.198l-1.032-1.103c-.102-.108-.163-.249-.174-.396l-.044-.519zm3.935-7.963c-.82-.2-1.11-.363-1.11-.607 0-.211.171-.365.487-.365.559 0 1.12.123 1.687.384.208.097.423.146.628.146.629 0 1.098-.512.098-.982 0-.156-.046-.313-.139-.464-.196-.323-.624-.616-1.188-.802.055-.157.087-.322.087-.493 0-.87-.717-1.529-1.882-1.529-.548 0-1.033.161-1.358.451-.368.291-.583.741-.605 1.241-.545.163-.968.522-.968 1.011 0 .589.538 1.007 1.334 1.12l.024.004c-.037.116-.056.23-.056.344 0 .407.24.748.694.97l.017.009c-.608.179-2.615.821-2.615 2.474 0 1.504 1.461 2.419 2.989 2.419 2.095 0 3.537-1.214 3.537-2.54 0-.851-.694-1.442-2.661-1.816zm-10.913.864c.625 0 1.193.314 1.193.966 0 .572-.53.86-1.175.86-.59 0-1.192-.286-1.192-.86 0-.652.602-.966 1.174-.966zm5.906 2.764c.627 0 1.083.362 1.083.798 0 .51-.534 1.012-1.51 1.012-.828 0-1.472-.416-1.472-1.01 0-.444.419-.8 1.17-.8h.73zM8.293 13.57c-.625 0-1.147-.34-1.147-.948 0-.536.474-.918 1.111-.918.764 0 1.193.487 1.193.918 0 .607-.5.948-1.157.948z" />
+                    </svg>
+                    Générer lien carte
+                  </button>
+                </div>
+              )}
+
             {/* Affichage du lien PayPal une fois généré */}
             {paypalLink && (
               <div className="mt-3 bg-gray-700 p-2 rounded-lg">
@@ -1128,6 +1228,46 @@ export default function BookingsPage() {
                   <input
                     type="text"
                     value={paypalLink}
+                    readOnly
+                    className="bg-gray-600 text-white text-xs w-full rounded-lg p-2 pr-10 overflow-x-auto whitespace-nowrap"
+                    style={{ scrollbarWidth: "none" }}
+                  />
+                </div>
+                <p className="text-xs text-gray-400 mt-1">
+                  Envoyez ce lien au client pour qu&apos;il puisse effectuer le
+                  paiement restant.
+                </p>
+              </div>
+            )}
+
+            {/* Affichage du lien Stripe une fois généré */}
+            {stripeLink && (
+              <div className="mt-3 bg-gray-700 p-2 rounded-lg">
+                <div className="flex items-center justify-between mb-1">
+                  <label className="text-sm text-gray-400">
+                    Lien de paiement Stripe:
+                  </label>
+                  <button
+                    onClick={copyStripeLink}
+                    className="text-blue-400 hover:text-blue-300 text-xs flex items-center"
+                  >
+                    <svg
+                      className="w-3 h-3 mr-1"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                    >
+                      <rect x="9" y="9" width="13" height="13" rx="2" />
+                      <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+                    </svg>
+                    Copier
+                  </button>
+                </div>
+                <div className="flex">
+                  <input
+                    type="text"
+                    value={stripeLink}
                     readOnly
                     className="bg-gray-600 text-white text-xs w-full rounded-lg p-2 pr-10 overflow-x-auto whitespace-nowrap"
                     style={{ scrollbarWidth: "none" }}
