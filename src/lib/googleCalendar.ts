@@ -333,7 +333,7 @@ export async function getAvailableTimeSlots(
     const dayOfWeek = targetDate.getDay();
 
     // En France, les horaires d'ouverture du service sont généralement entre 9h et 20h
-    const openingTime = 9; // 9h00
+    const openingTime = 10; // 10h00 (modifié de 9h à 10h)
     const hardClosingTime = 22; // 22h00 - heure limite absolue
 
     // Calcul de l'heure maximum de début en fonction de l'heure de fermeture stricte et de la durée

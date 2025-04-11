@@ -48,12 +48,16 @@ export async function POST(request: Request) {
 
     // Adapter les noms de champs pour correspondre au modèle Booking
     // Accepter à la fois les formats customerName/customerEmail et name/email
+    // Convertir la date pour s'assurer qu'elle est au format YYYY-MM-DD sans l'heure
+    const dateObj = new Date(body.date);
+    const formattedDate = dateObj.toISOString().split("T")[0]; // Format YYYY-MM-DD
+
     const adaptedData = {
       customerName: body.customerName || body.name,
       customerEmail: body.customerEmail || body.email,
       customerPhone: body.customerPhone || body.phone,
       service: body.service,
-      date: body.date,
+      date: formattedDate, // Utiliser la date formatée sans l'heure
       time: timeValue,
       endTime,
       duration,

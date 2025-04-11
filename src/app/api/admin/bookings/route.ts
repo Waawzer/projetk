@@ -219,6 +219,12 @@ export async function POST(request: NextRequest) {
       delete data.addToGoogleCalendar;
     }
 
+    // Formater la date pour s'assurer qu'elle est au format YYYY-MM-DD
+    if (data.date) {
+      const dateObj = new Date(data.date);
+      data.date = dateObj.toISOString().split("T")[0]; // Format YYYY-MM-DD
+    }
+
     // Créer la réservation dans la base de données
     const newBooking = await BookingModel.create(data);
 
@@ -291,6 +297,12 @@ export async function PUT(request: NextRequest) {
 
     const data = await request.json();
     const { id } = data;
+
+    // Formater la date pour s'assurer qu'elle est au format YYYY-MM-DD
+    if (data.date) {
+      const dateObj = new Date(data.date);
+      data.date = dateObj.toISOString().split("T")[0]; // Format YYYY-MM-DD
+    }
 
     const updatedBooking = await BookingModel.findByIdAndUpdate(
       id,
