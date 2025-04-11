@@ -253,14 +253,14 @@ ${data.notes ? `Notes: ${data.notes}` : ""}
 
         // Créer une date en utilisant UTC avec décalage horaire (+2 heures pour la France en été)
         const startDateTime = new Date(
-          Date.UTC(year, month - 1, day, hours + 2, minutes)
+          Date.UTC(year, month - 1, day, hours - 2, minutes)
         );
 
         console.log("Date et heure de début UTC:", startDateTime.toISOString());
 
         // Créer la date et l'heure de fin
         const endDateTime = new Date(
-          Date.UTC(year, month - 1, day, hours + data.duration + 2, minutes)
+          Date.UTC(year, month - 1, day, hours + data.duration - 2, minutes)
         );
 
         console.log("Date et heure de fin UTC:", endDateTime.toISOString());
