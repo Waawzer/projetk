@@ -338,6 +338,8 @@ Acompte: ${booking.depositAmount || "Non spécifié"} €`,
       // Envoyer un email de confirmation au client
       try {
         console.log("Envoi de l'email de confirmation de réservation...");
+        console.log("RESEND_API_KEY définie:", !!process.env.RESEND_API_KEY);
+        console.log("ADMIN_EMAIL définie:", !!process.env.ADMIN_EMAIL);
 
         await sendBookingConfirmationEmail({
           customerName: booking.customerName,
@@ -359,6 +361,13 @@ Acompte: ${booking.depositAmount || "Non spécifié"} €`,
           "Erreur lors de l'envoi de l'email de confirmation:",
           emailError
         );
+        // Plus de détails sur l'erreur pour le débogage
+        if (emailError instanceof Error) {
+          console.error("Message d'erreur:", emailError.message);
+          console.error("Stack trace:", emailError.stack);
+        } else {
+          console.error("Erreur non standard:", JSON.stringify(emailError));
+        }
         // Continuer même si l'envoi de l'email échoue
       }
     } else {

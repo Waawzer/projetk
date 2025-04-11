@@ -268,21 +268,25 @@ export async function POST(request: NextRequest) {
           console.log("- Email:", booking.customerEmail);
 
           // Créer la date et l'heure de début
-          const bookingDate = new Date(booking.date);
+          const [year, month, day] = booking.date.split("-").map(Number);
           const [hours, minutes] = startTime.split(":").map(Number);
-          bookingDate.setHours(hours, minutes, 0);
+
+          // Utiliser UTC pour éviter les problèmes de fuseau horaire sur Vercel
+          const bookingDate = new Date(
+            Date.UTC(year, month - 1, day, hours, minutes)
+          );
 
           console.log(
-            "- Date et heure formatées:",
-            bookingDate.toLocaleString()
+            "- Date et heure formatées UTC:",
+            bookingDate.toISOString()
           );
 
           // Créer la date et l'heure de fin
           const endDateTime = new Date(
-            bookingDate.getTime() + duration * 60 * 60 * 1000
+            Date.UTC(year, month - 1, day, hours + duration, minutes)
           );
 
-          console.log("- Date et heure de fin:", endDateTime.toLocaleString());
+          console.log("- Date et heure de fin UTC:", endDateTime.toISOString());
 
           // Formatage du service pour le titre
           const serviceLabel = getServiceLabel(booking.service);
@@ -351,6 +355,8 @@ Acompte: ${booking.depositAmount || "Non spécifié"} €`,
         // Envoyer un email de confirmation au client
         try {
           console.log("Envoi de l'email de confirmation de réservation");
+          console.log("RESEND_API_KEY définie:", !!process.env.RESEND_API_KEY);
+          console.log("ADMIN_EMAIL définie:", !!process.env.ADMIN_EMAIL);
 
           await sendBookingConfirmationEmail({
             customerName: booking.customerName,
@@ -372,6 +378,15 @@ Acompte: ${booking.depositAmount || "Non spécifié"} €`,
             "Erreur lors de l'envoi de l'email de confirmation:",
             emailError
           );
+
+          // Plus de détails sur l'erreur pour le débogage
+          if (emailError instanceof Error) {
+            console.error("Message d'erreur:", emailError.message);
+            console.error("Stack trace:", emailError.stack);
+          } else {
+            console.error("Erreur non standard:", JSON.stringify(emailError));
+          }
+
           // Continuer même si l'envoi de l'email échoue
         }
       }

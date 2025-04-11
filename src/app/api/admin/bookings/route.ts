@@ -251,9 +251,15 @@ ${data.notes ? `Notes: ${data.notes}` : ""}
         const [year, month, day] = data.date.split("-").map(Number);
         const [hours, minutes] = data.time.split(":").map(Number);
 
-        const startDateTime = new Date(year, month - 1, day, hours, minutes);
-        const endDateTime = new Date(startDateTime);
-        endDateTime.setHours(endDateTime.getHours() + data.duration);
+        // Créer une date en spécifiant explicitement le fuseau horaire Europe/Paris
+        // Pour éviter le décalage sur Vercel qui utilise UTC par défaut
+        const startDateTime = new Date(
+          Date.UTC(year, month - 1, day, hours, minutes)
+        );
+        // Ajustement du fuseau horaire pour être sûr que l'heure est correcte sur Vercel
+        const endDateTime = new Date(
+          Date.UTC(year, month - 1, day, hours + data.duration, minutes)
+        );
 
         // Créer l'événement dans Google Calendar
         const calendarEvent = await createCalendarEvent(
@@ -456,14 +462,18 @@ export async function PATCH(request: NextRequest) {
       try {
         console.log("Ajout de l'événement au calendrier Google");
 
-        // Créer la date et l'heure de début
-        const bookingDate = new Date(booking.date);
+        // Récupérer les composants de la date et de l'heure
+        const [year, month, day] = booking.date.split("-").map(Number);
         const [hours, minutes] = booking.time.split(":").map(Number);
-        bookingDate.setHours(hours, minutes, 0);
 
-        // Créer la date et l'heure de fin
+        // Créer une date en utilisant UTC pour éviter les problèmes de fuseau horaire sur Vercel
+        const bookingDate = new Date(
+          Date.UTC(year, month - 1, day, hours, minutes)
+        );
+
+        // Créer la date et l'heure de fin en utilisant UTC également
         const endDateTime = new Date(
-          bookingDate.getTime() + booking.duration * 60 * 60 * 1000
+          Date.UTC(year, month - 1, day, hours + booking.duration, minutes)
         );
 
         // Formatage du service pour le titre
