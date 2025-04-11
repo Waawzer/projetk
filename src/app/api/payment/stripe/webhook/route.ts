@@ -271,11 +271,11 @@ export async function POST(request: NextRequest) {
           const [year, month, day] = booking.date.split("-").map(Number);
           const [hours, minutes] = startTime.split(":").map(Number);
 
-          // Utiliser UTC pour éviter les problèmes de fuseau horaire sur Vercel
           // Correction spécifique à l'environnement :
-          // Si nous sommes en production (+3h observé), n'ajoutons pas de décalage
-          // Si nous sommes en développement, ajoutons +2h
-          const timeAdjustment = process.env.NODE_ENV === "production" ? 0 : 2;
+          // En local : nous observons un décalage de +4h (17h → 21h), donc ajustons de -4h
+          // En production : nous observons un décalage de +2h (17h → 19h), donc ajustons de -2h
+          const timeAdjustment =
+            process.env.NODE_ENV === "production" ? -2 : -4;
 
           console.log("Environnement:", process.env.NODE_ENV);
           console.log("Ajustement horaire appliqué:", timeAdjustment, "heures");
