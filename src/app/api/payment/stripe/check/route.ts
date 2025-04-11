@@ -289,9 +289,17 @@ export async function GET(request: NextRequest) {
           const [year, month, day] = booking.date.split("-").map(Number);
           const [hours, minutes] = startTime.split(":").map(Number);
 
-          // Créer une date en utilisant UTC avec décalage horaire (+2 heures pour la France en été)
+          // Correction spécifique à l'environnement :
+          // Si nous sommes en production (+3h observé), n'ajoutons pas de décalage
+          // Si nous sommes en développement, ajoutons +2h
+          const timeAdjustment = process.env.NODE_ENV === "production" ? 0 : 2;
+
+          console.log("Environnement:", process.env.NODE_ENV);
+          console.log("Ajustement horaire appliqué:", timeAdjustment, "heures");
+
+          // Créer une date en utilisant UTC avec décalage horaire ajusté selon l'environnement
           const bookingDate = new Date(
-            Date.UTC(year, month - 1, day, hours + 2, minutes)
+            Date.UTC(year, month - 1, day, hours + timeAdjustment, minutes)
           );
 
           console.log(
@@ -301,7 +309,13 @@ export async function GET(request: NextRequest) {
 
           // Créer la date et l'heure de fin
           const endDateTime = new Date(
-            Date.UTC(year, month - 1, day, hours + duration + 2, minutes)
+            Date.UTC(
+              year,
+              month - 1,
+              day,
+              hours + duration + timeAdjustment,
+              minutes
+            )
           );
 
           console.log(

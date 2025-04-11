@@ -272,9 +272,16 @@ export async function POST(request: NextRequest) {
           const [hours, minutes] = startTime.split(":").map(Number);
 
           // Utiliser UTC pour éviter les problèmes de fuseau horaire sur Vercel
-          // Ajouter +2 heures pour compenser la différence entre UTC et l'heure française (UTC+2 en été)
+          // Correction spécifique à l'environnement :
+          // Si nous sommes en production (+3h observé), n'ajoutons pas de décalage
+          // Si nous sommes en développement, ajoutons +2h
+          const timeAdjustment = process.env.NODE_ENV === "production" ? 0 : 2;
+
+          console.log("Environnement:", process.env.NODE_ENV);
+          console.log("Ajustement horaire appliqué:", timeAdjustment, "heures");
+
           const bookingDate = new Date(
-            Date.UTC(year, month - 1, day, hours + 2, minutes)
+            Date.UTC(year, month - 1, day, hours + timeAdjustment, minutes)
           );
 
           console.log(
@@ -284,7 +291,13 @@ export async function POST(request: NextRequest) {
 
           // Créer la date et l'heure de fin
           const endDateTime = new Date(
-            Date.UTC(year, month - 1, day, hours + duration + 2, minutes)
+            Date.UTC(
+              year,
+              month - 1,
+              day,
+              hours + duration + timeAdjustment,
+              minutes
+            )
           );
 
           console.log("- Date et heure de fin UTC:", endDateTime.toISOString());
