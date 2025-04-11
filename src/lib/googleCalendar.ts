@@ -631,16 +631,4 @@ export async function deleteCalendarEvent(eventId: string): Promise<boolean> {
   }
 }
 
-// Convertir la date et l'heure en objets Date pour Google Calendar
-const [year, month, day] = data.date.split("-").map(Number);
-const [hours, minutes] = data.time.split(":").map(Number);
 
-// Créer une date en spécifiant explicitement le fuseau horaire Europe/Paris
-// Pour éviter le décalage sur Vercel qui utilise UTC par défaut
-const startDateTime = new Date(
-  Date.UTC(year, month - 1, day, hours - 2, minutes)
-);
-startDateTime.toLocaleString("fr-FR", { timeZone: "Europe/Paris" });
-
-const endDateTime = new Date(startDateTime);
-endDateTime.setHours(endDateTime.getHours() + data.duration);
