@@ -251,15 +251,19 @@ ${data.notes ? `Notes: ${data.notes}` : ""}
         const [year, month, day] = data.date.split("-").map(Number);
         const [hours, minutes] = data.time.split(":").map(Number);
 
-        // Créer une date en spécifiant explicitement le fuseau horaire Europe/Paris
-        // Pour éviter le décalage sur Vercel qui utilise UTC par défaut
+        // Créer une date en utilisant UTC avec décalage horaire (+2 heures pour la France en été)
         const startDateTime = new Date(
-          Date.UTC(year, month - 1, day, hours, minutes)
+          Date.UTC(year, month - 1, day, hours + 2, minutes)
         );
-        // Ajustement du fuseau horaire pour être sûr que l'heure est correcte sur Vercel
+
+        console.log("Date et heure de début UTC:", startDateTime.toISOString());
+
+        // Créer la date et l'heure de fin
         const endDateTime = new Date(
-          Date.UTC(year, month - 1, day, hours + data.duration, minutes)
+          Date.UTC(year, month - 1, day, hours + data.duration + 2, minutes)
         );
+
+        console.log("Date et heure de fin UTC:", endDateTime.toISOString());
 
         // Créer l'événement dans Google Calendar
         const calendarEvent = await createCalendarEvent(
@@ -466,15 +470,19 @@ export async function PATCH(request: NextRequest) {
         const [year, month, day] = booking.date.split("-").map(Number);
         const [hours, minutes] = booking.time.split(":").map(Number);
 
-        // Créer une date en utilisant UTC pour éviter les problèmes de fuseau horaire sur Vercel
+        // Créer une date en utilisant UTC avec décalage horaire (+2 heures pour la France en été)
         const bookingDate = new Date(
-          Date.UTC(year, month - 1, day, hours, minutes)
+          Date.UTC(year, month - 1, day, hours + 2, minutes)
         );
+
+        console.log("Date et heure de début UTC:", bookingDate.toISOString());
 
         // Créer la date et l'heure de fin en utilisant UTC également
         const endDateTime = new Date(
-          Date.UTC(year, month - 1, day, hours + booking.duration, minutes)
+          Date.UTC(year, month - 1, day, hours + booking.duration + 2, minutes)
         );
+
+        console.log("Date et heure de fin UTC:", endDateTime.toISOString());
 
         // Formatage du service pour le titre
         const serviceLabel = (() => {

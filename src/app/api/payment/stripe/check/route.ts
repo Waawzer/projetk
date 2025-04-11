@@ -285,14 +285,28 @@ export async function GET(request: NextRequest) {
           const startTime = booking.time;
           const duration = booking.duration;
 
-          // Créer la date et l'heure de début
-          const bookingDate = new Date(booking.date);
+          // Récupérer les composants de la date
+          const [year, month, day] = booking.date.split("-").map(Number);
           const [hours, minutes] = startTime.split(":").map(Number);
-          bookingDate.setHours(hours, minutes, 0);
+
+          // Créer une date en utilisant UTC avec décalage horaire (+2 heures pour la France en été)
+          const bookingDate = new Date(
+            Date.UTC(year, month - 1, day, hours + 2, minutes)
+          );
+
+          console.log(
+            "Date et heure de début formatées:",
+            bookingDate.toISOString()
+          );
 
           // Créer la date et l'heure de fin
           const endDateTime = new Date(
-            bookingDate.getTime() + duration * 60 * 60 * 1000
+            Date.UTC(year, month - 1, day, hours + duration + 2, minutes)
+          );
+
+          console.log(
+            "Date et heure de fin formatées:",
+            endDateTime.toISOString()
           );
 
           // Formatage du service pour le titre

@@ -272,8 +272,9 @@ export async function POST(request: NextRequest) {
           const [hours, minutes] = startTime.split(":").map(Number);
 
           // Utiliser UTC pour éviter les problèmes de fuseau horaire sur Vercel
+          // Ajouter +2 heures pour compenser la différence entre UTC et l'heure française (UTC+2 en été)
           const bookingDate = new Date(
-            Date.UTC(year, month - 1, day, hours, minutes)
+            Date.UTC(year, month - 1, day, hours + 2, minutes)
           );
 
           console.log(
@@ -283,7 +284,7 @@ export async function POST(request: NextRequest) {
 
           // Créer la date et l'heure de fin
           const endDateTime = new Date(
-            Date.UTC(year, month - 1, day, hours + duration, minutes)
+            Date.UTC(year, month - 1, day, hours + duration + 2, minutes)
           );
 
           console.log("- Date et heure de fin UTC:", endDateTime.toISOString());
