@@ -221,8 +221,23 @@ export async function POST(request: NextRequest) {
 
     // Formater la date pour s'assurer qu'elle est au format YYYY-MM-DD
     if (data.date) {
-      const dateObj = new Date(data.date);
-      data.date = dateObj.toISOString().split("T")[0]; // Format YYYY-MM-DD
+      // Utiliser une approche directe pour éviter tout décalage de jour
+      const [year, month, day] = data.date.split("T")[0].split("-").map(Number);
+      data.date = `${year}-${String(month).padStart(2, "0")}-${String(
+        day
+      ).padStart(2, "0")}`;
+      console.log(`Date formatée: ${data.date}`);
+    }
+
+    // Calculer l'heure de fin (endTime) si elle n'est pas déjà fournie
+    if (data.time && data.duration && !data.endTime) {
+      const [hours, minutes] = data.time.split(":").map(Number);
+      const endHour = hours + parseInt(data.duration);
+      const endTime = `${String(endHour).padStart(2, "0")}:${String(
+        minutes
+      ).padStart(2, "0")}`;
+      data.endTime = endTime;
+      console.log(`Heure de fin calculée: ${data.endTime}`);
     }
 
     // Créer la réservation dans la base de données
@@ -251,16 +266,30 @@ ${data.notes ? `Notes: ${data.notes}` : ""}
         const [year, month, day] = data.date.split("-").map(Number);
         const [hours, minutes] = data.time.split(":").map(Number);
 
-        // Créer une date en utilisant UTC avec décalage horaire (+2 heures pour la France en été)
+        // Correction spécifique à l'environnement comme dans les routes Stripe
+        // En local : nous observons un décalage de +4h, donc ajustons de -4h
+        // En production : nous observons un décalage de +2h, donc ajustons de -2h
+        const timeAdjustment = process.env.NODE_ENV === "production" ? -2 : -4;
+
+        console.log("Environnement:", process.env.NODE_ENV);
+        console.log("Ajustement horaire appliqué:", timeAdjustment, "heures");
+
+        // Créer une date en utilisant UTC avec décalage horaire ajusté selon l'environnement
         const startDateTime = new Date(
-          Date.UTC(year, month - 1, day, hours - 2, minutes)
+          Date.UTC(year, month - 1, day, hours + timeAdjustment, minutes)
         );
 
         console.log("Date et heure de début UTC:", startDateTime.toISOString());
 
         // Créer la date et l'heure de fin
         const endDateTime = new Date(
-          Date.UTC(year, month - 1, day, hours + data.duration - 2, minutes)
+          Date.UTC(
+            year,
+            month - 1,
+            day,
+            hours + data.duration + timeAdjustment,
+            minutes
+          )
         );
 
         console.log("Date et heure de fin UTC:", endDateTime.toISOString());
@@ -310,8 +339,32 @@ export async function PUT(request: NextRequest) {
 
     // Formater la date pour s'assurer qu'elle est au format YYYY-MM-DD
     if (data.date) {
-      const dateObj = new Date(data.date);
-      data.date = dateObj.toISOString().split("T")[0]; // Format YYYY-MM-DD
+      // Utiliser une approche directe pour éviter tout décalage de jour
+      const [year, month, day] = data.date.split("T")[0].split("-").map(Number);
+      data.date = `${year}-${String(month).padStart(2, "0")}-${String(
+        day
+      ).padStart(2, "0")}`;
+      console.log(`Date formatée: ${data.date}`);
+    }
+
+    // Calculer l'heure de fin (endTime) si elle n'est pas déjà fournie
+    // ou si la durée ou l'heure de début a changé
+    if (
+      data.time &&
+      data.duration &&
+      (!data.endTime || data.time_changed || data.duration_changed)
+    ) {
+      const [hours, minutes] = data.time.split(":").map(Number);
+      const endHour = hours + parseInt(data.duration);
+      const endTime = `${String(endHour).padStart(2, "0")}:${String(
+        minutes
+      ).padStart(2, "0")}`;
+      data.endTime = endTime;
+      console.log(`Heure de fin calculée: ${data.endTime}`);
+
+      // Supprimer les flags temporaires
+      delete data.time_changed;
+      delete data.duration_changed;
     }
 
     const updatedBooking = await BookingModel.findByIdAndUpdate(
@@ -470,16 +523,30 @@ export async function PATCH(request: NextRequest) {
         const [year, month, day] = booking.date.split("-").map(Number);
         const [hours, minutes] = booking.time.split(":").map(Number);
 
-        // Créer une date en utilisant UTC avec décalage horaire (+2 heures pour la France en été)
+        // Correction spécifique à l'environnement comme dans les routes Stripe
+        // En local : nous observons un décalage de +4h, donc ajustons de -4h
+        // En production : nous observons un décalage de +2h, donc ajustons de -2h
+        const timeAdjustment = process.env.NODE_ENV === "production" ? -2 : -4;
+
+        console.log("Environnement:", process.env.NODE_ENV);
+        console.log("Ajustement horaire appliqué:", timeAdjustment, "heures");
+
+        // Créer une date en utilisant UTC avec décalage horaire ajusté selon l'environnement
         const bookingDate = new Date(
-          Date.UTC(year, month - 1, day, hours + 2, minutes)
+          Date.UTC(year, month - 1, day, hours + timeAdjustment, minutes)
         );
 
         console.log("Date et heure de début UTC:", bookingDate.toISOString());
 
         // Créer la date et l'heure de fin en utilisant UTC également
         const endDateTime = new Date(
-          Date.UTC(year, month - 1, day, hours + booking.duration + 2, minutes)
+          Date.UTC(
+            year,
+            month - 1,
+            day,
+            hours + booking.duration + timeAdjustment,
+            minutes
+          )
         );
 
         console.log("Date et heure de fin UTC:", endDateTime.toISOString());

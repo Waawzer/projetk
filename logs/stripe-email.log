@@ -1,0 +1,67 @@
+[2025-04-15T11:54:22.320Z] DÉBUT POST stripe/capture - Nouvelle requête
+[2025-04-15T11:54:22.323Z] POST - Paiement demandé: sessionId=cs_test_a1mBmVQCKE6wJoUvlz02ns3uQ5gRjTVSpoMQK21xBST0vqWTio24xslD2u, bookingId=67fe48c47211c67020347968, type=deposit
+[2025-04-15T11:54:22.325Z] Récupération de la session Stripe
+[2025-04-15T11:54:22.561Z] Session Stripe récupérée: id=cs_test_a1mBmVQCKE6wJoUvlz02ns3uQ5gRjTVSpoMQK21xBST0vqWTio24xslD2u, payment_status=paid
+[2025-04-15T11:54:22.563Z] Paiement confirmé: true
+[2025-04-15T11:54:22.564Z] Connexion à la base de données
+[2025-04-15T11:54:22.567Z] Recherche de la réservation: 67fe48c47211c67020347968
+[2025-04-15T11:54:22.608Z] Réservation trouvée: id=67fe48c47211c67020347968, depositPaid=true
+[2025-04-15T11:54:22.611Z] Paiement déjà traité (acompte)
+[2025-04-15T12:00:15.853Z] DÉBUT POST stripe/capture - Nouvelle requête
+[2025-04-15T12:00:15.855Z] POST - Paiement demandé: sessionId=cs_test_a1qwK6cQ3GQTrrd4gE7xG2MryOHCTS7Weqp6DKrLgBzehSWHsPF4ngCDvB, bookingId=67fe4a2b7211c6702034796b, type=deposit
+[2025-04-15T12:00:15.857Z] Récupération de la session Stripe
+[2025-04-15T12:00:16.286Z] Session Stripe récupérée: id=cs_test_a1qwK6cQ3GQTrrd4gE7xG2MryOHCTS7Weqp6DKrLgBzehSWHsPF4ngCDvB, payment_status=paid
+[2025-04-15T12:00:16.289Z] Paiement confirmé: true
+[2025-04-15T12:00:16.289Z] Connexion à la base de données
+[2025-04-15T12:00:16.291Z] Recherche de la réservation: 67fe4a2b7211c6702034796b
+[2025-04-15T12:00:16.314Z] Réservation trouvée: id=67fe4a2b7211c6702034796b, depositPaid=true
+[2025-04-15T12:00:16.316Z] Paiement déjà traité (acompte), envoi d'email seulement
+[2025-04-15T12:00:16.318Z] Création d'un événement dans Google Calendar
+[2025-04-15T12:00:17.225Z] Événement Google Calendar créé avec ID: nlnkr00hsh07ku3r8rk12o8fps
+[2025-04-15T12:00:17.249Z] Réservation mise à jour avec l'ID de l'événement Google Calendar
+[2025-04-15T12:00:17.250Z] POINT CRITIQUE - Début envoi email via lib/email.ts
+[2025-04-15T12:00:21.612Z] POINT CRITIQUE - Email envoyé avec succès via lib/email.ts
+[2025-04-15T12:00:21.613Z] FIN POST stripe/capture - Paiement confirmé: type=deposit, bookingId=67fe4a2b7211c6702034796b
+[2025-04-15T12:22:59.955Z] DÉBUT POST stripe/capture - Nouvelle requête
+[2025-04-15T12:22:59.956Z] POST - Paiement demandé: sessionId=cs_test_a1IlG23vIJEQbyBXSQVh80yxgONnKu3lNOwruqRLa4mjvWCQBu34jzhyBP, bookingId=67fe4f7b7211c670203479a7, type=deposit
+[2025-04-15T12:22:59.958Z] Récupération de la session Stripe
+[2025-04-15T12:23:00.281Z] Session Stripe récupérée: id=cs_test_a1IlG23vIJEQbyBXSQVh80yxgONnKu3lNOwruqRLa4mjvWCQBu34jzhyBP, payment_status=paid
+[2025-04-15T12:23:00.283Z] Paiement confirmé: true
+[2025-04-15T12:23:00.284Z] Connexion à la base de données
+[2025-04-15T12:23:00.286Z] Recherche de la réservation: 67fe4f7b7211c670203479a7
+[2025-04-15T12:23:00.305Z] Réservation trouvée: id=67fe4f7b7211c670203479a7, depositPaid=true
+[2025-04-15T12:23:00.307Z] Paiement déjà traité (acompte), envoi d'email seulement
+[2025-04-15T12:23:00.309Z] Création d'un événement dans Google Calendar
+[2025-04-15T12:23:01.200Z] Événement Google Calendar créé avec ID: 0ahv6koip1cfbr0vsi1v9vt7e8
+[2025-04-15T12:23:01.226Z] Réservation mise à jour avec l'ID de l'événement Google Calendar
+[2025-04-15T12:23:01.227Z] POINT CRITIQUE - Début envoi email via lib/email.ts
+[2025-04-15T12:23:02.893Z] POINT CRITIQUE - Email envoyé avec succès via lib/email.ts
+[2025-04-15T12:23:02.893Z] FIN POST stripe/capture - Paiement confirmé: type=deposit, bookingId=67fe4f7b7211c670203479a7
+[2025-04-15T12:34:22.616Z] DÉBUT POST stripe/capture - Nouvelle requête
+[2025-04-15T12:34:22.619Z] POST - Paiement demandé: sessionId=cs_test_a1ZE7MJo4IpJ6j6uMemyM6gvs6xu40TQz73xhyJ8tjT9Goluj4eMUHRiJo, bookingId=67fe522a7211c670203479b7, type=deposit
+[2025-04-15T12:34:22.621Z] Récupération de la session Stripe
+[2025-04-15T12:34:22.966Z] Session Stripe récupérée: id=cs_test_a1ZE7MJo4IpJ6j6uMemyM6gvs6xu40TQz73xhyJ8tjT9Goluj4eMUHRiJo, payment_status=paid
+[2025-04-15T12:34:22.968Z] Paiement confirmé: true
+[2025-04-15T12:34:22.969Z] Connexion à la base de données
+[2025-04-15T12:34:22.970Z] Recherche de la réservation: 67fe522a7211c670203479b7
+[2025-04-15T12:34:22.991Z] Réservation trouvée: id=67fe522a7211c670203479b7, depositPaid=true
+[2025-04-15T12:34:22.993Z] Paiement déjà traité (acompte), envoi d'email seulement
+[2025-04-15T12:34:22.994Z] Création d'un événement dans Google Calendar
+[2025-04-15T12:34:23.965Z] Événement Google Calendar créé avec ID: u4keo8j7d5thvmq9bko6m0100k
+[2025-04-15T12:34:23.986Z] Réservation mise à jour avec l'ID de l'événement Google Calendar
+[2025-04-15T12:34:23.987Z] POINT CRITIQUE - Début envoi email via lib/email.ts
+[2025-04-15T12:34:25.671Z] POINT CRITIQUE - Email envoyé avec succès via lib/email.ts
+[2025-04-15T12:34:25.672Z] FIN POST stripe/capture - Paiement confirmé: type=deposit, bookingId=67fe522a7211c670203479b7
+[2025-04-15T12:41:07.540Z] DÉBUT POST stripe/capture - Nouvelle requête
+[2025-04-15T12:41:07.543Z] POST - Paiement demandé: sessionId=cs_test_a11ZIfwxmw1mw51C3EmGdZW97vV5elHXCbImHK6SY5RN4rXvNwP4nc37Ji, bookingId=67fe53bd7211c670203479c1, type=deposit, fromWebhook=undefined
+[2025-04-15T12:41:07.547Z] Récupération de la session Stripe
+[2025-04-15T12:41:07.967Z] Session Stripe récupérée: id=cs_test_a11ZIfwxmw1mw51C3EmGdZW97vV5elHXCbImHK6SY5RN4rXvNwP4nc37Ji, payment_status=paid
+[2025-04-15T12:41:07.970Z] Paiement confirmé: true
+[2025-04-15T12:41:07.970Z] Connexion à la base de données
+[2025-04-15T12:41:07.973Z] Recherche de la réservation: 67fe53bd7211c670203479c1
+[2025-04-15T12:41:07.995Z] Réservation trouvée: id=67fe53bd7211c670203479c1, depositPaid=true
+[2025-04-15T12:41:07.997Z] Paiement déjà traité (acompte), envoi d'email seulement
+[2025-04-15T12:41:07.998Z] Événement Google Calendar déjà créé avec ID: 6eclj0cr8c1eruk0qk3cgbc2p4
+[2025-04-15T12:41:08.000Z] POINT CRITIQUE - Début envoi email via lib/email.ts
+[2025-04-15T12:41:09.749Z] POINT CRITIQUE - Email envoyé avec succès via lib/email.ts
+[2025-04-15T12:41:09.750Z] FIN POST stripe/capture - Paiement confirmé: type=deposit, bookingId=67fe53bd7211c670203479c1

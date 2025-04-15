@@ -179,7 +179,7 @@ const BookingForm = () => {
           service: serviceLabel,
           customerName: data.name,
           customerEmail: data.email,
-          returnUrl: `${window.location.origin}/payment/success?bookingId=${bookingId}&type=deposit`,
+          returnUrl: `${window.location.origin}/payment/success?bookingId=${bookingId}&type=deposit&session_id=`,
           cancelUrl: `${window.location.origin}/payment/cancel`,
         }),
       });

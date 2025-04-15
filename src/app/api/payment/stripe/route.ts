@@ -51,7 +51,7 @@ export async function POST(request: NextRequest) {
       },
       customer_email: customerEmail,
       mode: "payment",
-      success_url: `${returnUrl}?session_id={CHECKOUT_SESSION_ID}`,
+      success_url: `${returnUrl}{CHECKOUT_SESSION_ID}`,
       cancel_url: cancelUrl,
     });
 

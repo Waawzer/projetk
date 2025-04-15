@@ -2,163 +2,7 @@ import { NextResponse, NextRequest } from "next/server";
 import dbConnect from "@/lib/mongodb";
 import Booking from "@/models/Booking";
 import { createCalendarEvent } from "@/lib/googleCalendar";
-import { Resend } from "resend";
-
-// Créer une instance de Resend pour l'envoi d'emails
-const resend = new Resend(process.env.RESEND_API_KEY);
-
-// Fonction locale pour envoyer l'email de confirmation
-async function sendBookingConfirmationEmail(data: {
-  customerName: string;
-  customerEmail: string;
-  service: string;
-  date: string;
-  time: string;
-  duration: number;
-  totalPrice?: number;
-  depositAmount?: number;
-  remainingAmount?: number;
-}) {
-  if (!process.env.RESEND_API_KEY) {
-    console.error("RESEND_API_KEY non définie");
-    throw new Error("Configuration email manquante");
-  }
-
-  if (!process.env.ADMIN_EMAIL) {
-    console.error("ADMIN_EMAIL non définie");
-    throw new Error("Email admin manquant");
-  }
-
-  try {
-    console.log(
-      "Tentative d'envoi d'email de confirmation de réservation à:",
-      data.customerEmail
-    );
-
-    const formattedDate = formatDateFr(data.date);
-    const serviceLabel = getServiceLabel(data.service);
-
-    // Email de confirmation pour le client
-    const clientResponse = await resend.emails.send({
-      from: "onboarding@resend.dev", // Utilisez cette adresse pour commencer
-      to: data.customerEmail,
-      subject: "Confirmation de votre réservation - Kasar Studio",
-      html: `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eaeaea; border-radius: 5px;">
-          <h2 style="color: #6200ea; text-align: center;">Confirmation de réservation</h2>
-          <p>Cher(e) ${data.customerName},</p>
-          <p>Nous vous remercions pour votre réservation. Votre paiement initial a été confirmé et votre réservation est maintenant <strong>validée</strong>.</p>
-          
-          <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
-            <h3 style="color: #6200ea; margin-top: 0;">Détails de votre réservation</h3>
-            <p><strong>Service :</strong> ${serviceLabel}</p>
-            <p><strong>Date :</strong> ${formattedDate}</p>
-            <p><strong>Heure :</strong> ${data.time}</p>
-            <p><strong>Durée :</strong> ${data.duration} heure${
-        data.duration > 1 ? "s" : ""
-      }</p>
-            ${
-              data.totalPrice
-                ? `<p><strong>Prix total :</strong> ${data.totalPrice} €</p>`
-                : ""
-            }
-            ${
-              data.depositAmount
-                ? `<p><strong>Acompte payé :</strong> ${data.depositAmount} €</p>`
-                : ""
-            }
-            ${
-              data.remainingAmount
-                ? `<p><strong>Reste à payer :</strong> ${data.remainingAmount} €</p>`
-                : ""
-            }
-          </div>
-          
-          <p>Le solde restant sera à régler le jour de votre séance.</p>
-          
-          <p>Si vous avez des questions ou souhaitez modifier votre réservation, n'hésitez pas à nous contacter.</p>
-          
-          <p style="margin-top: 30px;">Cordialement,</p>
-          <p><strong>L'équipe Kasar Studio</strong></p>
-        </div>
-      `,
-    });
-
-    console.log(
-      "Réponse de l'envoi confirmation de réservation:",
-      clientResponse
-    );
-
-    // Email de notification pour l'administrateur
-    const adminResponse = await resend.emails.send({
-      from: "onboarding@resend.dev",
-      to: process.env.ADMIN_EMAIL,
-      subject: `Nouvelle réservation confirmée - ${serviceLabel}`,
-      html: `
-        <h2>Nouvelle réservation confirmée</h2>
-        <p><strong>Client :</strong> ${data.customerName}</p>
-        <p><strong>Email :</strong> ${data.customerEmail}</p>
-        <p><strong>Service :</strong> ${serviceLabel}</p>
-        <p><strong>Date :</strong> ${formattedDate}</p>
-        <p><strong>Heure :</strong> ${data.time}</p>
-        <p><strong>Durée :</strong> ${data.duration} heure${
-        data.duration > 1 ? "s" : ""
-      }</p>
-        ${
-          data.totalPrice
-            ? `<p><strong>Prix total :</strong> ${data.totalPrice} €</p>`
-            : ""
-        }
-        ${
-          data.depositAmount
-            ? `<p><strong>Acompte payé :</strong> ${data.depositAmount} €</p>`
-            : ""
-        }
-        ${
-          data.remainingAmount
-            ? `<p><strong>Reste à payer :</strong> ${data.remainingAmount} €</p>`
-            : ""
-        }
-      `,
-    });
-
-    console.log("Réponse de l'envoi notification admin:", adminResponse);
-
-    return { success: true };
-  } catch (error) {
-    console.error(
-      "Erreur détaillée lors de l'envoi des emails de confirmation:",
-      error
-    );
-    throw error;
-  }
-}
-
-// Fonction pour formatter la date au format français
-const formatDateFr = (dateStr: string) => {
-  const date = new Date(dateStr);
-  return date.toLocaleDateString("fr-FR", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
-};
-
-// Fonction pour obtenir le libellé du service
-const getServiceLabel = (service: string) => {
-  switch (service) {
-    case "recording":
-      return "Enregistrement";
-    case "mixing":
-      return "Mixage";
-    case "mastering":
-      return "Mastering";
-    case "production":
-      return "Production";
-    default:
-      return service;
-  }
-};
+import { sendBookingConfirmation } from "@/lib/email";
 
 // PayPal API endpoints
 const PAYPAL_API_BASE =
@@ -317,20 +161,7 @@ export async function POST(request: NextRequest) {
         console.log("- Date et heure de fin:", endDateTime.toLocaleString());
 
         // Formatage du service pour le titre
-        const serviceLabel = (() => {
-          switch (booking.service) {
-            case "recording":
-              return "Enregistrement";
-            case "mixing":
-              return "Mixage";
-            case "mastering":
-              return "Mastering";
-            case "production":
-              return "Production";
-            default:
-              return booking.service;
-          }
-        })();
+        const serviceLabel = getServiceLabel(booking.service);
 
         // Vérifier les variables d'environnement Google Calendar
         console.log(
@@ -394,7 +225,7 @@ Acompte: ${booking.depositAmount || "Non spécifié"} €`,
       try {
         console.log("Envoi de l'email de confirmation de réservation");
 
-        await sendBookingConfirmationEmail({
+        await sendBookingConfirmation({
           customerName: booking.customerName,
           customerEmail: booking.customerEmail,
           service: booking.service,
@@ -438,5 +269,20 @@ Acompte: ${booking.depositAmount || "Non spécifié"} €`,
       { error: "Erreur serveur lors du traitement du paiement" },
       { status: 500 }
     );
+  }
+}
+
+function getServiceLabel(service: string): string {
+  switch (service) {
+    case "recording":
+      return "Enregistrement";
+    case "mixing":
+      return "Mixage";
+    case "mastering":
+      return "Mastering";
+    case "production":
+      return "Production";
+    default:
+      return service;
   }
 }

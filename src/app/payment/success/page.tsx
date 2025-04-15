@@ -19,23 +19,60 @@ function PaymentSuccessContent() {
         const payerId = searchParams.get("PayerID"); // PayPal
         let sessionId = searchParams.get("session_id"); // Stripe
 
-        // Gestion spéciale pour le cas où l'URL contient d'autres paramètres (solution pour le problème d'URL)
+        // Gestion spéciale pour le cas où l'URL contient d'autres paramètres mal formés
         if (!sessionId) {
-          // Vérifier si session_id est dans un autre paramètre
-          for (const [key] of Array.from(searchParams.entries())) {
-            if (key.includes("session_id")) {
-              const match = key.match(/session_id=([^&]+)/);
-              if (match && match[1]) {
-                sessionId = match[1];
-                console.log("Session ID extrait de:", key, "->", sessionId);
+          // Vérifier si session_id est dans un autre paramètre ou dans l'URL complète
+          const urlString = window.location.href;
+          console.log("URL complète:", urlString);
+
+          // Essayer d'extraire session_id de l'URL complète
+          const sessionMatch = urlString.match(/session_id=([^&]+)/);
+          if (sessionMatch && sessionMatch[1]) {
+            sessionId = sessionMatch[1];
+            console.log("Session ID extrait de l'URL complète:", sessionId);
+          } else {
+            // Parcourir tous les paramètres pour trouver session_id
+            for (const [key, value] of Array.from(searchParams.entries())) {
+              console.log("Paramètre URL:", key, "=", value);
+
+              if (key.includes("session_id")) {
+                sessionId = value;
+                console.log(
+                  "Session ID trouvé dans paramètre:",
+                  key,
+                  "=",
+                  value
+                );
                 break;
+              } else if (value && value.includes("session_id")) {
+                // Le cas où session_id est dans la valeur d'un autre paramètre
+                const match = value.match(/session_id=([^&]+)/);
+                if (match && match[1]) {
+                  sessionId = match[1];
+                  console.log(
+                    "Session ID extrait de paramètre:",
+                    key,
+                    "->",
+                    sessionId
+                  );
+                  break;
+                }
               }
             }
           }
         }
 
-        // Récupérer notre paramètre d'ID de réservation
-        const bookingId = searchParams.get("bookingId");
+        // Récupérer notre paramètre d'ID de réservation (même logique robuste)
+        let bookingId = searchParams.get("bookingId");
+        if (!bookingId) {
+          const urlString = window.location.href;
+          const bookingMatch = urlString.match(/bookingId=([^&?]+)/);
+          if (bookingMatch && bookingMatch[1]) {
+            bookingId = bookingMatch[1];
+            console.log("BookingId extrait de l'URL complète:", bookingId);
+          }
+        }
+
         const type = searchParams.get("type") || "deposit";
 
         console.log("URL Params:", {
@@ -84,31 +121,29 @@ function PaymentSuccessContent() {
 
         // Si nous venons de Stripe, nous aurons un session_id
         if (sessionId && bookingId) {
-          console.log(
-            "Vérification du paiement Stripe avec sessionId:",
-            sessionId
-          );
+          console.log("Capture du paiement Stripe avec sessionId:", sessionId);
 
-          // Pour Stripe, le paiement est déjà capturé automatiquement
-          // Mais nous devons vérifier le statut pour confirmer
-          const response = await fetch(
-            `/api/payment/stripe/check?session_id=${sessionId}&bookingId=${bookingId}&type=${type}`,
-            {
-              method: "GET",
-              headers: { "Content-Type": "application/json" },
-            }
-          );
+          // Capturer le paiement Stripe
+          const response = await fetch(`/api/payment/stripe/capture`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              sessionId: sessionId,
+              bookingId: bookingId,
+              type: type,
+            }),
+          });
 
           if (!response.ok) {
             const errorData = await response.json();
             console.error("Erreur de l'API Stripe:", errorData);
             throw new Error(
-              errorData.error || "Erreur lors de la vérification du paiement"
+              errorData.error || "Erreur lors de la capture du paiement Stripe"
             );
           }
 
           const result = await response.json();
-          console.log("Résultat de la vérification Stripe:", result);
+          console.log("Résultat de la capture Stripe:", result);
 
           setStatus("success");
 
