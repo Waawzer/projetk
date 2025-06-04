@@ -42,7 +42,7 @@ export default function ContactPage() {
                   <div>
                     <h3 className="text-lg font-medium mb-1">Adresse</h3>
                     <p className="text-gray-400">
-                      Villeurbanne, secteur Charpennes
+                      Villeurbanne, secteur Charpennes.
                     </p>
                   </div>
                 </div>
