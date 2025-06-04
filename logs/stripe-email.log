@@ -65,3 +65,18 @@
 [2025-04-15T12:41:08.000Z] POINT CRITIQUE - Début envoi email via lib/email.ts
 [2025-04-15T12:41:09.749Z] POINT CRITIQUE - Email envoyé avec succès via lib/email.ts
 [2025-04-15T12:41:09.750Z] FIN POST stripe/capture - Paiement confirmé: type=deposit, bookingId=67fe53bd7211c670203479c1
+[2025-05-30T17:16:45.140Z] DÉBUT POST stripe/capture - Nouvelle requête
+[2025-05-30T17:16:45.180Z] POST - Paiement demandé: sessionId=cs_test_a15trNgWeTNlR05a4T0I9deGzKh1T51Psj5DngFSds04eTEs98YlaS0asl, bookingId=6839e7cbb51d2f475f56ba98, type=deposit, fromWebhook=undefined
+[2025-05-30T17:16:45.182Z] Récupération de la session Stripe
+[2025-05-30T17:16:45.478Z] Session Stripe récupérée: id=cs_test_a15trNgWeTNlR05a4T0I9deGzKh1T51Psj5DngFSds04eTEs98YlaS0asl, payment_status=paid
+[2025-05-30T17:16:45.480Z] Paiement confirmé: true
+[2025-05-30T17:16:45.481Z] Connexion à la base de données
+[2025-05-30T17:16:45.483Z] Recherche de la réservation: 6839e7cbb51d2f475f56ba98
+[2025-05-30T17:16:45.545Z] Réservation trouvée: id=6839e7cbb51d2f475f56ba98, depositPaid=true
+[2025-05-30T17:16:45.547Z] Paiement déjà traité (acompte), envoi d'email seulement
+[2025-05-30T17:16:45.548Z] Création d'un événement dans Google Calendar
+[2025-05-30T17:16:46.926Z] Événement Google Calendar créé avec ID: 3a8sopfr6i0e85p2ngke0h4n40
+[2025-05-30T17:16:47.003Z] Réservation mise à jour avec l'ID de l'événement Google Calendar
+[2025-05-30T17:16:47.004Z] POINT CRITIQUE - Début envoi email via lib/email.ts
+[2025-05-30T17:16:49.151Z] POINT CRITIQUE - Email envoyé avec succès via lib/email.ts
+[2025-05-30T17:16:49.152Z] FIN POST stripe/capture - Paiement confirmé: type=deposit, bookingId=6839e7cbb51d2f475f56ba98

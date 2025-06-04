@@ -138,22 +138,27 @@ export async function PUT(request: Request) {
     // Convertir l'ID en ObjectId pour MongoDB
     const formationId = new ObjectId(data.id);
 
-    // Préparer les données pour la mise à jour
-    const updateData = {
-      title: data.title,
-      description: data.description,
-      longDescription: data.longDescription || "",
-      duration: data.duration,
-      price: data.price,
-      maxParticipants: data.maxParticipants,
-      imageUrl: data.imageUrl || "",
-      objectives: data.objectives || [],
-      prerequisites: data.prerequisites || [],
-      syllabus: data.syllabus || [],
-      isActive: data.isActive !== undefined ? data.isActive : true,
-      format: data.format || "présentiel",
-      nbSessions: data.nbSessions || 1,
-    };
+    // Préparer les données pour la mise à jour (seulement les champs fournis)
+    const updateData: Partial<Omit<FormationData, "id">> = {};
+
+    // Ne mettre à jour que les champs qui sont fournis dans la requête
+    if (data.title !== undefined) updateData.title = data.title;
+    if (data.description !== undefined)
+      updateData.description = data.description;
+    if (data.longDescription !== undefined)
+      updateData.longDescription = data.longDescription;
+    if (data.duration !== undefined) updateData.duration = data.duration;
+    if (data.price !== undefined) updateData.price = data.price;
+    if (data.maxParticipants !== undefined)
+      updateData.maxParticipants = data.maxParticipants;
+    if (data.imageUrl !== undefined) updateData.imageUrl = data.imageUrl;
+    if (data.objectives !== undefined) updateData.objectives = data.objectives;
+    if (data.prerequisites !== undefined)
+      updateData.prerequisites = data.prerequisites;
+    if (data.syllabus !== undefined) updateData.syllabus = data.syllabus;
+    if (data.isActive !== undefined) updateData.isActive = data.isActive;
+    if (data.format !== undefined) updateData.format = data.format;
+    if (data.nbSessions !== undefined) updateData.nbSessions = data.nbSessions;
 
     const result = await db
       .collection("formations")

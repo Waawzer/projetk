@@ -4,7 +4,6 @@ import Image from "next/image";
 import { FiMapPin, FiPhone, FiMail, FiClock } from "react-icons/fi";
 import Navbar from "@/components/Navbar";
 import ContactForm from "@/components/ContactForm";
-import BlackHoleLogo from "@/components/BlackHoleLogo";
 import Footer from "@/components/Footer";
 
 export default function ContactPage() {
@@ -54,8 +53,7 @@ export default function ContactPage() {
                   </div>
                   <div>
                     <h3 className="text-lg font-medium mb-1">Téléphone</h3>
-                    <p className="text-gray-400">+33 1 23 45 67 89</p>
-                    <p className="text-gray-400">+33 6 12 34 56 78 (Mobile)</p>
+                    <p className="text-gray-400">+33 6 12 34 56 78</p>
                   </div>
                 </div>
 
@@ -83,17 +81,12 @@ export default function ContactPage() {
               {/* Map */}
               <div className="relative w-full h-64 rounded-lg overflow-hidden">
                 <Image
-                  src="https://images.unsplash.com/photo-1524661135-423995f22d0b?q=80&w=800&auto=format&fit=crop"
+                  src="/images/micro.png"
                   alt="Carte de localisation"
                   fill
                   className="object-cover"
                 />
-                <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
-                  <div className="bg-primary text-white px-4 py-2 rounded-lg font-medium flex items-center">
-                    <BlackHoleLogo className="mr-2" size={20} />
-                    Kasar Studio
-                  </div>
-                </div>
+                <div className="absolute inset-0 bg-black/30 flex items-center justify-center"></div>
               </div>
             </div>
 

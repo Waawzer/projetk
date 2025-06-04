@@ -140,22 +140,26 @@ export async function PUT(request: Request) {
     // Convertir l'ID en ObjectId pour MongoDB
     const courseId = new ObjectId(data.id);
 
-    // Préparer les données pour la mise à jour
-    const updateData = {
-      title: data.title,
-      description: data.description,
-      longDescription: data.longDescription || "",
-      category: data.category,
-      level: data.level || "tous niveaux",
-      pricePerHour: data.pricePerHour,
-      imageUrl: data.imageUrl || "",
-      instructor: data.instructor || "",
-      benefits: data.benefits || [],
-      contenus: data.contenus || [],
-      isActive: data.isActive !== undefined ? data.isActive : true,
-      format: data.format || "présentiel",
-      nbSessions: data.nbSessions || 1,
-    };
+    // Préparer les données pour la mise à jour (seulement les champs fournis)
+    const updateData: Partial<Omit<CourseData, "id">> = {};
+
+    // Ne mettre à jour que les champs qui sont fournis dans la requête
+    if (data.title !== undefined) updateData.title = data.title;
+    if (data.description !== undefined)
+      updateData.description = data.description;
+    if (data.longDescription !== undefined)
+      updateData.longDescription = data.longDescription;
+    if (data.category !== undefined) updateData.category = data.category;
+    if (data.level !== undefined) updateData.level = data.level;
+    if (data.pricePerHour !== undefined)
+      updateData.pricePerHour = data.pricePerHour;
+    if (data.imageUrl !== undefined) updateData.imageUrl = data.imageUrl;
+    if (data.instructor !== undefined) updateData.instructor = data.instructor;
+    if (data.benefits !== undefined) updateData.benefits = data.benefits;
+    if (data.contenus !== undefined) updateData.contenus = data.contenus;
+    if (data.isActive !== undefined) updateData.isActive = data.isActive;
+    if (data.format !== undefined) updateData.format = data.format;
+    if (data.nbSessions !== undefined) updateData.nbSessions = data.nbSessions;
 
     const result = await db
       .collection("courses")
