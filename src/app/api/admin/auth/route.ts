@@ -1,29 +1,35 @@
 import { NextRequest, NextResponse } from "next/server";
 import jwt from "jsonwebtoken";
 
-// Dans une application réelle, vous utiliseriez un secret stocké dans les variables d'environnement
-const JWT_SECRET =
-  process.env.JWT_SECRET || "your-secret-key-for-development-only";
+// Secret JWT depuis les variables d'environnement
+const JWT_SECRET = process.env.JWT_SECRET;
+if (!JWT_SECRET) {
+  throw new Error(
+    "JWT_SECRET doit être défini dans les variables d'environnement"
+  );
+}
 
-// Dans une application réelle, vous stockeriez ces informations dans une base de données
-const ADMIN_CREDENTIALS = {
-  username: "admin",
-  password: "password",
-};
+// Identifiants admin depuis les variables d'environnement
+const ADMIN_USERNAME = process.env.ADMIN_USERNAME;
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
+
+if (!ADMIN_USERNAME || !ADMIN_PASSWORD) {
+  throw new Error(
+    "ADMIN_USERNAME et ADMIN_PASSWORD doivent être définis dans les variables d'environnement"
+  );
+}
 
 export async function POST(request: NextRequest) {
   try {
     console.log("API Auth: Tentative d'authentification...");
+
     const body = await request.json();
     const { username, password } = body;
 
     console.log("API Auth: Vérification des identifiants pour:", username);
 
-    // Vérifier les identifiants
-    if (
-      username !== ADMIN_CREDENTIALS.username ||
-      password !== ADMIN_CREDENTIALS.password
-    ) {
+    // Vérifier les identifiants avec les variables d'environnement
+    if (username !== ADMIN_USERNAME || password !== ADMIN_PASSWORD) {
       console.log(
         "API Auth: Échec d'authentification - identifiants incorrects"
       );

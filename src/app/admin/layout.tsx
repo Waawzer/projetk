@@ -40,17 +40,36 @@ const AdminLayout = ({ children }: { children: React.ReactNode }) => {
     checkAuth();
   }, []);
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError("");
 
-    // Dans une application réelle, vous feriez une requête API pour vérifier les identifiants
-    // Pour cette démonstration, nous utilisons des identifiants codés en dur
-    if (username === "admin" && password === "password") {
-      localStorage.setItem("admin_token", "demo_token_123");
-      setIsAuthenticated(true);
-      setError("");
-    } else {
-      setError("Identifiants incorrects");
+    try {
+      // Appel à l'API d'authentification
+      const response = await fetch("/api/admin/auth", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          username,
+          password,
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        // Stocker le token JWT
+        localStorage.setItem("admin_token", data.token);
+        setIsAuthenticated(true);
+        setError("");
+      } else {
+        const errorData = await response.json();
+        setError(errorData.error || "Erreur d'authentification");
+      }
+    } catch (error) {
+      console.error("Erreur lors de l'authentification:", error);
+      setError("Erreur de connexion au serveur");
     }
   };
 
@@ -170,17 +189,6 @@ const AdminLayout = ({ children }: { children: React.ReactNode }) => {
               </button>
             </div>
           </form>
-
-          <div className="text-center text-sm text-gray-400 mt-4">
-            <p>Pour la démonstration :</p>
-            <p>
-              Nom d&apos;utilisateur :{" "}
-              <span className="text-primary">admin</span>
-            </p>
-            <p>
-              Mot de passe : <span className="text-primary">password</span>
-            </p>
-          </div>
         </div>
       </div>
     );

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import jwt from "jsonwebtoken";
 
-const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key";
+const JWT_SECRET = process.env.JWT_SECRET;
 
 export async function middleware(request: NextRequest) {
   console.log(
@@ -36,6 +36,10 @@ export async function middleware(request: NextRequest) {
 
     try {
       // Vérifier et décoder le token
+      if (!JWT_SECRET) {
+        throw new Error("JWT_SECRET non configuré");
+      }
+
       const decoded = jwt.verify(token, JWT_SECRET);
       console.log("Middleware: Token vérifié avec succès pour:", decoded);
 
