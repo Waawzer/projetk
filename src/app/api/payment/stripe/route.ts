@@ -1,5 +1,6 @@
 import { NextResponse, NextRequest } from "next/server";
 import Stripe from "stripe";
+import { isValidService } from "@/lib/services";
 
 // Initialiser Stripe avec la clé secrète
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string);
@@ -17,6 +18,7 @@ export async function POST(request: NextRequest) {
       paymentType = "deposit", // "deposit" ou "remaining"
     } = body;
 
+    // Validation des paramètres requis
     if (!amount || !bookingId || !returnUrl || !cancelUrl) {
       return NextResponse.json(
         { error: "Les paramètres requis sont manquants" },
@@ -24,8 +26,24 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Validation du service
+    if (service && !isValidService(service)) {
+      return NextResponse.json({ error: "Service invalide" }, { status: 400 });
+    }
+
+    // Validation du montant
+    const numericAmount = parseFloat(amount);
+    if (isNaN(numericAmount) || numericAmount <= 0 || numericAmount > 10000) {
+      return NextResponse.json({ error: "Montant invalide" }, { status: 400 });
+    }
+
+    // Validation de l'email
+    if (customerEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(customerEmail)) {
+      return NextResponse.json({ error: "Email invalide" }, { status: 400 });
+    }
+
     // Formater le montant pour Stripe (en centimes)
-    const stripeAmount = Math.round(parseFloat(amount) * 100);
+    const stripeAmount = Math.round(numericAmount * 100);
 
     // Créer une session de paiement Stripe
     const session = await stripe.checkout.sessions.create({

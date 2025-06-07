@@ -131,18 +131,5 @@ export async function POST(request: Request) {
   }
 }
 
-// Helper function to get price per hour based on service
-function getPricePerHour(service: string): number {
-  switch (service) {
-    case "recording":
-      return 60;
-    case "mixing":
-      return 50;
-    case "mastering":
-      return 40;
-    case "production":
-      return 70;
-    default:
-      return 50;
-  }
-}
+// Import des utilitaires de services
+import { getPricePerHour } from "@/lib/services";

@@ -5,22 +5,7 @@ import { FilterQuery } from "mongoose";
 import { IBookingDocument } from "@/models/Booking";
 import { deleteCalendarEvent, createCalendarEvent } from "@/lib/googleCalendar";
 import { sendBookingConfirmation } from "@/lib/email";
-
-// Fonction pour obtenir le libellé du service
-const getServiceLabel = (service: string) => {
-  switch (service) {
-    case "recording":
-      return "Enregistrement";
-    case "mixing":
-      return "Mixage";
-    case "mastering":
-      return "Mastering";
-    case "production":
-      return "Production";
-    default:
-      return service;
-  }
-};
+import { getServiceLabel } from "@/lib/services";
 
 export async function GET(request: NextRequest) {
   try {

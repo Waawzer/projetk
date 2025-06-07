@@ -6,7 +6,9 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "generate-admin-hash": "node scripts/generate-admin-hash.js",
+    "security-check": "npm audit && npm outdated"
   },
   "dependencies": {
     "@paypal/react-paypal-js": "^8.8.2",

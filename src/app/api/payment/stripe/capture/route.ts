@@ -447,18 +447,5 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// Fonction pour obtenir le libellé du service
-const getServiceLabel = (service: string) => {
-  switch (service) {
-    case "recording":
-      return "Enregistrement";
-    case "mixing":
-      return "Mixage";
-    case "mastering":
-      return "Mastering";
-    case "production":
-      return "Production";
-    default:
-      return service;
-  }
-};
+// Import des utilitaires de services
+import { getServiceLabel } from "@/lib/services";

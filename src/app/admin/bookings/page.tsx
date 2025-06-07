@@ -15,6 +15,10 @@ import {
   FiEye,
 } from "react-icons/fi";
 import React from "react";
+import {
+  copyPayPalLink as copyPayPalToClipboard,
+  copyStripeLink as copyStripeToClipboard,
+} from "@/lib/clipboard";
 
 interface Booking {
   _id: string;
@@ -366,48 +370,15 @@ export default function BookingsPage() {
     }
   };
 
-  // Fonction pour copier le lien PayPal
+  // Fonctions pour copier les liens de paiement
   const copyPayPalLink = () => {
     if (!paypalLink) return;
-
-    navigator.clipboard
-      .writeText(paypalLink)
-      .then(() => {
-        alert("Lien PayPal copié dans le presse-papiers!");
-      })
-      .catch((err) => {
-        console.error("Erreur lors de la copie:", err);
-        // Méthode de repli
-        const textarea = document.createElement("textarea");
-        textarea.value = paypalLink;
-        document.body.appendChild(textarea);
-        textarea.select();
-        document.execCommand("copy");
-        document.body.removeChild(textarea);
-        alert("Lien PayPal copié dans le presse-papiers!");
-      });
+    copyPayPalToClipboard(paypalLink);
   };
 
-  // Fonction pour copier le lien Stripe
   const copyStripeLink = () => {
     if (!stripeLink) return;
-
-    navigator.clipboard
-      .writeText(stripeLink)
-      .then(() => {
-        alert("Lien Stripe copié dans le presse-papiers!");
-      })
-      .catch((err) => {
-        console.error("Erreur lors de la copie:", err);
-        // Méthode de repli
-        const textarea = document.createElement("textarea");
-        textarea.value = stripeLink;
-        document.body.appendChild(textarea);
-        textarea.select();
-        document.execCommand("copy");
-        document.body.removeChild(textarea);
-        alert("Lien Stripe copié dans le presse-papiers!");
-      });
+    copyStripeToClipboard(stripeLink);
   };
 
   const formatDate = (dateString: string) => {

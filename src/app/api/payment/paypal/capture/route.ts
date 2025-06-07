@@ -272,17 +272,5 @@ Acompte: ${booking.depositAmount || "Non spécifié"} €`,
   }
 }
 
-function getServiceLabel(service: string): string {
-  switch (service) {
-    case "recording":
-      return "Enregistrement";
-    case "mixing":
-      return "Mixage";
-    case "mastering":
-      return "Mastering";
-    case "production":
-      return "Production";
-    default:
-      return service;
-  }
-}
+// Import des utilitaires de services
+import { getServiceLabel } from "@/lib/services";
